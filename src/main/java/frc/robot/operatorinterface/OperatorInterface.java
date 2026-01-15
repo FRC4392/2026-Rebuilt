@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.DeceiverRobotState;
-// import frc.robot.subsystems.swerve.SwerveControlSignal;
+import frc.robot.subsystems.swerve.SwerveControlSignal;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
@@ -146,13 +146,13 @@ public class OperatorInterface extends SubsystemBase {
    *
    * @return
    */
-  // public SwerveControlSignal getSwerveControlSignal() {
-  //   return new SwerveControlSignal(
-  //       () -> driverController.getLeftX(),
-  //       () -> driverController.getLeftY(),
-  //       () -> driverController.getLeftTriggerAxis() - driverController.getRightTriggerAxis(),
-  //       () -> driverController.getHID().getAButton());
-  // }
+  public SwerveControlSignal getSwerveControlSignal() {
+    return new SwerveControlSignal(
+        () -> driverController.getLeftX(),
+        () -> driverController.getLeftY(),
+        () -> driverController.getLeftTriggerAxis() - driverController.getRightTriggerAxis(),
+        () -> driverController.getHID().getAButton());
+  }
 
   // Game Controls (vary by year)
 
