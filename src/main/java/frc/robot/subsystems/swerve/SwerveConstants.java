@@ -144,6 +144,43 @@ public final class SwerveConstants {
   public static final double azimuthPIDMinInput = 0; // Radians
   public static final double azimuthPIDMaxInput = 2 * Math.PI; // Radians
 
+  public static final TalonFXConfiguration azimuthConfiguration =
+      new TalonFXConfiguration()
+          .withAudio(
+              new AudioConfigs()
+                  .withAllowMusicDurDisable(true)
+                  .withBeepOnBoot(true)
+                  .withBeepOnConfig(true))
+          .withCurrentLimits(
+              new CurrentLimitsConfigs()
+                  .withStatorCurrentLimit(driveMotorStatorLimit)
+                  .withStatorCurrentLimitEnable(true)
+                  .withSupplyCurrentLimit(driveMotorSupplyLimitHigh)
+                  .withSupplyCurrentLowerLimit(driveMotorSupplyLimitLow)
+                  .withSupplyCurrentLowerTime(1)
+                  .withSupplyCurrentLimitEnable(true))
+          .withFeedback(
+              new FeedbackConfigs()
+                  .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
+                  .withSensorToMechanismRatio(driveMotorReduction))
+          .withMotorOutput(
+              new MotorOutputConfigs()
+                  .withInverted(InvertedValue.CounterClockwise_Positive)
+                  .withNeutralMode(NeutralModeValue.Brake))
+          .withSlot0(
+              new Slot0Configs()
+                  .withKP(driveKp)
+                  .withKI(driveKi)
+                  .withKD(driveKd)
+                  .withKG(0)
+                  .withKV(driveKv)
+                  .withKS(driveKs)
+                  .withKA(driveKa))
+          .withTorqueCurrent(
+              new TorqueCurrentConfigs()
+                  .withPeakForwardTorqueCurrent(driveMotorStatorLimit)
+                  .withPeakReverseTorqueCurrent(-driveMotorStatorLimit));
+
   // PathPlanner configuration
   public static final double robotMassKg = Units.lbsToKilograms(115);
   public static final double robotMOI = 10;
