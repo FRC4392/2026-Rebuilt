@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.operatorinterface.OperatorInterface;
 import frc.robot.subsystems.swerve.GyroIO;
-import frc.robot.subsystems.swerve.GyroIOPigeon2;
+import frc.robot.subsystems.swerve.GyroIONavx3;
 import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.subsystems.swerve.SwerveModuleIO;
 import frc.robot.subsystems.swerve.SwerveModuleIODeceivers;
@@ -42,7 +42,7 @@ public class RobotContainer {
         // Real Robot, use real hardware interfaces
         swerve =
             new Swerve(
-                new GyroIOPigeon2(),
+                new GyroIONavx3(),
                 new SwerveModuleIODeceivers(0),
                 new SwerveModuleIODeceivers(1),
                 new SwerveModuleIODeceivers(2),
@@ -61,7 +61,7 @@ public class RobotContainer {
                 state);
         break;
       default:
-      // Replay, don't use hardware
+        // Replay, don't use hardware
         swerve =
             new Swerve(
                 new GyroIO() {},

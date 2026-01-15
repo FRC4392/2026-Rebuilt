@@ -8,7 +8,6 @@ import static edu.wpi.first.units.Units.Degrees;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
 import com.studica.frc.Navx;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import java.util.Queue;
 
@@ -21,7 +20,7 @@ public class GyroIONavx3 implements GyroIO {
   /** Constructor */
   public GyroIONavx3() {
     gyro.resetYaw();
-    gyro.setODRHz((int)odometryFrequencyHz);
+    gyro.setODRHz((int) odometryFrequencyHz);
     yawTimestampQueue = SwerveOdometryThread.getInstance().makeTimestampQueue();
     yawPositionQueue = SwerveOdometryThread.getInstance().makeTimestampQueue();
   }
