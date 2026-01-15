@@ -60,18 +60,8 @@ public class RobotContainer {
                 new SwerveModuleIOSim(),
                 state);
         break;
-      case REPLAY:
-        // Replayed Robot, don't use hardware
-        swerve =
-            new Swerve(
-                new GyroIO() {},
-                new SwerveModuleIO() {},
-                new SwerveModuleIO() {},
-                new SwerveModuleIO() {},
-                new SwerveModuleIO() {},
-                state);
-        break;
       default:
+      // Replay, don't use hardware
         swerve =
             new Swerve(
                 new GyroIO() {},
