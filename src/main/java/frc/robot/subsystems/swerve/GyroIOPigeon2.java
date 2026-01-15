@@ -18,7 +18,7 @@ import java.util.Queue;
 
 /** Gyro implementation using a pigeon2 */
 public class GyroIOPigeon2 implements GyroIO {
-  private final Pigeon2 gyro = new Pigeon2(pigeonCanId);
+  private final Pigeon2 gyro = new Pigeon2(gyroCanId);
   private final StatusSignal<Angle> yaw = gyro.getYaw();
   private final StatusSignal<AngularVelocity> yawVelocity = gyro.getAngularVelocityZWorld();
   private final Queue<Double> yawPositionQueue;

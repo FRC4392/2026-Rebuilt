@@ -51,7 +51,7 @@ public final class SwerveConstants {
   public static final Rotation2d backRightZeroRotation = new Rotation2d(0.0);
 
   // Device CAN IDs
-  public static final int pigeonCanId = 11;
+  public static final int gyroCanId = 11;
 
   public static final int frontLeftDriveCanId = 12;
   public static final int backLeftDriveCanId = 11;
