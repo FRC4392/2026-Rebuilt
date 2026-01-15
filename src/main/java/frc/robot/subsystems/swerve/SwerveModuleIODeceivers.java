@@ -50,10 +50,8 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
   private final Rotation2d zeroRotation;
 
   // Hardware
-  private final SparkMax azimuthMotor;
+  private final TalonFX azimuthMotor;
   private final TalonFX driveMotor;
-  private final AbsoluteEncoder azimuthEncoder;
-  private final SparkClosedLoopController azimuthController;
 
   // Voltage control requests
   private final VoltageOut voltageRequest = new VoltageOut(0);
@@ -75,6 +73,12 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
   private final StatusSignal<Current> driveCurrent;
   private final StatusSignal<Temperature> driveTemp;
 
+  private final StatusSignal<Angle> azimuthPosition;
+  private final StatusSignal<AngularVelocity> azimuthVelocity;
+  private final StatusSignal<Voltage> azimuthAppliedVolts;
+  private final StatusSignal<Current> azimuthCurrent;
+  private final StatusSignal<Temperature> azimuthTemp;
+
   // Odometry queue
   private final Queue<Double> timestampQueue;
   private final Queue<Double> drivePositionQueue;
@@ -82,7 +86,7 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
 
   // Connection debouncers
   private final Debouncer driveConnectedDebounce = new Debouncer(0.5);
-  private final Debouncer turnConnectedDebounce = new Debouncer(0.5);
+  private final Debouncer azimuthConnectedDebounce = new Debouncer(0.5);
 
   /**
    * Constructor for swerve module
@@ -110,15 +114,14 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
         };
 
     azimuthMotor =
-        new SparkMax(
+        new TalonFX(
             switch (module) {
               case 0 -> frontLeftAzimuthCanId;
               case 1 -> frontRightAzimuthCanId;
               case 2 -> backLeftAzimuthCanId;
               case 3 -> backRightAzimuthCanId;
               default -> 0;
-            },
-            MotorType.kBrushless);
+            });
 
     driveMotor =
         new TalonFX(
@@ -130,46 +133,12 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
               default -> 0;
             });
 
-    azimuthEncoder = azimuthMotor.getAbsoluteEncoder();
-    azimuthController = azimuthMotor.getClosedLoopController();
-
     tryUntilOk(5, () -> driveMotor.getConfigurator().apply(driveConfiguration, 0.25));
     tryUntilOk(5, () -> driveMotor.setPosition(0.0, 0.25));
 
     // Configure turn motor
-    var azimuthConfig = new SparkMaxConfig();
-    azimuthConfig
-        .inverted(azimuthInverted)
-        .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(azimuthMotorCurrentLimit)
-        .voltageCompensation(12.0);
-    azimuthConfig
-        .absoluteEncoder
-        .inverted(azimuthEncoderInverted)
-        .positionConversionFactor(azimuthEncoderPositionFactor)
-        .velocityConversionFactor(azimuthEncoderVelocityFactor)
-        .averageDepth(2);
-    azimuthConfig
-        .closedLoop
-        .feedbackSensor(com.revrobotics.spark.FeedbackSensor.kAbsoluteEncoder)
-        .positionWrappingEnabled(true)
-        .positionWrappingInputRange(azimuthPIDMinInput, azimuthPIDMaxInput)
-        .pidf(azimuthKp, 0.0, azimuthKd, 0.0);
-    azimuthConfig
-        .signals
-        .absoluteEncoderPositionAlwaysOn(true)
-        .absoluteEncoderPositionPeriodMs((int) (1000.0 / odometryFrequencyHz))
-        .absoluteEncoderVelocityAlwaysOn(true)
-        .absoluteEncoderVelocityPeriodMs(20)
-        .appliedOutputPeriodMs(20)
-        .busVoltagePeriodMs(20)
-        .outputCurrentPeriodMs(20);
-    tryUntilOk(
-        azimuthMotor,
-        5,
-        () ->
-            azimuthMotor.configure(
-                azimuthConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
+
+    tryUntilOk(5, () -> azimuthMotor.getConfigurator().apply(azimuthConfiguration, 0.25));
 
     // Create drive status signals
     drivePosition = driveMotor.getPosition();
@@ -178,10 +147,16 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
     driveCurrent = driveMotor.getStatorCurrent();
     driveTemp = driveMotor.getDeviceTemp();
 
+    azimuthPosition = azimuthMotor.getPosition();
+    azimuthVelocity = azimuthMotor.getVelocity();
+    azimuthAppliedVolts = azimuthMotor.getMotorVoltage();
+    azimuthCurrent = azimuthMotor.getStatorCurrent();
+    azimuthTemp = azimuthMotor.getDeviceTemp();
+
     // Configure periodic frames
-    BaseStatusSignal.setUpdateFrequencyForAll(odometryFrequencyHz, drivePosition);
-    BaseStatusSignal.setUpdateFrequencyForAll(50.0, driveVelocity, driveAppliedVolts, driveCurrent);
-    ParentDevice.optimizeBusUtilizationForAll(driveMotor);
+    BaseStatusSignal.setUpdateFrequencyForAll(odometryFrequencyHz, drivePosition, azimuthPosition);
+    BaseStatusSignal.setUpdateFrequencyForAll(50.0, driveVelocity, driveAppliedVolts, driveCurrent, azimuthVelocity, azimuthAppliedVolts, azimuthCurrent);
+    ParentDevice.optimizeBusUtilizationForAll(driveMotor, azimuthMotor);
 
     // Create odometry queues
     timestampQueue = SwerveOdometryThread.getInstance().makeTimestampQueue();
@@ -189,7 +164,7 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
         SwerveOdometryThread.getInstance().registerSignal(driveMotor.getPosition());
     turnPositionQueue =
         SwerveOdometryThread.getInstance()
-            .registerSignal(azimuthMotor, azimuthEncoder::getPosition);
+            .registerSignal(azimuthMotor.getPosition());
   }
 
   @Override
@@ -207,28 +182,17 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
     inputs.driveMotorTemp = driveTemp.getValue();
 
     // Update turn inputs
-    sparkStickyFault = false;
-    ifOk(
-        azimuthMotor,
-        azimuthEncoder::getPosition,
-        (value) -> inputs.azimuthPosition = new Rotation2d(value).minus(zeroRotation));
-    ifOk(
-        azimuthMotor,
-        azimuthEncoder::getVelocity,
-        (value) -> inputs.azimuthVelocity = RadiansPerSecond.of(value));
-    ifOk(
-        azimuthMotor,
-        new DoubleSupplier[] {azimuthMotor::getAppliedOutput, azimuthMotor::getBusVoltage},
-        (values) -> inputs.azimuthAppliedVolts = Volts.of(values[0] * values[1]));
-    ifOk(
-        azimuthMotor,
-        azimuthMotor::getOutputCurrent,
-        (value) -> inputs.azimuthCurrent = Amps.of(value));
-    ifOk(
-        azimuthMotor,
-        azimuthMotor::getMotorTemperature,
-        (value) -> inputs.azimuthMotorTemp = Celsius.of(value));
-    inputs.azimuthConnected = turnConnectedDebounce.calculate(!sparkStickyFault);
+
+    var azimuthStatus =
+        BaseStatusSignal.refreshAll(
+            azimuthPosition, azimuthVelocity, azimuthAppliedVolts, azimuthCurrent, azimuthTemp);
+
+    inputs.azimuthConnected = azimuthConnectedDebounce.calculate(azimuthStatus.isOK());
+    inputs.azimuthPosition = new Rotation2d(azimuthPosition.getValue());
+    inputs.azimuthVelocity = azimuthVelocity.getValue();
+    inputs.azimuthAppliedVolts = azimuthAppliedVolts.getValue();
+    inputs.azimuthCurrent = azimuthCurrent.getValue();
+    inputs.azimuthMotorTemp = azimuthTemp.getValue();
 
     // Update odometry inputs
     inputs.odometryTimestamps =
@@ -254,10 +218,7 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
 
   @Override
   public void setAzimuthPosition(Rotation2d rotation) {
-    double setpoint =
-        MathUtil.inputModulus(
-            rotation.plus(zeroRotation).getRadians(), azimuthPIDMinInput, azimuthPIDMaxInput);
-    azimuthController.setReference(setpoint, ControlType.kPosition);
+
   }
 
   @Override

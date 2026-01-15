@@ -162,24 +162,24 @@ public final class SwerveConstants {
           .withFeedback(
               new FeedbackConfigs()
                   .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-                  .withSensorToMechanismRatio(driveMotorReduction))
+                  .withSensorToMechanismRatio(azimuthMotorReduction))
           .withMotorOutput(
               new MotorOutputConfigs()
                   .withInverted(InvertedValue.CounterClockwise_Positive)
                   .withNeutralMode(NeutralModeValue.Brake))
           .withSlot0(
               new Slot0Configs()
-                  .withKP(driveKp)
-                  .withKI(driveKi)
-                  .withKD(driveKd)
+                  .withKP(azimuthKp)
+                  .withKI(0)
+                  .withKD(azimuthKd)
                   .withKG(0)
-                  .withKV(driveKv)
-                  .withKS(driveKs)
-                  .withKA(driveKa))
+                  .withKV(0)
+                  .withKS(0)
+                  .withKA(0))
           .withTorqueCurrent(
               new TorqueCurrentConfigs()
-                  .withPeakForwardTorqueCurrent(driveMotorStatorLimit)
-                  .withPeakReverseTorqueCurrent(-driveMotorStatorLimit));
+                  .withPeakForwardTorqueCurrent(azimuthMotorCurrentLimit)
+                  .withPeakReverseTorqueCurrent(-azimuthMotorCurrentLimit));
 
   // PathPlanner configuration
   public static final double robotMassKg = Units.lbsToKilograms(115);
