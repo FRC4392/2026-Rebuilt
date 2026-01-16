@@ -7,8 +7,14 @@ package frc.robot.subsystems.indexer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Indexer extends SubsystemBase {
+
+  private final IndexerIO indexerIO;
+  private final IndexerIOInputsAutoLogged inputs = new IndexerIOInputsAutoLogged();
+
   /** Creates a new Indexer. */
-  public Indexer() {}
+  public Indexer(IndexerIO IO) {
+    indexerIO = IO;
+  }
 
   @Override
   public void periodic() {

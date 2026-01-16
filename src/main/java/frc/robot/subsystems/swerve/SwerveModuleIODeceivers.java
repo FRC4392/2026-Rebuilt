@@ -37,7 +37,7 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
   private final TalonFX azimuthMotor;
   private final TalonFX driveMotor;
 
-  //TODO: do these need to exist?
+  // TODO: do these need to exist?
   // Voltage control requests
   private final VoltageOut voltageRequest = new VoltageOut(0);
   private final VelocityVoltage velocityVoltageRequest = new VelocityVoltage(0.0);
@@ -51,7 +51,7 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
   private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0.0);
   private final VelocityDutyCycle velocityDutyCycle = new VelocityDutyCycle(0.0);
 
-  //Position Control Requests
+  // Position Control Requests
   private final PositionVoltage positionVoltageRequest = new PositionVoltage(0.0);
 
   // Inputs from drive motor

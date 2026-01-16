@@ -7,8 +7,14 @@ package frc.robot.subsystems.hopper;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Hopper extends SubsystemBase {
+
+  private final HopperIO hopperIO;
+  private final HopperIOInputsAutoLogged inputs = new HopperIOInputsAutoLogged();
+
   /** Creates a new Hopper. */
-  public Hopper() {}
+  public Hopper(HopperIO IO) {
+    hopperIO = IO;
+  }
 
   @Override
   public void periodic() {
