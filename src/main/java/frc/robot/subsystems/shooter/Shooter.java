@@ -4,6 +4,12 @@
 
 package frc.robot.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.Volts;
+
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
@@ -18,6 +24,15 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    shooterIO.updateInputs(inputs);
+    Logger.processInputs("Shooter", inputs);
+  }
+
+  public void setVoltage(Voltage volts) {
+    shooterIO.setVoltage(volts);
+  }
+
+  public Command runTestVoltage() {
+    return this.runEnd(() -> setVoltage(Volts.of(6)), () -> setVoltage(Volts.of(0)));
   }
 }

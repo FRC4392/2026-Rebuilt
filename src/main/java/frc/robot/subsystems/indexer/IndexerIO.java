@@ -11,6 +11,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+
 import org.littletonrobotics.junction.AutoLog;
 
 public interface IndexerIO {
@@ -23,4 +24,8 @@ public interface IndexerIO {
     public Current motorCurrent = Amps.of(0.0);
     public Temperature motorTemp = Celsius.of(0.0);
   }
+
+  public default void updateInputs(IndexerIOInputs inputs) {}
+
+  public default void setVoltage(Voltage volts) {}
 }

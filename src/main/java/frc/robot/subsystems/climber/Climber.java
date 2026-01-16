@@ -4,6 +4,12 @@
 
 package frc.robot.subsystems.climber;
 
+import static edu.wpi.first.units.Units.Volts;
+
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Climber extends SubsystemBase {
@@ -18,6 +24,15 @@ public class Climber extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    climberIO.updateInputs(inputs);
+    Logger.processInputs("Climber", inputs);
+  }
+
+  public void setVoltage(Voltage volts) {
+    climberIO.setVoltage(volts);
+  }
+
+  public Command runTestVoltage() {
+    return this.runEnd(() -> setVoltage(Volts.of(6)), () -> setVoltage(Volts.of(0)));
   }
 }
