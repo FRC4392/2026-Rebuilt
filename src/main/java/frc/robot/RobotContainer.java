@@ -42,10 +42,9 @@ public class RobotContainer {
 
   public final Shooter shooter;
   public final Indexer indexer;
-  public final Hopper hopper ;
+  public final Hopper hopper;
   public final Climber climber;
   public final Intake intake;
-
 
   // Operator Interface
   private final OperatorInterface operatorInterface;
@@ -110,10 +109,10 @@ public class RobotContainer {
                 new SwerveModuleIO() {},
                 state);
 
-        shooter = new Shooter(new ShooterIO(){});
-        indexer = new Indexer(new IndexerIO(){});
-        climber = new Climber(new ClimberIO(){});
-        hopper = new Hopper(new HopperIO(){});
+        shooter = new Shooter(new ShooterIO() {});
+        indexer = new Indexer(new IndexerIO() {});
+        climber = new Climber(new ClimberIO() {});
+        hopper = new Hopper(new HopperIO() {});
         intake = new Intake(new IntakeIO() {});
     }
 
@@ -129,6 +128,8 @@ public class RobotContainer {
 
   private void configureBindings() {
     swerve.setDefaultCommand(swerve.joystickDrive(operatorInterface.getSwerveControlSignal()));
+
+    operatorInterface.intakeButton().whileTrue(intake.runTestVoltage());
   }
 
   public Command getAutonomousCommand() {
