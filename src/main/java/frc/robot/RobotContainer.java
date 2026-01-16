@@ -19,6 +19,10 @@ import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.indexer.IndexerIO;
 import frc.robot.subsystems.indexer.IndexerIOReal;
 import frc.robot.subsystems.indexer.IndexerIOSim;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOReal;
+import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOReal;
@@ -40,6 +44,7 @@ public class RobotContainer {
   public final Indexer indexer;
   public final Hopper hopper ;
   public final Climber climber;
+  public final Intake intake;
 
 
   // Operator Interface
@@ -75,6 +80,7 @@ public class RobotContainer {
         indexer = new Indexer(new IndexerIOReal());
         climber = new Climber(new ClimberIOReal());
         hopper = new Hopper(new HopperIOReal());
+        intake = new Intake(new IntakeIOReal());
         break;
       case SIM:
         // Simulated robot use simulation hardware interfaces
@@ -91,6 +97,7 @@ public class RobotContainer {
         indexer = new Indexer(new IndexerIOSim());
         climber = new Climber(new ClimberIOSim());
         hopper = new Hopper(new HopperIOSim());
+        intake = new Intake(new IntakeIOSim());
         break;
       default:
         // Replay, don't use hardware
@@ -107,6 +114,7 @@ public class RobotContainer {
         indexer = new Indexer(new IndexerIO(){});
         climber = new Climber(new ClimberIO(){});
         hopper = new Hopper(new HopperIO(){});
+        intake = new Intake(new IntakeIO() {});
     }
 
     // Create Operator Interface
