@@ -23,4 +23,8 @@ public interface HopperIO {
     public Current motorCurrent = Amps.of(0.0);
     public Temperature motorTemp = Celsius.of(0.0);
   }
+
+  public default void updateInputs(HopperIOInputs inputs) {}
+
+  public default void setVoltage(Voltage volts) {}
 }

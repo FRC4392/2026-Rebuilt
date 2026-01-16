@@ -44,4 +44,8 @@ public interface ShooterIO {
     public Current hoodMotorCurrent = Amps.of(0.0);
     public Temperature hoodMotorTemp = Celsius.of(0.0);
   }
+
+  public default void updateInputs(ShooterIOInputs inputs) {}
+
+  public default void setVoltage(Voltage volts) {}
 }
