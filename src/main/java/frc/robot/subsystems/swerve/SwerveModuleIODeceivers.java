@@ -4,19 +4,14 @@
 
 package frc.robot.subsystems.swerve;
 
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Celsius;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 import static frc.robot.util.PhoenixUtil.*;
 import static frc.robot.util.PhoenixUtil.tryUntilOk;
-import static frc.robot.util.SparkUtil.*;
-import static frc.robot.util.SparkUtil.tryUntilOk;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
@@ -24,16 +19,6 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -43,7 +28,6 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import java.util.Queue;
-import java.util.function.DoubleSupplier;
 
 /** Represents a single swerve module IO */
 public class SwerveModuleIODeceivers implements SwerveModuleIO {
@@ -53,6 +37,7 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
   private final TalonFX azimuthMotor;
   private final TalonFX driveMotor;
 
+  //TODO: do these need to exist?
   // Voltage control requests
   private final VoltageOut voltageRequest = new VoltageOut(0);
   private final VelocityVoltage velocityVoltageRequest = new VelocityVoltage(0.0);
@@ -65,6 +50,9 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
   // Duty Cycle Control Requests
   private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0.0);
   private final VelocityDutyCycle velocityDutyCycle = new VelocityDutyCycle(0.0);
+
+  //Position Control Requests
+  private final PositionVoltage positionVoltageRequest = new PositionVoltage(0.0);
 
   // Inputs from drive motor
   private final StatusSignal<Angle> drivePosition;
@@ -155,7 +143,14 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
 
     // Configure periodic frames
     BaseStatusSignal.setUpdateFrequencyForAll(odometryFrequencyHz, drivePosition, azimuthPosition);
-    BaseStatusSignal.setUpdateFrequencyForAll(50.0, driveVelocity, driveAppliedVolts, driveCurrent, azimuthVelocity, azimuthAppliedVolts, azimuthCurrent);
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        50.0,
+        driveVelocity,
+        driveAppliedVolts,
+        driveCurrent,
+        azimuthVelocity,
+        azimuthAppliedVolts,
+        azimuthCurrent);
     ParentDevice.optimizeBusUtilizationForAll(driveMotor, azimuthMotor);
 
     // Create odometry queues
@@ -163,8 +158,7 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
     drivePositionQueue =
         SwerveOdometryThread.getInstance().registerSignal(driveMotor.getPosition());
     turnPositionQueue =
-        SwerveOdometryThread.getInstance()
-            .registerSignal(azimuthMotor.getPosition());
+        SwerveOdometryThread.getInstance().registerSignal(azimuthMotor.getPosition());
   }
 
   @Override
@@ -218,7 +212,7 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
 
   @Override
   public void setAzimuthPosition(Rotation2d rotation) {
-
+    azimuthMotor.setControl(positionVoltageRequest.withPosition(rotation.getMeasure()));
   }
 
   @Override
