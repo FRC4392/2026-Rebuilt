@@ -1,0 +1,31 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+package frc.robot.subsystems.swerve;
+
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.AngularVelocity;
+import org.littletonrobotics.junction.AutoLog;
+
+/** Generic Gyro IO interface */
+public interface GyroIO {
+  /** Input values from a connected gyro */
+  @AutoLog
+  public static class GyroIOInputs {
+    public boolean isConnected = false;
+    public Rotation2d yawPosition = new Rotation2d();
+    public AngularVelocity yawVelocityRadPerSec = RadiansPerSecond.of(0.0);
+    public double[] odometryYawTimestamps = new double[] {};
+    public Rotation2d[] odometryYawPositions = new Rotation2d[] {};
+  }
+
+  /**
+   * Updated the supplied inputs
+   *
+   * @param inputs input to be updated
+   */
+  public default void updateInputs(GyroIOInputs inputs) {}
+}
