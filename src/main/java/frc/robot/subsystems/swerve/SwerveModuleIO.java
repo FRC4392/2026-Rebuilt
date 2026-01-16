@@ -46,16 +46,20 @@ public interface SwerveModuleIO {
   public default void updateInputs(SwerveModuleIOInputs inputs) {}
 
   /** Run the drive motor at the specified open loop value. */
-  // TODO: Convert to volts
-  public default void setDriveOpenLoop(double output) {}
+  public default void setDrive(Voltage volts) {}
 
   /** Run the azimuth motor at the specified open loop value. */
-  // TODO: Convert to volts
-  public default void setAzimuthOpenLoop(double output) {}
+  public default void setAzimuth(Voltage volts) {}
 
   /** Run the drive motor at the specified velocity. */
-  public default void setDriveVelocity(AngularVelocity velocityRadPerSec) {}
+  public default void setDrive(AngularVelocity velocity) {}
 
   /** Run the Azimuth motor to the specified rotation. */
-  public default void setAzimuthPosition(Rotation2d rotation) {}
+  public default void setAzimuth(Rotation2d rotation) {}
+
+  /** Run the drive motor at the specified current. */
+  public default void setDrive(Current current) {}
+
+  /** Run the Azimuth motor to the specified current. */
+  public default void setAzimuth(Current current) {}
 }
