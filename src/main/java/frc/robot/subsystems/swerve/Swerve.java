@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems.swerve;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
@@ -30,7 +33,9 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -136,8 +141,7 @@ public class Swerve extends SubsystemBase {
                 null,
                 null,
                 (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
-            new SysIdRoutine.Mechanism(
-                (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
+            new SysIdRoutine.Mechanism((voltage) -> runCharacterization(voltage), null, this));
   }
 
   @Override
@@ -211,7 +215,7 @@ public class Swerve extends SubsystemBase {
     // Calculate module setpoints
     ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, maxSpeedMetersPerSec);
+    SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, maxSpeed);
 
     // Log unoptimized setpoints
     Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
@@ -227,9 +231,9 @@ public class Swerve extends SubsystemBase {
   }
 
   /** Runs the drive in a straight line with the specified drive output. */
-  private void runCharacterization(double output) {
+  private void runCharacterization(Voltage volts) {
     for (int i = 0; i < 4; i++) {
-      modules[i].runCharacterization(output);
+      modules[i].runCharacterization(volts);
     }
   }
 
@@ -278,6 +282,7 @@ public class Swerve extends SubsystemBase {
     return kinematics.toChassisSpeeds(getModuleStates());
   }
 
+  // TODO: Units?
   /** Returns the position of each module in radians. */
   private double[] getWheelRadiusCharacterizationPositions() {
     double[] values = new double[4];
@@ -287,6 +292,7 @@ public class Swerve extends SubsystemBase {
     return values;
   }
 
+  // TODO: Units?
   /** Returns the average velocity of the modules in rad/sec. */
   private double getFFCharacterizationVelocity() {
     double output = 0.0;
@@ -307,13 +313,11 @@ public class Swerve extends SubsystemBase {
     return getPose().getRotation();
   }
 
-  // TODO: private?
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
   }
 
-  // TODO: private?
   public void resetGyro() {
     var pose = poseEstimator.getEstimatedPosition();
     var rotation =
@@ -334,13 +338,13 @@ public class Swerve extends SubsystemBase {
   }
 
   /** Returns the maximum linear speed in meters per sec. */
-  public double getMaxLinearSpeedMetersPerSec() {
-    return maxSpeedMetersPerSec;
+  public LinearVelocity getMaxLinearSpeed() {
+    return maxSpeed;
   }
 
   /** Returns the maximum angular speed in radians per sec. */
-  public double getMaxAngularSpeedRadPerSec() {
-    return maxSpeedMetersPerSec / driveBaseRadius;
+  public AngularVelocity getMaxAngularSpeed() {
+    return RadiansPerSecond.of(maxSpeed.in(MetersPerSecond) / driveBaseRadius.in(Meters));
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -361,19 +365,21 @@ public class Swerve extends SubsystemBase {
 
   /** Returns a command to run a quasistatic test in the specified direction. */
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    return run(() -> runCharacterization(0.0))
+    return run(() -> runCharacterization(Volts.of(0)))
         .withTimeout(1.0)
         .andThen(sysId.quasistatic(direction));
   }
 
   /** Returns a command to run a dynamic test in the specified direction. */
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    return run(() -> runCharacterization(0.0)).withTimeout(1.0).andThen(sysId.dynamic(direction));
+    return run(() -> runCharacterization(Volts.of(0)))
+        .withTimeout(1.0)
+        .andThen(sysId.dynamic(direction));
   }
 
   private static Translation2d getLinearVelocityFromJoysticks(double x, double y) {
     // Apply deadband
-    double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), DEADBAND);
+    double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), controllerDeadband);
     Rotation2d linearDirection = new Rotation2d(Math.atan2(y, x));
 
     // Square magnitude for more precise control
@@ -431,7 +437,7 @@ public class Swerve extends SubsystemBase {
                   .times(multiplier);
 
           // Apply rotation deadband
-          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), controllerDeadband);
 
           // Apply speed scalar
           omega = omega * multiplier;
@@ -442,9 +448,9 @@ public class Swerve extends SubsystemBase {
           // Convert to field relative speeds & send command
           ChassisSpeeds speeds =
               new ChassisSpeeds(
-                  linearVelocity.getX() * getMaxLinearSpeedMetersPerSec(),
-                  linearVelocity.getY() * getMaxLinearSpeedMetersPerSec(),
-                  omega * getMaxAngularSpeedRadPerSec());
+                  getMaxLinearSpeed().times(linearVelocity.getX()),
+                  getMaxLinearSpeed().times(linearVelocity.getY()),
+                  getMaxAngularSpeed().times(omega));
 
           boolean isFlipped =
               robotState.getAlliance().isPresent()
@@ -477,10 +483,11 @@ public class Swerve extends SubsystemBase {
     // Create PID controller
     ProfiledPIDController angleController =
         new ProfiledPIDController(
-            ANGLE_KP,
+            angleControllerKp,
             0.0,
-            ANGLE_KD,
-            new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
+            angleControllerKd,
+            new TrapezoidProfile.Constraints(
+                allowedMaxAngularVelocity, allowedMaxAngularAcceleration));
     angleController.enableContinuousInput(-Math.PI, Math.PI);
 
     // Construct command
@@ -500,9 +507,9 @@ public class Swerve extends SubsystemBase {
           // Convert to field relative speeds & send command
           ChassisSpeeds speeds =
               new ChassisSpeeds(
-                  linearVelocity.getX() * getMaxLinearSpeedMetersPerSec(),
-                  linearVelocity.getY() * getMaxLinearSpeedMetersPerSec(),
-                  omega);
+                  getMaxLinearSpeed().times(linearVelocity.getX()),
+                  getMaxLinearSpeed().times(linearVelocity.getY()),
+                  getMaxAngularSpeed().times(omega));
           boolean isFlipped =
               robotState.getAlliance().isPresent()
                   && robotState.getAlliance().get() == Alliance.Red;
@@ -539,7 +546,7 @@ public class Swerve extends SubsystemBase {
 
         // Allow modules to orient
         run(() -> {
-              runCharacterization(0.0);
+              runCharacterization(Volts.of(0));
             })
             .withTimeout(FF_START_DELAY),
 
@@ -548,10 +555,10 @@ public class Swerve extends SubsystemBase {
 
         // Accelerate and gather data
         run(() -> {
-              double voltage = timer.get() * FF_RAMP_RATE;
-              runCharacterization(voltage);
+              double volts = timer.get() * FF_RAMP_RATE;
+              runCharacterization(Volts.of(volts));
               velocitySamples.add(getFFCharacterizationVelocity());
-              voltageSamples.add(voltage);
+              voltageSamples.add(volts);
             })
 
             // When cancelled, calculate and print results
@@ -636,7 +643,8 @@ public class Swerve extends SubsystemBase {
                         wheelDelta += Math.abs(positions[i] - state.positions[i]) / 4.0;
                       }
                       double wheelRadius =
-                          (state.gyroDelta * SwerveConstants.driveBaseRadius) / wheelDelta;
+                          (state.gyroDelta * SwerveConstants.driveBaseRadius.in(Meters))
+                              / wheelDelta;
 
                       NumberFormat formatter = new DecimalFormat("#0.000");
                       System.out.println(

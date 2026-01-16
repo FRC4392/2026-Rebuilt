@@ -88,27 +88,24 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
     // Update odometry inputs (50Hz because high-frequency odometry in sim doesn't
     // matter)
     inputs.odometryTimestamps = new double[] {Timer.getFPGATimestamp()};
-    // TODO: Convert to proper units
     inputs.odometryDrivePositionsRad = new double[] {inputs.drivePositionAngle.in(Radians)};
     inputs.odometryAzimuthPositions = new Rotation2d[] {inputs.azimuthPosition};
   }
 
-  // TODO: Convert to volts
   @Override
-  public void setDriveOpenLoop(double output) {
+  public void setDrive(Voltage volts) {
     driveClosedLoop = false;
-    driveAppliedVolts = Volts.of(output);
+    driveAppliedVolts = volts;
   }
 
-  // TODO: Convert to volts
   @Override
-  public void setAzimuthOpenLoop(double output) {
+  public void setAzimuth(Voltage volts) {
     azimuthClosedLoop = false;
-    azimuthAppliedVolts = Volts.of(output);
+    azimuthAppliedVolts = volts;
   }
 
   @Override
-  public void setDriveVelocity(AngularVelocity velocity) {
+  public void setDrive(AngularVelocity velocity) {
     driveClosedLoop = true;
     driveFFVolts =
         driveSimKs * Math.signum(velocity.in(RadiansPerSecond))
@@ -117,7 +114,7 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
   }
 
   @Override
-  public void setAzimuthPosition(Rotation2d rotation) {
+  public void setAzimuth(Rotation2d rotation) {
     azimuthClosedLoop = true;
     azimuthController.setSetpoint(rotation.getRadians());
   }
