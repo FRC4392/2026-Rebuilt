@@ -1,5 +1,3 @@
 package frc.robot.subsystems.indexer;
 
-public class IndexerIOSim implements IndexerIO{
-
-}
+public class IndexerIOSim implements IndexerIO {}
