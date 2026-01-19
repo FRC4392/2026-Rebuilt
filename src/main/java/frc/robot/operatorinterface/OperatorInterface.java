@@ -156,64 +156,7 @@ public class OperatorInterface extends SubsystemBase {
 
   // Game Controls (vary by year)
 
-  public Trigger pathPlanToPointTrigger() {
-    return driverController.back();
-  }
-
-  public Trigger intakeTrigger() {
-    return driverController.leftStick();
-  }
-
-  public Trigger outtakeTrigger() {
-    return driverController.rightStick();
-  }
-
-  public Trigger autoAlignLeftTrigger() {
-    return driverController.leftBumper();
-  }
-
-  public Trigger autoAlignRightTrigger() {
-    return driverController.rightBumper();
-  }
-
-  public boolean L1PositionTrigger() {
-    return operatorController.getHID().getBButton();
-  }
-
-  public boolean L2PositionTrigger() {
-    return operatorController.getHID().getAButton();
-  }
-
-  public boolean L3PositionTrigger() {
-    return operatorController.getHID().getXButton();
-  }
-
-  public boolean L4PositionTrigger() {
-    return operatorController.getHID().getRightStickButton();
-  }
-
-  public boolean homePositionTrigger() {
-    return operatorController.getHID().getStartButton();
-  }
-
-  public boolean intakePositionTrigger() {
-    return operatorController.getHID().getRightBumperButton()
-        || operatorController.getHID().getLeftBumperButton();
-  }
-
-  public boolean algae1PositionTrigger() {
-    return operatorController.getHID().getPOV() == 180;
-  }
-
-  public boolean algae2PositionTrigger() {
-    return operatorController.getHID().getPOV() == 0;
-  }
-
-  public boolean bargePositionTrigger() {
-    return operatorController.getHID().getPOV() == 90;
-  }
-
-  public boolean processorPositionTrigger() {
-    return operatorController.getHID().getPOV() == 270;
+  public Trigger intakeButton() {
+    return operatorController.a();
   }
 }
