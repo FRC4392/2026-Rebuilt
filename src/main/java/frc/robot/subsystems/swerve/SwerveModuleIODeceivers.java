@@ -152,6 +152,7 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
             });
 
     // Configure drive motor
+    driveConfiguration.MotorOutput.Inverted = driveMotorDirection;
     tryUntilOk(5, () -> driveMotor.getConfigurator().apply(driveConfiguration, 0.25));
     tryUntilOk(5, () -> driveMotor.setPosition(0.0, 0.25));
 
