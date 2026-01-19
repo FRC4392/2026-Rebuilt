@@ -1,0 +1,20 @@
+Climber:
+1 Kraken
+
+Hopper:
+1 Kraken
+
+Indexer:
+1 Kraken
+
+Intake:
+1 Kraken
+
+Shooter:
+2 Shooter Kraken
+Turret Kraken
+Hood Spark Max
+
+Drivetrain:
+4 Kraken Steer
+4 Kraken Drive
