@@ -11,6 +11,8 @@ import static frc.robot.util.PhoenixUtil.tryUntilOk;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
@@ -37,22 +39,25 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
   private final TalonFX azimuthMotor;
   private final TalonFX driveMotor;
 
-  // TODO: do these need to exist?
   // Voltage control requests
-  private final VoltageOut voltageRequest = new VoltageOut(0);
-  private final VelocityVoltage velocityVoltageRequest = new VelocityVoltage(0.0);
+  private final VoltageOut driveVoltageRequest = new VoltageOut(0);
+  private final VelocityVoltage driveVelocityVoltageRequest = new VelocityVoltage(0.0);
+  private final VoltageOut azimuthVoltageRequest = new VoltageOut(0);
+  private final PositionVoltage azimuthPositionVoltageRequest = new PositionVoltage(0.0);
 
   // Torque-current control requests
-  private final TorqueCurrentFOC torqueCurrentRequest = new TorqueCurrentFOC(0);
-  private final VelocityTorqueCurrentFOC velocityTorqueCurrentRequest =
+  private final TorqueCurrentFOC driveTorqueCurrentRequest = new TorqueCurrentFOC(0);
+  private final VelocityTorqueCurrentFOC driveVelocityTorqueCurrentRequest =
       new VelocityTorqueCurrentFOC(0.0);
+  private final TorqueCurrentFOC azimuthTorqueCurrentRequest = new TorqueCurrentFOC(0);
+  private final PositionTorqueCurrentFOC azimuthPositionTorqueCurrentRequest =
+      new PositionTorqueCurrentFOC(0.0);
 
   // Duty Cycle Control Requests
-  private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0.0);
-  private final VelocityDutyCycle velocityDutyCycle = new VelocityDutyCycle(0.0);
-
-  // Position Control Requests
-  private final PositionVoltage positionVoltageRequest = new PositionVoltage(0.0);
+  private final DutyCycleOut driveDutyCycleRequest = new DutyCycleOut(0.0);
+  private final VelocityDutyCycle driveVelocityDutyCycle = new VelocityDutyCycle(0.0);
+  private final DutyCycleOut azimuthDutyCycleRequest = new DutyCycleOut(0.0);
+  private final PositionDutyCycle azimuthPositionDutyCycleRequest = new PositionDutyCycle(0.0);
 
   // Inputs from drive motor
   private final StatusSignal<Angle> drivePosition;
@@ -121,11 +126,11 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
               default -> 0;
             });
 
+    // Configure drive motot
     tryUntilOk(5, () -> driveMotor.getConfigurator().apply(driveConfiguration, 0.25));
     tryUntilOk(5, () -> driveMotor.setPosition(0.0, 0.25));
 
-    // Configure turn motor
-
+    // Configure azimuth motor
     tryUntilOk(5, () -> azimuthMotor.getConfigurator().apply(azimuthConfiguration, 0.25));
 
     // Create drive status signals
@@ -135,11 +140,24 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
     driveCurrent = driveMotor.getStatorCurrent();
     driveTemp = driveMotor.getDeviceTemp();
 
+    // Create azimuth status signals
     azimuthPosition = azimuthMotor.getPosition();
     azimuthVelocity = azimuthMotor.getVelocity();
     azimuthAppliedVolts = azimuthMotor.getMotorVoltage();
     azimuthCurrent = azimuthMotor.getStatorCurrent();
     azimuthTemp = azimuthMotor.getDeviceTemp();
+
+    // Enable FOC
+    driveVoltageRequest.EnableFOC = true;
+    driveVelocityVoltageRequest.EnableFOC = true;
+    driveDutyCycleRequest.EnableFOC = true;
+    driveVelocityDutyCycle.EnableFOC = true;
+    azimuthVoltageRequest.EnableFOC = true;
+    azimuthPositionVoltageRequest.EnableFOC = true;
+    azimuthDutyCycleRequest.EnableFOC = true;
+    azimuthPositionDutyCycleRequest.EnableFOC = true;
+
+    // TODO: Set max accelerations
 
     // Configure periodic frames
     BaseStatusSignal.setUpdateFrequencyForAll(odometryFrequencyHz, drivePosition, azimuthPosition);
@@ -176,7 +194,6 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
     inputs.driveMotorTemp = driveTemp.getValue();
 
     // Update turn inputs
-
     var azimuthStatus =
         BaseStatusSignal.refreshAll(
             azimuthPosition, azimuthVelocity, azimuthAppliedVolts, azimuthCurrent, azimuthTemp);
@@ -204,36 +221,44 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
     turnPositionQueue.clear();
   }
 
-  // TODO: Convert to volts
   @Override
-  public void setAzimuthOpenLoop(double output) {
-    azimuthMotor.setVoltage(output);
+  public void setAzimuth(Voltage volts) {
+    azimuthMotor.setControl(azimuthVoltageRequest.withOutput(volts));
   }
 
   @Override
-  public void setAzimuthPosition(Rotation2d rotation) {
-    azimuthMotor.setControl(positionVoltageRequest.withPosition(rotation.getMeasure()));
-  }
-
-  @Override
-  public void setDriveVelocity(AngularVelocity velocity) {
-    // double velocityRotPerSec = Units.radiansToRotations(velocityRadPerSec);
-    driveMotor.setControl(
-        switch (driveMotorClosedLoopOutput) {
-          case Voltage -> velocityVoltageRequest.withVelocity(velocity);
-          case TorqueCurrentFOC -> velocityTorqueCurrentRequest.withVelocity(velocity);
-          case DutyCyle -> velocityDutyCycle.withVelocity(velocity);
+  public void setAzimuth(Rotation2d rotation) {
+    azimuthMotor.setControl(
+        switch (azimuthMotorClosedLoopOutput) {
+          case Voltage -> azimuthPositionVoltageRequest.withPosition(rotation.getMeasure());
+          case TorqueCurrentFOC -> azimuthPositionTorqueCurrentRequest.withPosition(
+              rotation.getMeasure());
+          case DutyCyle -> azimuthPositionDutyCycleRequest.withPosition(rotation.getMeasure());
         });
   }
 
-  // TODO: Convert to volts
   @Override
-  public void setDriveOpenLoop(double output) {
+  public void setAzimuth(Current current) {
+    azimuthMotor.setControl(azimuthTorqueCurrentRequest.withOutput(current));
+  }
+
+  @Override
+  public void setDrive(AngularVelocity velocity) {
     driveMotor.setControl(
         switch (driveMotorClosedLoopOutput) {
-          case Voltage -> voltageRequest.withOutput(output);
-          case TorqueCurrentFOC -> torqueCurrentRequest.withOutput(output);
-          case DutyCyle -> dutyCycleRequest.withOutput(output);
+          case Voltage -> driveVelocityVoltageRequest.withVelocity(velocity);
+          case TorqueCurrentFOC -> driveVelocityTorqueCurrentRequest.withVelocity(velocity);
+          case DutyCyle -> driveVelocityDutyCycle.withVelocity(velocity);
         });
+  }
+
+  @Override
+  public void setDrive(Voltage volts) {
+    driveMotor.setControl(driveVoltageRequest.withOutput(volts));
+  }
+
+  @Override
+  public void setDrive(Current current) {
+    driveMotor.setControl(driveTorqueCurrentRequest.withOutput(current));
   }
 }
