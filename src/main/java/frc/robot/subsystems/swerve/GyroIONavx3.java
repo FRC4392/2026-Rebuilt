@@ -21,6 +21,8 @@ public class GyroIONavx3 implements GyroIO {
   public GyroIONavx3() {
     gyro.resetYaw();
     gyro.setODRHz((int) odometryFrequencyHz);
+
+    gyro.enableOptionalMessages(true, false, false, false, true, true, false, true, true);
     yawTimestampQueue = SwerveOdometryThread.getInstance().makeTimestampQueue();
     yawPositionQueue = SwerveOdometryThread.getInstance().makeTimestampQueue();
   }
