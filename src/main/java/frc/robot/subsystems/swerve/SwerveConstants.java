@@ -10,13 +10,16 @@ import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.configs.AudioConfigs;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -24,6 +27,7 @@ import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
@@ -81,17 +85,17 @@ public final class SwerveConstants {
   public static final Rotation2d backRightZeroRotation = new Rotation2d(0.0);
 
   // Device CAN IDs
-  public static final int gyroCanId = 11;
+  public static final int gyroCanId = 10;
 
-  public static final int frontLeftDriveCanId = 12;
-  public static final int backLeftDriveCanId = 11;
-  public static final int frontRightDriveCanId = 13;
+  public static final int frontLeftDriveCanId = 11;
+  public static final int backLeftDriveCanId = 13;
+  public static final int frontRightDriveCanId = 12;
   public static final int backRightDriveCanId = 14;
 
-  public static final int frontLeftAzimuthCanId = 12;
-  public static final int backLeftAzimuthCanId = 11;
-  public static final int frontRightAzimuthCanId = 13;
-  public static final int backRightAzimuthCanId = 14;
+  public static final int frontLeftAzimuthCanId = 15;
+  public static final int backLeftAzimuthCanId = 17;
+  public static final int frontRightAzimuthCanId = 16;
+  public static final int backRightAzimuthCanId = 18;
 
   // Drive motor configuration
   public static final Current driveStatorCurrentLimit = Amps.of(80);
@@ -102,7 +106,9 @@ public final class SwerveConstants {
   public static final Distance wheelRadius = wheelDiameter.div(2);
   public static final double driveMotorReduction = (45.0 * 28.0) / (20.0 * 15.0);
   public static final DCMotor driveGearbox = DCMotor.getKrakenX60Foc(1);
-  public static final boolean driveMotorInverted = false;
+  public static final InvertedValue driveMotorLeftDirection = InvertedValue.Clockwise_Positive;
+  public static final InvertedValue driveMotorRightDirection =
+      InvertedValue.CounterClockwise_Positive;
   public static final ClosedLoopControlType driveMotorClosedLoopOutput =
       ClosedLoopControlType.Voltage;
 
@@ -157,6 +163,17 @@ public final class SwerveConstants {
                   .withPeakForwardTorqueCurrent(driveStatorCurrentLimit)
                   .withPeakReverseTorqueCurrent(driveStatorCurrentLimit.unaryMinus()));
 
+  // Azimuth encoder configuration
+  public static final SensorDirectionValue azimuthEncoderInverted =
+      SensorDirectionValue.CounterClockwise_Positive;
+
+  public static final CANcoderConfiguration azimuthCanCoderConfiguration =
+      new CANcoderConfiguration()
+          .withMagnetSensor(
+              new MagnetSensorConfigs()
+                  .withAbsoluteSensorDiscontinuityPoint(Radians.of(Math.PI * 2.0))
+                  .withSensorDirection(azimuthEncoderInverted));
+
   // Azimuth motor configuration
   public static final Current azimuthStatorCurrentLimit = Amps.of(25);
   public static final Current azimuthMotorSupplyLimitHigh = Amps.of(20);
@@ -164,14 +181,9 @@ public final class SwerveConstants {
   public static final Time azimuthSupplyCurrentLowerTime = Seconds.of(1);
   public static final double azimuthMotorReduction = (32 * 20 * 63) / (8 * 14 * 18);
   public static final DCMotor azimuthGearbox = DCMotor.getKrakenX44(1);
-  public static final boolean azimuthMotorInverted = true;
+  public static final InvertedValue azimuthMotorInverted = InvertedValue.Clockwise_Positive;
   public static final ClosedLoopControlType azimuthMotorClosedLoopOutput =
       ClosedLoopControlType.Voltage;
-
-  // Azimuth encoder configuration
-  public static final boolean azimuthEncoderInverted = false;
-  public static final double azimuthEncoderPositionFactor = 2 * Math.PI; // Rotations -> Radians
-  public static final double azimuthEncoderVelocityFactor = (2 * Math.PI) / 60.0; // RPM -> Rad/Sec
 
   // Azimuth PID configuration
   public static final double azimuthKp = 1.0;
@@ -208,7 +220,6 @@ public final class SwerveConstants {
           .withFeedback(
               new FeedbackConfigs()
                   .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-                  .withFeedbackRemoteSensorID(0)
                   .withSensorToMechanismRatio(1)
                   .withRotorToSensorRatio(azimuthMotorReduction))
           .withMotorOutput(

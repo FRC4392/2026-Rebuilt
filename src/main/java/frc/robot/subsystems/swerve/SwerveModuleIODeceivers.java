@@ -19,8 +19,10 @@ import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -38,6 +40,10 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
   // Hardware
   private final TalonFX azimuthMotor;
   private final TalonFX driveMotor;
+  private final CANcoder azimuthEncoder;
+
+  // Drive Motor Direction
+  private final InvertedValue driveMotorDirection;
 
   // Voltage control requests
   private final VoltageOut driveVoltageRequest = new VoltageOut(0);
@@ -106,6 +112,15 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
           default -> new Rotation2d();
         };
 
+    driveMotorDirection =
+        switch (module) {
+          case 0 -> driveMotorLeftDirection;
+          case 1 -> driveMotorRightDirection;
+          case 2 -> driveMotorLeftDirection;
+          case 3 -> driveMotorRightDirection;
+          default -> driveMotorLeftDirection;
+        };
+
     azimuthMotor =
         new TalonFX(
             switch (module) {
@@ -126,11 +141,26 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
               default -> 0;
             });
 
-    // Configure drive motot
+    azimuthEncoder =
+        new CANcoder(
+            switch (module) {
+              case 0 -> frontLeftAzimuthCanId;
+              case 1 -> frontRightAzimuthCanId;
+              case 2 -> backLeftAzimuthCanId;
+              case 3 -> backRightAzimuthCanId;
+              default -> 0;
+            });
+
+    // Configure drive motor
+    driveConfiguration.MotorOutput.Inverted = driveMotorDirection;
     tryUntilOk(5, () -> driveMotor.getConfigurator().apply(driveConfiguration, 0.25));
     tryUntilOk(5, () -> driveMotor.setPosition(0.0, 0.25));
 
+    // Configure azimuth encoder
+    tryUntilOk(5, () -> azimuthEncoder.getConfigurator().apply(azimuthCanCoderConfiguration, 0.25));
+
     // Configure azimuth motor
+    azimuthConfiguration.Feedback.FeedbackRemoteSensorID = azimuthEncoder.getDeviceID();
     tryUntilOk(5, () -> azimuthMotor.getConfigurator().apply(azimuthConfiguration, 0.25));
 
     // Create drive status signals
