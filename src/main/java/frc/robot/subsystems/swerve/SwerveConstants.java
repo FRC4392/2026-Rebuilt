@@ -17,6 +17,7 @@ import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.configs.AudioConfigs;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.ClosedLoopGeneralConfigs;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
@@ -165,7 +166,7 @@ public final class SwerveConstants {
 
   // Azimuth encoder configuration
   public static final SensorDirectionValue azimuthEncoderInverted =
-      SensorDirectionValue.CounterClockwise_Positive;
+      SensorDirectionValue.Clockwise_Positive;
 
   public static final CANcoderConfiguration azimuthCanCoderConfiguration =
       new CANcoderConfiguration()
@@ -186,7 +187,7 @@ public final class SwerveConstants {
       ClosedLoopControlType.Voltage;
 
   // Azimuth PID configuration
-  public static final double azimuthKp = 1.0;
+  public static final double azimuthKp = 100.0;
   public static final double azimuthKi = 0.0;
   public static final double azimuthKd = 0.0;
 
@@ -204,6 +205,7 @@ public final class SwerveConstants {
 
   public static final TalonFXConfiguration azimuthConfiguration =
       new TalonFXConfiguration()
+          .withClosedLoopGeneral(new ClosedLoopGeneralConfigs().withContinuousWrap(true))
           .withAudio(
               new AudioConfigs()
                   .withAllowMusicDurDisable(enableBeeps)
