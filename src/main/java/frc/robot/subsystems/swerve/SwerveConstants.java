@@ -180,7 +180,7 @@ public final class SwerveConstants {
   public static final Current azimuthMotorSupplyLimitHigh = Amps.of(20);
   public static final Current azimuthMotorSupplyLimitLow = Amps.of(10);
   public static final Time azimuthSupplyCurrentLowerTime = Seconds.of(1);
-  public static final double azimuthMotorReduction = (32 * 20 * 63) / (8 * 14 * 18);
+  public static final double azimuthMotorReduction = (32.0 * 30.0 * 63.0) / (10.0 * 14.0 * 18.0);
   public static final DCMotor azimuthGearbox = DCMotor.getKrakenX44(1);
   public static final InvertedValue azimuthMotorInverted = InvertedValue.Clockwise_Positive;
   public static final ClosedLoopControlType azimuthMotorClosedLoopOutput =
