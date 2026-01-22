@@ -195,7 +195,7 @@ public final class SwerveConstants {
   public static final double azimuthKv = 0.0;
   public static final double azimuthKa = 0.0;
 
-  public static final double azimuthSimP = 8.0;
+  public static final double azimuthSimP = 100.0;
   public static final double azimuthSimD = 0.0;
   public static final double azimuthSimKs = 0.0;
   public static final double azimuthSimKv = 0.0;
