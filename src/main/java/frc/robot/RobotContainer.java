@@ -69,10 +69,10 @@ public class RobotContainer {
         swerve =
             new Swerve(
                 new GyroIONavx3(),
-                new SwerveModuleIODeceivers(1),
                 new SwerveModuleIODeceivers(0),
-                new SwerveModuleIODeceivers(3),
+                new SwerveModuleIODeceivers(1),
                 new SwerveModuleIODeceivers(2),
+                new SwerveModuleIODeceivers(3),
                 state);
 
         shooter = new Shooter(new ShooterIOReal());

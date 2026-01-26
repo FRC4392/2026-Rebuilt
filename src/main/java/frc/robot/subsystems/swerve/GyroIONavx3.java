@@ -5,7 +5,6 @@
 package frc.robot.subsystems.swerve;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Radians;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
 import com.studica.frc.Navx;
@@ -23,9 +22,10 @@ public class GyroIONavx3 implements GyroIO {
     gyro.resetYaw();
     gyro.setODRHz((int) odometryFrequencyHz);
 
-    gyro.enableOptionalMessages(true, false, false, false, false, true, false, false, false);
+    gyro.enableOptionalMessages(true, true, true, true, false, true, true, true, true);
     yawTimestampQueue = SwerveOdometryThread.getInstance().makeTimestampQueue();
-    yawPositionQueue = SwerveOdometryThread.getInstance().registerSignal(() -> gyro.getYaw().in(Radians));
+    yawPositionQueue =
+        SwerveOdometryThread.getInstance().registerSignal(() -> gyro.getYaw().in(Degrees));
   }
 
   @Override

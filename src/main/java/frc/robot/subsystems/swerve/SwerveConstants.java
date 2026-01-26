@@ -166,7 +166,7 @@ public final class SwerveConstants {
 
   // Azimuth encoder configuration
   public static final SensorDirectionValue azimuthEncoderInverted =
-      SensorDirectionValue.Clockwise_Positive;
+      SensorDirectionValue.CounterClockwise_Positive;
 
   public static final CANcoderConfiguration azimuthCanCoderConfiguration =
       new CANcoderConfiguration()
@@ -226,7 +226,7 @@ public final class SwerveConstants {
                   .withRotorToSensorRatio(azimuthMotorReduction))
           .withMotorOutput(
               new MotorOutputConfigs()
-                  .withInverted(InvertedValue.CounterClockwise_Positive)
+                  .withInverted(azimuthMotorInverted)
                   .withNeutralMode(NeutralModeValue.Brake))
           .withSlot0(
               new Slot0Configs()
