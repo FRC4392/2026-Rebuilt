@@ -38,4 +38,10 @@ public final class RobotConstants {
     /** AdvantageKit Replay */
     REPLAY
   }
+
+  public static boolean disableHAL = false;
+
+  public static void disableHAL() {
+    disableHAL = true;
+  }
 }
