@@ -26,5 +26,5 @@ public interface IndexerIO {
 
   public default void updateInputs(IndexerIOInputs inputs) {}
 
-  public default void setVoltage(Voltage volts) {}
+  public default void setIndexer(Voltage volts) {}
 }
