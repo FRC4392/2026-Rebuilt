@@ -306,11 +306,17 @@ public class Swerve extends SubsystemBase {
   @AutoLogOutput(key = "Odometry/Robot")
   public Pose2d getPose() {
     return poseEstimator.getEstimatedPosition();
+    // TODO: Remove
+    // Pose2d pose = poseEstimator.getEstimatedPosition();
+    // Pose2d newPose = new Pose2d(pose.getX(), pose.getY(), gyroInputs.yawPosition);
+    // return newPose;
   }
 
   /** Returns the current odometry rotation. */
   public Rotation2d getRotation() {
     return getPose().getRotation();
+    // TODO: Remove
+    // return gyroInputs.yawPosition;
   }
 
   /** Resets the current odometry pose. */

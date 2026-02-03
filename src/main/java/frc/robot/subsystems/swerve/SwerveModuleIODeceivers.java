@@ -157,7 +157,8 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
     tryUntilOk(5, () -> driveMotor.setPosition(0.0, 0.25));
 
     // Configure azimuth encoder
-    tryUntilOk(5, () -> azimuthEncoder.getConfigurator().apply(azimuthCanCoderConfiguration, 0.25));
+    // tryUntilOk(5, () -> azimuthEncoder.getConfigurator().apply(azimuthCanCoderConfiguration,
+    // 0.25));
 
     // Configure azimuth motor
     azimuthConfiguration.Feedback.FeedbackRemoteSensorID = azimuthEncoder.getDeviceID();

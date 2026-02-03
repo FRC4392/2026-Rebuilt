@@ -22,7 +22,7 @@ public final class RobotConstants {
    * <p>Mode.COMMISIONING = Enable extra diagnostic and testing functions that aren't helpful during
    * competition
    */
-  private static final Mode realMode = Mode.REAL;
+  private static final Mode realMode = Mode.COMMISIONING;
 
   /** What is the current mode the robot is in? */
   public static final Mode currentMode = RobotBase.isReal() ? realMode : simMode;
@@ -37,5 +37,11 @@ public final class RobotConstants {
     SIM,
     /** AdvantageKit Replay */
     REPLAY
+  }
+
+  public static boolean disableHAL = false;
+
+  public static void disableHAL() {
+    disableHAL = true;
   }
 }

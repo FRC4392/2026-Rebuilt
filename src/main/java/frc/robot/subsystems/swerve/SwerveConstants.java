@@ -17,6 +17,7 @@ import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.configs.AudioConfigs;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.ClosedLoopGeneralConfigs;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
@@ -85,7 +86,7 @@ public final class SwerveConstants {
   public static final Rotation2d backRightZeroRotation = new Rotation2d(0.0);
 
   // Device CAN IDs
-  public static final int gyroCanId = 10;
+  public static final int gyroCanId = 0;
 
   public static final int frontLeftDriveCanId = 11;
   public static final int backLeftDriveCanId = 13;
@@ -179,14 +180,14 @@ public final class SwerveConstants {
   public static final Current azimuthMotorSupplyLimitHigh = Amps.of(20);
   public static final Current azimuthMotorSupplyLimitLow = Amps.of(10);
   public static final Time azimuthSupplyCurrentLowerTime = Seconds.of(1);
-  public static final double azimuthMotorReduction = (32 * 20 * 63) / (8 * 14 * 18);
+  public static final double azimuthMotorReduction = (32.0 * 30.0 * 63.0) / (10.0 * 14.0 * 18.0);
   public static final DCMotor azimuthGearbox = DCMotor.getKrakenX44(1);
   public static final InvertedValue azimuthMotorInverted = InvertedValue.Clockwise_Positive;
   public static final ClosedLoopControlType azimuthMotorClosedLoopOutput =
       ClosedLoopControlType.Voltage;
 
   // Azimuth PID configuration
-  public static final double azimuthKp = 1.0;
+  public static final double azimuthKp = 100.0;
   public static final double azimuthKi = 0.0;
   public static final double azimuthKd = 0.0;
 
@@ -194,7 +195,7 @@ public final class SwerveConstants {
   public static final double azimuthKv = 0.0;
   public static final double azimuthKa = 0.0;
 
-  public static final double azimuthSimP = 8.0;
+  public static final double azimuthSimP = 100.0;
   public static final double azimuthSimD = 0.0;
   public static final double azimuthSimKs = 0.0;
   public static final double azimuthSimKv = 0.0;
@@ -204,6 +205,7 @@ public final class SwerveConstants {
 
   public static final TalonFXConfiguration azimuthConfiguration =
       new TalonFXConfiguration()
+          .withClosedLoopGeneral(new ClosedLoopGeneralConfigs().withContinuousWrap(true))
           .withAudio(
               new AudioConfigs()
                   .withAllowMusicDurDisable(enableBeeps)
@@ -224,7 +226,7 @@ public final class SwerveConstants {
                   .withRotorToSensorRatio(azimuthMotorReduction))
           .withMotorOutput(
               new MotorOutputConfigs()
-                  .withInverted(InvertedValue.CounterClockwise_Positive)
+                  .withInverted(azimuthMotorInverted)
                   .withNeutralMode(NeutralModeValue.Brake))
           .withSlot0(
               new Slot0Configs()

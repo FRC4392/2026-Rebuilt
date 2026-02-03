@@ -148,9 +148,9 @@ public class OperatorInterface extends SubsystemBase {
    */
   public SwerveControlSignal getSwerveControlSignal() {
     return new SwerveControlSignal(
-        () -> driverController.getLeftX(),
-        () -> driverController.getLeftY(),
-        () -> driverController.getLeftTriggerAxis() - driverController.getRightTriggerAxis(),
+        () -> -driverController.getLeftY(),
+        () -> -driverController.getLeftX(),
+        () -> -driverController.getRightX(),
         () -> driverController.getHID().getAButton());
   }
 
