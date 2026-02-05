@@ -27,11 +27,11 @@ public class Hopper extends SubsystemBase {
     Logger.processInputs("Hopper", inputs);
   }
 
-  public void setVoltage(Voltage volts) {
-    hopperIO.setVoltage(volts);
+  public void setHopper(Voltage volts) {
+    hopperIO.setHopper(volts);
   }
 
   public Command runTestVoltage() {
-    return this.runEnd(() -> setVoltage(Volts.of(6)), () -> setVoltage(Volts.of(0)));
+    return this.runEnd(() -> setHopper(Volts.of(6)), () -> setHopper(Volts.of(0)));
   }
 }
