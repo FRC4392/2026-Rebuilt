@@ -26,5 +26,5 @@ public interface ClimberIO {
 
   public default void updateInputs(ClimberIOInputs inputs) {}
 
-  public default void setClimber(Voltage volts) {}
+  public default void setVoltage(Voltage volts) {}
 }

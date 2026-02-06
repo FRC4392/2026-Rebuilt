@@ -27,11 +27,11 @@ public class Shooter extends SubsystemBase {
     Logger.processInputs("Shooter", inputs);
   }
 
-  public void setVoltage(Voltage volts) {
-    shooterIO.setVoltage(volts);
+  public void setShooter(Voltage volts) {
+    shooterIO.setShooter(volts);
   }
 
   public Command runTestVoltage() {
-    return this.runEnd(() -> setVoltage(Volts.of(6)), () -> setVoltage(Volts.of(0)));
+    return this.runEnd(() -> setShooter(Volts.of(6)), () -> setShooter(Volts.of(0)));
   }
 }

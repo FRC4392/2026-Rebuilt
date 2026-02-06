@@ -47,5 +47,5 @@ public interface ShooterIO {
 
   public default void updateInputs(ShooterIOInputs inputs) {}
 
-  public default void setVoltage(Voltage volts) {}
+  public default void setShooter(Voltage volts) {}
 }
