@@ -27,11 +27,11 @@ public class Indexer extends SubsystemBase {
     Logger.processInputs("Indexer", inputs);
   }
 
-  public void setIndexer(Voltage volts) {
-    indexerIO.setIndexer(volts);
+  public void setVoltage(Voltage volts) {
+    indexerIO.setVoltage(volts);
   }
 
   public Command runTestVoltage() {
-    return this.runEnd(() -> setIndexer(Volts.of(6)), () -> setIndexer(Volts.of(0)));
+    return this.runEnd(() -> setVoltage(Volts.of(6)), () -> setVoltage(Volts.of(0)));
   }
 }
