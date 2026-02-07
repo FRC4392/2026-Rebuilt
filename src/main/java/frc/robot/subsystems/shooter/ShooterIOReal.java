@@ -309,10 +309,17 @@ public class ShooterIOReal implements ShooterIO {
             shooterMotor2Temperatre);
     var turretMotorStatus =
         BaseStatusSignal.refreshAll(
-            turretPosition, turretVelocity, turretVoltage, turretCurrent, turretTemperatre);
+            turretPosition,
+            turretVelocity, turretVoltage,
+            turretCurrent,
+            turretTemperatre);
     var hoodMotorStatus =
         BaseStatusSignal.refreshAll(
-            hoodPosition, hoodVelocity, hoodVoltage, hoodCurrent, hoodTemperatre);
+            hoodPosition,
+            hoodVelocity,
+            hoodVoltage,
+            hoodCurrent,
+            hoodTemperatre);
 
     inputs.shooterMotor1Connected = motorConnectDebouncer.calculate(shooterMotor1Status.isOK());
     inputs.shooterMotor1Position = shooterMotor1Position.getValue();
