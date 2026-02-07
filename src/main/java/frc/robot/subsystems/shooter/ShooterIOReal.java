@@ -22,7 +22,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.subsystems.shooter.ShooterIO.ShooterIOInputs;
 
 public class ShooterIOReal implements ShooterIO {
   // Motors
@@ -67,7 +66,7 @@ public class ShooterIOReal implements ShooterIO {
     // Shooter Motor 1
     shooterMotor1 = new TalonFX(shooterMotor1CanID);
 
-    TalonFXConfiguration shooterConfiguration =
+    TalonFXConfiguration shooterMotor1Configuration =
         new TalonFXConfiguration()
             .withAudio(
                 new AudioConfigs()
@@ -104,7 +103,7 @@ public class ShooterIOReal implements ShooterIO {
                     .withPeakForwardTorqueCurrent(shooterMotor1StatorCurrentLimit)
                     .withPeakReverseTorqueCurrent(shooterMotor1StatorCurrentLimit.unaryMinus()));
 
-    tryUntilOk(5, () -> shooterMotor1.getConfigurator().apply(shooterConfiguration, 0.25));
+    tryUntilOk(5, () -> shooterMotor1.getConfigurator().apply(shooterMotor1Configuration, 0.25));
 
     shooterMotor1Position = shooterMotor1.getPosition();
     shooterMotor1Velocity = shooterMotor1.getVelocity();
@@ -163,7 +162,7 @@ public class ShooterIOReal implements ShooterIO {
                     .withPeakForwardTorqueCurrent(shooterMotor2StatorCurrentLimit)
                     .withPeakReverseTorqueCurrent(shooterMotor2StatorCurrentLimit.unaryMinus()));
 
-    tryUntilOk(5, () -> shooterMotor2.getConfigurator().apply(shooterConfiguration, 0.25));
+    tryUntilOk(5, () -> shooterMotor2.getConfigurator().apply(shooterMotor2Configuration, 0.25));
 
     shooterMotor2Position = shooterMotor2.getPosition();
     shooterMotor2Velocity = shooterMotor2.getVelocity();
@@ -222,7 +221,7 @@ public class ShooterIOReal implements ShooterIO {
                     .withPeakForwardTorqueCurrent(turretMotorStatorCurrentLimit)
                     .withPeakReverseTorqueCurrent(turretMotorStatorCurrentLimit.unaryMinus()));
 
-    tryUntilOk(5, () -> turretMotor.getConfigurator().apply(shooterConfiguration, 0.25));
+    tryUntilOk(5, () -> turretMotor.getConfigurator().apply(turretConfiguration, 0.25));
 
     turretPosition = turretMotor.getPosition();
     turretVelocity = turretMotor.getVelocity();
@@ -276,7 +275,7 @@ public class ShooterIOReal implements ShooterIO {
                     .withPeakForwardTorqueCurrent(hoodStatorCurrentLimit)
                     .withPeakReverseTorqueCurrent(hoodStatorCurrentLimit.unaryMinus()));
 
-    tryUntilOk(5, () -> hoodMotor.getConfigurator().apply(shooterConfiguration, 0.25));
+    tryUntilOk(5, () -> hoodMotor.getConfigurator().apply(hoodConfiguration, 0.25));
 
     hoodPosition = hoodMotor.getPosition();
     hoodVelocity = hoodMotor.getVelocity();
@@ -309,17 +308,10 @@ public class ShooterIOReal implements ShooterIO {
             shooterMotor2Temperatre);
     var turretMotorStatus =
         BaseStatusSignal.refreshAll(
-            turretPosition,
-            turretVelocity, turretVoltage,
-            turretCurrent,
-            turretTemperatre);
+            turretPosition, turretVelocity, turretVoltage, turretCurrent, turretTemperatre);
     var hoodMotorStatus =
         BaseStatusSignal.refreshAll(
-            hoodPosition,
-            hoodVelocity,
-            hoodVoltage,
-            hoodCurrent,
-            hoodTemperatre);
+            hoodPosition, hoodVelocity, hoodVoltage, hoodCurrent, hoodTemperatre);
 
     inputs.shooterMotor1Connected = motorConnectDebouncer.calculate(shooterMotor1Status.isOK());
     inputs.shooterMotor1Position = shooterMotor1Position.getValue();
