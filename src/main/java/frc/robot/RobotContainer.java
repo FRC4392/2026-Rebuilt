@@ -129,7 +129,7 @@ public class RobotContainer {
   private void configureBindings() {
     swerve.setDefaultCommand(swerve.joystickDrive(operatorInterface.getSwerveControlSignal()));
 
-    operatorInterface.intakeButton().whileTrue(intake.runTestVoltage());
+    operatorInterface.climberButton().whileTrue(climber.runTestVoltage());
   }
 
   public Command getAutonomousCommand() {
