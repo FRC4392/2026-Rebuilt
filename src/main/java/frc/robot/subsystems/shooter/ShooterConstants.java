@@ -28,7 +28,7 @@ public class ShooterConstants {
   public static final Current shooterMotor1MotorSupplyLimitLow = Amps.of(10);
   public static final Time shooterMotor1SupplyCurrentLowerTime = Seconds.of(1);
 
-  public static final double shooterMotor1MotorReduction = 3.0;
+  public static final double shooterMotor1MotorReduction = 1.0;
 
   public static final InvertedValue shooterMotor1Inverted = InvertedValue.Clockwise_Positive;
   public static final NeutralModeValue shooterMotor1NeutralMode = NeutralModeValue.Coast;
@@ -46,7 +46,7 @@ public class ShooterConstants {
   public static final Current shooterMotor2MotorSupplyLimitLow = Amps.of(10);
   public static final Time shooterMotor2SupplyCurrentLowerTime = Seconds.of(1);
 
-  public static final double shooterMotor2MotorReduction = 3.0;
+  public static final double shooterMotor2MotorReduction = 1.0;
 
   public static final InvertedValue shooterMotor2Inverted = InvertedValue.Clockwise_Positive;
   public static final NeutralModeValue shooterMotor2NeutralMode = NeutralModeValue.Coast;

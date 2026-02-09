@@ -159,4 +159,8 @@ public class OperatorInterface extends SubsystemBase {
   public Trigger intakeButton() {
     return operatorController.a();
   }
+
+  public Trigger shooterButton() {
+    return operatorController.rightTrigger();
+  }
 }
