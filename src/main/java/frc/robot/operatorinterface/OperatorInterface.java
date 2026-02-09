@@ -156,7 +156,7 @@ public class OperatorInterface extends SubsystemBase {
 
   // Game Controls (vary by year)
 
-  public Trigger intakeButton() {
-    return operatorController.a();
+  public Trigger indexerButton() {
+    return operatorController.x();
   }
 }
