@@ -17,7 +17,7 @@ public class HopperConstants {
 
   public static boolean enableBeeps = true;
 
-  public static final int hopperMotorCanID = 51;
+  public static final int hopperMotorCanID = 41;
 
   public static final Current hopperStatorCurrentLimit = Amps.of(10);
   public static final Current hopperMotorSupplyLimitHigh = Amps.of(10);
