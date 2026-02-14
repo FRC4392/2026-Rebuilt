@@ -17,10 +17,10 @@ public class ShooterConstants {
 
   public static boolean enableBeeps = true;
 
-  public static final int shooterMotor1CanID = 61;
-  public static final int shooterMotor2CanID = 60;
-  public static final int turretMotorCanID = 62;
-  public static final int hoodMotorCanID = 64;
+  public static final int shooterMotor1CanID = 50;
+  public static final int shooterMotor2CanID = 51;
+  public static final int turretMotorCanID = 52;
+  public static final int hoodMotorCanID = 53;
 
   // Shooter Motor 1
   public static final Current shooterMotor1StatorCurrentLimit = Amps.of(10);
