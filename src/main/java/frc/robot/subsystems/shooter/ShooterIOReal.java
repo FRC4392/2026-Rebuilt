@@ -32,6 +32,7 @@ public class ShooterIOReal implements ShooterIO {
 
   // Conrtol Requests
   private final VoltageOut voltageRequest = new VoltageOut(0);
+  private final VoltageOut turretvoltageRequest = new VoltageOut(0);
 
   // Status Signals
   private final StatusSignal<Angle> shooterMotor1Position;
@@ -348,5 +349,9 @@ public class ShooterIOReal implements ShooterIO {
     shooterMotor2.setControl(voltageRequest.withOutput(volts));
     turretMotor.setControl(voltageRequest.withOutput(volts));
     hoodMotor.setControl(voltageRequest.withOutput(volts));
+  }
+
+  public void setTurret(Voltage volts) {
+    turretMotor.setControl(turretvoltageRequest.withOutput(volts));
   }
 }

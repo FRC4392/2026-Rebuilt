@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.DeceiverRobotState;
 import frc.robot.subsystems.swerve.SwerveControlSignal;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
@@ -157,6 +158,13 @@ public class OperatorInterface extends SubsystemBase {
   // Game Controls (vary by year)
 
   public Trigger shooterButton() {
-    return operatorController.rightTrigger();
+    return operatorController.rightTrigger(0.1).or(operatorController.leftTrigger(0.1));
+  }
+
+  public DoubleSupplier turretSpeedSupplier() {
+    return () -> {
+      return (operatorController.getRightTriggerAxis() - operatorController.getLeftTriggerAxis())
+          * 12.0;
+    };
   }
 }

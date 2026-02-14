@@ -18,8 +18,8 @@ public class ShooterConstants {
   public static boolean enableBeeps = true;
 
   public static final int shooterMotor1CanID = 61;
-  public static final int shooterMotor2CanID = 62;
-  public static final int turretMotorCanID = 63;
+  public static final int shooterMotor2CanID = 60;
+  public static final int turretMotorCanID = 62;
   public static final int hoodMotorCanID = 64;
 
   // Shooter Motor 1
@@ -59,15 +59,15 @@ public class ShooterConstants {
   public static final double shooterMotor2Ka = 0.0;
 
   // Turret Motor
-  public static final Current turretMotorStatorCurrentLimit = Amps.of(10);
-  public static final Current turretMotorMotorSupplyLimitHigh = Amps.of(10);
-  public static final Current turretMotorMotorSupplyLimitLow = Amps.of(10);
+  public static final Current turretMotorStatorCurrentLimit = Amps.of(100);
+  public static final Current turretMotorMotorSupplyLimitHigh = Amps.of(40);
+  public static final Current turretMotorMotorSupplyLimitLow = Amps.of(30);
   public static final Time turretMotorSupplyCurrentLowerTime = Seconds.of(1);
 
   public static final double turretMotorMotorReduction = 3.0;
 
   public static final InvertedValue turretMotorInverted = InvertedValue.Clockwise_Positive;
-  public static final NeutralModeValue turretMotorNeutralMode = NeutralModeValue.Coast;
+  public static final NeutralModeValue turretMotorNeutralMode = NeutralModeValue.Brake;
 
   public static final double turretMotorKp = 0.0;
   public static final double turretMotorKi = 0.0;
