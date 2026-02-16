@@ -157,8 +157,11 @@ public class OperatorInterface extends SubsystemBase {
 
   // Game Controls (vary by year)
 
+  public Trigger intakeButton() {
+    return operatorController.leftTrigger(0.1);
+    
   public Trigger shooterButton() {
-    return operatorController.rightTrigger(0.1).or(operatorController.leftTrigger(0.1));
+    return operatorController.rightTrigger(0.1);
   }
 
   public DoubleSupplier turretSpeedSupplier() {
