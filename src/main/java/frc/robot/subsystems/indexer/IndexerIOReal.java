@@ -110,7 +110,7 @@ public class IndexerIOReal implements IndexerIO {
   }
 
   @Override
-  public void setIndexer(Voltage volts) {
+  public void setVoltage(Voltage volts) {
     indexerMotor.setControl(voltageRequest.withOutput(volts));
   }
 }
