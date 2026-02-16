@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
@@ -27,11 +28,16 @@ public class Shooter extends SubsystemBase {
     Logger.processInputs("Shooter", inputs);
   }
 
-  public void setVoltage(Voltage volts) {
-    shooterIO.setVoltage(volts);
+  public void setShooter(Voltage volts) {
+    shooterIO.setShooter(volts);
   }
 
   public Command runTestVoltage() {
-    return this.runEnd(() -> setVoltage(Volts.of(6)), () -> setVoltage(Volts.of(0)));
+    return this.runEnd(() -> setShooter(Volts.of(12)), () -> setShooter(Volts.of(0)));
+  }
+
+  public Command runTurret(DoubleSupplier voltage) {
+    return this.runEnd(
+        () -> setShooter(Volts.of(voltage.getAsDouble())), () -> setShooter(Volts.of(0)));
   }
 }
