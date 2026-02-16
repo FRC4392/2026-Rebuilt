@@ -347,8 +347,6 @@ public class ShooterIOReal implements ShooterIO {
   public void setShooter(Voltage volts) {
     shooterMotor1.setControl(voltageRequest.withOutput(volts));
     shooterMotor2.setControl(voltageRequest.withOutput(volts));
-    turretMotor.setControl(voltageRequest.withOutput(volts));
-    hoodMotor.setControl(voltageRequest.withOutput(volts));
   }
 
   public void setTurret(Voltage volts) {

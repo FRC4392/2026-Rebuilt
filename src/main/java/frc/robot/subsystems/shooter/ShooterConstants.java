@@ -23,8 +23,8 @@ public class ShooterConstants {
   public static final int hoodMotorCanID = 53;
 
   // Shooter Motor 1
-  public static final Current shooterMotor1StatorCurrentLimit = Amps.of(10);
-  public static final Current shooterMotor1MotorSupplyLimitHigh = Amps.of(10);
+  public static final Current shooterMotor1StatorCurrentLimit = Amps.of(120);
+  public static final Current shooterMotor1MotorSupplyLimitHigh = Amps.of(20);
   public static final Current shooterMotor1MotorSupplyLimitLow = Amps.of(10);
   public static final Time shooterMotor1SupplyCurrentLowerTime = Seconds.of(1);
 
@@ -41,14 +41,14 @@ public class ShooterConstants {
   public static final double shooterMotor1Ka = 0.0;
 
   // Shooter Motor 2
-  public static final Current shooterMotor2StatorCurrentLimit = Amps.of(10);
-  public static final Current shooterMotor2MotorSupplyLimitHigh = Amps.of(10);
+  public static final Current shooterMotor2StatorCurrentLimit = Amps.of(100);
+  public static final Current shooterMotor2MotorSupplyLimitHigh = Amps.of(20);
   public static final Current shooterMotor2MotorSupplyLimitLow = Amps.of(10);
   public static final Time shooterMotor2SupplyCurrentLowerTime = Seconds.of(1);
 
   public static final double shooterMotor2MotorReduction = 1.0;
 
-  public static final InvertedValue shooterMotor2Inverted = InvertedValue.Clockwise_Positive;
+  public static final InvertedValue shooterMotor2Inverted = InvertedValue.CounterClockwise_Positive;
   public static final NeutralModeValue shooterMotor2NeutralMode = NeutralModeValue.Coast;
 
   public static final double shooterMotor2Kp = 0.0;

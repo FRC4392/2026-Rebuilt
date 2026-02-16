@@ -33,7 +33,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command runTestVoltage() {
-    return this.runEnd(() -> setShooter(Volts.of(6)), () -> setShooter(Volts.of(0)));
+    return this.runEnd(() -> setShooter(Volts.of(12)), () -> setShooter(Volts.of(0)));
   }
 
   public Command runTurret(DoubleSupplier voltage) {
