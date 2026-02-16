@@ -27,11 +27,11 @@ public class Intake extends SubsystemBase {
     Logger.processInputs("Intake", inputs);
   }
 
-  public void setVoltage(Voltage volts) {
-    intakeIO.setVoltage(volts);
+  public void SetIntake(Voltage volts) {
+    intakeIO.setIntake(volts);
   }
 
   public Command runTestVoltage() {
-    return this.runEnd(() -> setVoltage(Volts.of(6)), () -> setVoltage(Volts.of(0)));
+    return this.runEnd(() -> SetIntake(Volts.of(6)), () -> SetIntake(Volts.of(0)));
   }
 }

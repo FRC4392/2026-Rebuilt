@@ -27,11 +27,11 @@ public class Climber extends SubsystemBase {
     Logger.processInputs("Climber", inputs);
   }
 
-  public void setClimber(Voltage volts) {
-    climberIO.setClimber(volts);
+  public void setVoltage(Voltage volts) {
+    climberIO.setVoltage(volts);
   }
 
   public Command runTestVoltage() {
-    return this.runEnd(() -> setClimber(Volts.of(6)), () -> setClimber(Volts.of(0)));
+    return this.runEnd(() -> setVoltage(Volts.of(6)), () -> setVoltage(Volts.of(0)));
   }
 }
