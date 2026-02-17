@@ -19,14 +19,14 @@ public class IndexerConstants {
 
   public static final int indexerMotorCanID = 31;
 
-  public static final Current indexerStatorCurrentLimit = Amps.of(10);
-  public static final Current indexerMotorSupplyLimitHigh = Amps.of(10);
-  public static final Current indexerMotorSupplyLimitLow = Amps.of(10);
+  public static final Current indexerStatorCurrentLimit = Amps.of(100);
+  public static final Current indexerMotorSupplyLimitHigh = Amps.of(40);
+  public static final Current indexerMotorSupplyLimitLow = Amps.of(40);
   public static final Time indexerSupplyCurrentLowerTime = Seconds.of(1);
 
   public static final double indexerMotorReduction = 3.0;
 
-  public static final InvertedValue indexerInverted = InvertedValue.Clockwise_Positive;
+  public static final InvertedValue indexerInverted = InvertedValue.CounterClockwise_Positive;
   public static final NeutralModeValue indexerNeutralMode = NeutralModeValue.Coast;
 
   public static final double indexerKp = 0.0;
