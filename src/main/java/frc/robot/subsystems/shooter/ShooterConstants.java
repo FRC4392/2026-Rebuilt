@@ -24,8 +24,8 @@ public class ShooterConstants {
 
   // Shooter Motor 1
   public static final Current shooterMotor1StatorCurrentLimit = Amps.of(120);
-  public static final Current shooterMotor1MotorSupplyLimitHigh = Amps.of(20);
-  public static final Current shooterMotor1MotorSupplyLimitLow = Amps.of(10);
+  public static final Current shooterMotor1MotorSupplyLimitHigh = Amps.of(80);
+  public static final Current shooterMotor1MotorSupplyLimitLow = Amps.of(40);
   public static final Time shooterMotor1SupplyCurrentLowerTime = Seconds.of(1);
 
   public static final double shooterMotor1MotorReduction = 1.0;
@@ -33,30 +33,23 @@ public class ShooterConstants {
   public static final InvertedValue shooterMotor1Inverted = InvertedValue.Clockwise_Positive;
   public static final NeutralModeValue shooterMotor1NeutralMode = NeutralModeValue.Coast;
 
-  public static final double shooterMotor1Kp = 0.0;
-  public static final double shooterMotor1Ki = 0.0;
-  public static final double shooterMotor1Kd = 0.0;
-  public static final double shooterMotor1Kv = 0.0;
-  public static final double shooterMotor1Ks = 0.0;
-  public static final double shooterMotor1Ka = 0.0;
+  public static final double shooterKp = 0.0;
+  public static final double shooterKi = 0.0;
+  public static final double shooterKd = 0.0;
+  public static final double shooterKv = 0.0;
+  public static final double shooterKs = 0.0;
+  public static final double shooterKa = 0.0;
 
   // Shooter Motor 2
-  public static final Current shooterMotor2StatorCurrentLimit = Amps.of(100);
-  public static final Current shooterMotor2MotorSupplyLimitHigh = Amps.of(20);
-  public static final Current shooterMotor2MotorSupplyLimitLow = Amps.of(10);
+  public static final Current shooterMotor2StatorCurrentLimit = Amps.of(120);
+  public static final Current shooterMotor2MotorSupplyLimitHigh = Amps.of(80);
+  public static final Current shooterMotor2MotorSupplyLimitLow = Amps.of(40);
   public static final Time shooterMotor2SupplyCurrentLowerTime = Seconds.of(1);
 
   public static final double shooterMotor2MotorReduction = 1.0;
 
   public static final InvertedValue shooterMotor2Inverted = InvertedValue.CounterClockwise_Positive;
   public static final NeutralModeValue shooterMotor2NeutralMode = NeutralModeValue.Coast;
-
-  public static final double shooterMotor2Kp = 0.0;
-  public static final double shooterMotor2Ki = 0.0;
-  public static final double shooterMotor2Kd = 0.0;
-  public static final double shooterMotor2Kv = 0.0;
-  public static final double shooterMotor2Ks = 0.0;
-  public static final double shooterMotor2Ka = 0.0;
 
   // Turret Motor
   public static final Current turretMotorStatorCurrentLimit = Amps.of(100);

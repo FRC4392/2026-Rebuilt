@@ -132,7 +132,7 @@ public class RobotContainer {
     operatorInterface.hopperButton().whileTrue(hopper.runTestVoltage());
     operatorInterface.climberButton().whileTrue(climber.runTestVoltage());
     operatorInterface.indexerButton().whileTrue(indexer.runTestVoltage());
-    operatorInterface.shooterButton().whileTrue(shooter.runTestVoltage());
+    operatorInterface.shooterButton().whileTrue(shooter.shooterVelocityTuneCommand());
   }
 
   public Command getAutonomousCommand() {

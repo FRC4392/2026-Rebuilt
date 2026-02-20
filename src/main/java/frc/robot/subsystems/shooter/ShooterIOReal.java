@@ -1,6 +1,5 @@
 package frc.robot.subsystems.shooter;
 
-import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
 import static frc.robot.util.PhoenixUtil.tryUntilOk;
 
@@ -23,7 +22,6 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
-import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 
 public class ShooterIOReal implements ShooterIO {
@@ -96,13 +94,13 @@ public class ShooterIOReal implements ShooterIO {
                     .withNeutralMode(shooterMotor1NeutralMode))
             .withSlot0(
                 new Slot0Configs()
-                    .withKP(shooterMotor1Kp)
-                    .withKI(shooterMotor1Ki)
-                    .withKD(shooterMotor1Kd)
+                    .withKP(shooterKp)
+                    .withKI(shooterKi)
+                    .withKD(shooterKd)
                     .withKG(0)
-                    .withKV(shooterMotor1Kv)
-                    .withKS(shooterMotor1Ks)
-                    .withKA(shooterMotor1Ka))
+                    .withKV(shooterKv)
+                    .withKS(shooterKs)
+                    .withKA(shooterKa))
             .withTorqueCurrent(
                 new TorqueCurrentConfigs()
                     .withPeakForwardTorqueCurrent(shooterMotor1StatorCurrentLimit)
@@ -155,13 +153,13 @@ public class ShooterIOReal implements ShooterIO {
                     .withNeutralMode(shooterMotor2NeutralMode))
             .withSlot0(
                 new Slot0Configs()
-                    .withKP(shooterMotor2Kp)
-                    .withKI(shooterMotor2Ki)
-                    .withKD(shooterMotor2Kd)
+                    .withKP(shooterKp)
+                    .withKI(shooterKi)
+                    .withKD(shooterKd)
                     .withKG(0)
-                    .withKV(shooterMotor2Kv)
-                    .withKS(shooterMotor2Ks)
-                    .withKA(shooterMotor2Ka))
+                    .withKV(shooterKv)
+                    .withKS(shooterKs)
+                    .withKA(shooterKa))
             .withTorqueCurrent(
                 new TorqueCurrentConfigs()
                     .withPeakForwardTorqueCurrent(shooterMotor2StatorCurrentLimit)
@@ -352,7 +350,8 @@ public class ShooterIOReal implements ShooterIO {
     shooterMotor1.setControl(voltageRequest.withOutput(volts));
     shooterMotor2.setControl(voltageRequest.withOutput(volts));
   }
-  
+
+  @Override
   public void setShooter(AngularVelocity velocity) {
     shooterMotor1.setControl(shooterVelocityRequest.withVelocity(velocity));
     shooterMotor2.setControl(shooterVelocityRequest.withVelocity(velocity));
@@ -360,5 +359,11 @@ public class ShooterIOReal implements ShooterIO {
 
   public void setTurret(Voltage volts) {
     turretMotor.setControl(turretvoltageRequest.withOutput(volts));
+  }
+
+  public void updateShooterPID(double kp, double ki, double kd, double ks, double kv, double ka) {
+    Slot0Configs newConfig =
+        new Slot0Configs().withKP(kp).withKI(ki).withKD(kd).withKS(ks).withKV(kv).withKA(ka);
+    shooterMotor1.getConfigurator().apply(newConfig);
   }
 }
