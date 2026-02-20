@@ -59,7 +59,7 @@ public class LoggedTunableNumber implements DoubleSupplier {
     if (!hasDefault) {
       hasDefault = true;
       this.defaultValue = defaultValue;
-      if (RobotConstants.currentMode == Mode.COMMISIONING && !RobotConstants.disableHAL) {
+      if (RobotConstants.currentMode != Mode.REAL && !RobotConstants.disableHAL) {
         dashboardNumber = new LoggedNetworkNumber(key, defaultValue);
       }
     }

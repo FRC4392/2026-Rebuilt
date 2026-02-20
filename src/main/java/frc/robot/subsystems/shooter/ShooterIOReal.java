@@ -361,7 +361,8 @@ public class ShooterIOReal implements ShooterIO {
     turretMotor.setControl(turretvoltageRequest.withOutput(volts));
   }
 
-  public void updateShooterPID(double kp, double ki, double kd, double ks, double kv, double ka) {
+  @Override
+  public void setPID(double kp, double ki, double kd, double ks, double kv, double ka) {
     Slot0Configs newConfig =
         new Slot0Configs().withKP(kp).withKI(ki).withKD(kd).withKS(ks).withKV(kv).withKA(ka);
     shooterMotor1.getConfigurator().apply(newConfig);
