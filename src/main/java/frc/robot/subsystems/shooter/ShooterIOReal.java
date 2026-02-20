@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
 import static frc.robot.util.PhoenixUtil.tryUntilOk;
 
@@ -12,6 +13,7 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -21,6 +23,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 
 public class ShooterIOReal implements ShooterIO {
@@ -33,6 +36,7 @@ public class ShooterIOReal implements ShooterIO {
   // Conrtol Requests
   private final VoltageOut voltageRequest = new VoltageOut(0);
   private final VoltageOut turretvoltageRequest = new VoltageOut(0);
+  private final VelocityTorqueCurrentFOC shooterVelocityRequest = new VelocityTorqueCurrentFOC(0);
 
   // Status Signals
   private final StatusSignal<Angle> shooterMotor1Position;
@@ -347,6 +351,11 @@ public class ShooterIOReal implements ShooterIO {
   public void setShooter(Voltage volts) {
     shooterMotor1.setControl(voltageRequest.withOutput(volts));
     shooterMotor2.setControl(voltageRequest.withOutput(volts));
+  }
+  
+  public void setShooter(AngularVelocity velocity) {
+    shooterMotor1.setControl(shooterVelocityRequest.withVelocity(velocity));
+    shooterMotor2.setControl(shooterVelocityRequest.withVelocity(velocity));
   }
 
   public void setTurret(Voltage volts) {
