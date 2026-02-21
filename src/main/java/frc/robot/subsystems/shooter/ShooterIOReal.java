@@ -366,5 +366,6 @@ public class ShooterIOReal implements ShooterIO {
     Slot0Configs newConfig =
         new Slot0Configs().withKP(kp).withKI(ki).withKD(kd).withKS(ks).withKV(kv).withKA(ka);
     shooterMotor1.getConfigurator().apply(newConfig);
+    shooterMotor2.getConfigurator().apply(newConfig);
   }
 }

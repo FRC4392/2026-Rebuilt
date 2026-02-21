@@ -80,6 +80,7 @@ public class Shooter extends SubsystemBase {
 
   public Command shooterVelocityTuneCommand() {
     return this.runEnd(
-        () -> setShooter(RotationsPerSecond.of(4500)), () -> setShooter(RotationsPerSecond.of(0)));
+        () -> setShooter(RotationsPerSecond.of(4500.0 / 60.0)),
+        () -> setShooter(RotationsPerSecond.of(0)));
   }
 }
