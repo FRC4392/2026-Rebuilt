@@ -4,11 +4,13 @@
 
 package frc.robot.subsystems.intake;
 
-import static edu.wpi.first.units.Units.Volts;
-
-import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.subsystems.intake.IntakeConstants.intakeVoltage;
+import static frc.robot.subsystems.intake.IntakeConstants.outtakeVoltage;
+
 import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
@@ -27,11 +29,23 @@ public class Intake extends SubsystemBase {
     Logger.processInputs("Intake", inputs);
   }
 
-  public void SetIntake(Voltage volts) {
-    intakeIO.setIntake(volts);
+  private void rollerStop(){
+    intakeIO.setRoller(Volts.of(0));
   }
 
-  public Command runTestVoltage() {
-    return this.runEnd(() -> SetIntake(Volts.of(6)), () -> SetIntake(Volts.of(0)));
+  private void extensionStop(){
+    intakeIO.setExtension(Volts.of(0));
+  }
+
+  public Command runRollerIntake(){
+    return this.runEnd(() -> {
+      intakeIO.setRoller(intakeVoltage);
+    }, this::rollerStop);
+  }
+
+    public Command runRollerOuttake(){
+    return this.runEnd(() -> {
+      intakeIO.setRoller(outtakeVoltage);
+    }, this::rollerStop);
   }
 }
