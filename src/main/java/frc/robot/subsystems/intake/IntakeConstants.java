@@ -14,10 +14,10 @@ import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -25,6 +25,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Voltage;
 
 /** Add your docs here. */
 public class IntakeConstants {
@@ -55,11 +56,18 @@ public class IntakeConstants {
   public static final double extensionKs = 0.0;
   public static final double extensionKa = 0.0;
 
+  public static final Voltage extensionTestVoltage = Volts.of(3);
+
   public static final LinearVelocity extensionMaxSpeed = InchesPerSecond.of(1);
   public static final LinearAcceleration extensionMaxAcceleration = InchesPerSecondPerSecond.of(1);
 
-  public static final AngularVelocity extensionMotorMaxSpeed = RadiansPerSecond.of(extensionMaxSpeed.in(MetersPerSecond)/(extensionDriveDiameter.in(Meters)/2.0));
-  public static final AngularAcceleration extensionMotorMaxAcceleration = RadiansPerSecondPerSecond.of(extensionMaxAcceleration.in(MetersPerSecondPerSecond)/(extensionDriveDiameter.in(Meters)/2.0));
+  public static final AngularVelocity extensionMotorMaxSpeed =
+      RadiansPerSecond.of(
+          extensionMaxSpeed.in(MetersPerSecond) / (extensionDriveDiameter.in(Meters) / 2.0));
+  public static final AngularAcceleration extensionMotorMaxAcceleration =
+      RadiansPerSecondPerSecond.of(
+          extensionMaxAcceleration.in(MetersPerSecondPerSecond)
+              / (extensionDriveDiameter.in(Meters) / 2.0));
 
   // Roller Parameters
   public static final Current rollerStatorCurrentLimit = Amps.of(10);
@@ -73,4 +81,7 @@ public class IntakeConstants {
   public static final InvertedValue leftRollerInverted = InvertedValue.Clockwise_Positive;
   public static final InvertedValue rightRollerInverted = InvertedValue.CounterClockwise_Positive;
   public static final NeutralModeValue rollerNeutralMode = NeutralModeValue.Brake;
+
+  public static final Voltage intakeVoltage = Volts.of(8);
+  public static final Voltage outtakeVoltage = Volts.of(-8);
 }

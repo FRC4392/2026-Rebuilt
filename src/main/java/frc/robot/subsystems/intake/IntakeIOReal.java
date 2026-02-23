@@ -23,7 +23,6 @@ import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
-
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -108,9 +107,8 @@ public class IntakeIOReal implements IntakeIO {
                     .withKA(extensionKa))
             .withMotionMagic(
                 new MotionMagicConfigs()
-                .withMotionMagicAcceleration(extensionMotorMaxAcceleration)
-                .withMotionMagicCruiseVelocity(extensionMotorMaxSpeed)
-            )
+                    .withMotionMagicAcceleration(extensionMotorMaxAcceleration)
+                    .withMotionMagicCruiseVelocity(extensionMotorMaxSpeed))
             .withTorqueCurrent(
                 new TorqueCurrentConfigs()
                     .withPeakForwardTorqueCurrent(extenstionStatorCurrentLimit)
@@ -259,7 +257,7 @@ public class IntakeIOReal implements IntakeIO {
 
   @Override
   public void setExtension(Distance distance) {
-    Angle position = Radians.of(distance.in(Meters)/(extensionDriveDiameter.in(Meters)/2.0));
+    Angle position = Radians.of(distance.in(Meters) / (extensionDriveDiameter.in(Meters) / 2.0));
     extensionMotor.setControl(extensionPositionRequest.withPosition(position));
   }
 
