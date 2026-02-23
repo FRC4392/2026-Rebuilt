@@ -173,8 +173,20 @@ public class OperatorInterface extends SubsystemBase {
     return operatorController.leftTrigger(0.1);
   }
 
+  public Trigger outtakeButton() {
+    return operatorController.leftBumper();
+  }
+
+  public Trigger extendButton() {
+    return operatorController.x();
+  }
+
+  public Trigger retractButton() {
+    return operatorController.b();
+  }
+
   public Trigger shooterButton() {
-    return operatorController.rightTrigger(0.1);
+    return operatorController.rightTrigger();
   }
 
   public DoubleSupplier turretSpeedSupplier() {
