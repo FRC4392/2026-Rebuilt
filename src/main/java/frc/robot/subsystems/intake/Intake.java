@@ -11,16 +11,19 @@ import static frc.robot.subsystems.intake.IntakeConstants.outtakeVoltage;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.DeceiverRobotState;
 import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
 
   private final IntakeIO intakeIO;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
+  private final DeceiverRobotState robotState;
 
   /** Creates a new Intake. */
-  public Intake(IntakeIO IO) {
+  public Intake(IntakeIO IO, DeceiverRobotState state) {
     intakeIO = IO;
+    robotState = state;
   }
 
   @Override

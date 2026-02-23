@@ -78,8 +78,8 @@ public class IntakeConstants {
   public static final double rollerMotorReduction = 35.0 / 11.0;
   public static final Distance rollerDriveDiameter = Inches.of(4.0);
 
-  public static final InvertedValue leftRollerInverted = InvertedValue.Clockwise_Positive;
-  public static final InvertedValue rightRollerInverted = InvertedValue.CounterClockwise_Positive;
+  public static final InvertedValue leftRollerInverted = InvertedValue.CounterClockwise_Positive;
+  public static final InvertedValue rightRollerInverted = InvertedValue.Clockwise_Positive;
   public static final NeutralModeValue rollerNeutralMode = NeutralModeValue.Brake;
 
   public static final Voltage intakeVoltage = Volts.of(8);

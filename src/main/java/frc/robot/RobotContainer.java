@@ -79,7 +79,7 @@ public class RobotContainer {
         indexer = new Indexer(new IndexerIOReal());
         climber = new Climber(new ClimberIOReal());
         hopper = new Hopper(new HopperIOReal());
-        intake = new Intake(new IntakeIOReal());
+        intake = new Intake(new IntakeIOReal(), state);
         break;
       case SIM:
         // Simulated robot use simulation hardware interfaces
@@ -96,7 +96,7 @@ public class RobotContainer {
         indexer = new Indexer(new IndexerIOSim());
         climber = new Climber(new ClimberIOSim());
         hopper = new Hopper(new HopperIOSim());
-        intake = new Intake(new IntakeIOSim());
+        intake = new Intake(new IntakeIOSim(), state);
         break;
       default:
         // Replay, don't use hardware
@@ -113,7 +113,7 @@ public class RobotContainer {
         indexer = new Indexer(new IndexerIO() {});
         climber = new Climber(new ClimberIO() {});
         hopper = new Hopper(new HopperIO() {});
-        intake = new Intake(new IntakeIO() {});
+        intake = new Intake(new IntakeIO() {}, state);
     }
 
     // Create Operator Interface
