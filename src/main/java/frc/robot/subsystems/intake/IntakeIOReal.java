@@ -177,7 +177,6 @@ public class IntakeIOReal implements IntakeIO {
     rightRollerTemperature = rightRollerMotor.getDeviceTemp();
 
     rollerVoltageRequest.EnableFOC = true;
-    rightRollerMotor.setControl(new Follower(leftRollerCanID, MotorAlignmentValue.Opposed));
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
@@ -197,6 +196,8 @@ public class IntakeIOReal implements IntakeIO {
         rightRollerCurrent,
         rightRollerTemperature);
     ParentDevice.optimizeBusUtilizationForAll(extensionMotor, leftRollerMotor, rightRollerMotor);
+
+    tryUntilOk(5, () -> rightRollerMotor.setControl(new Follower(leftRollerCanID, MotorAlignmentValue.Opposed)));
   }
 
   @Override
@@ -264,10 +265,12 @@ public class IntakeIOReal implements IntakeIO {
   @Override
   public void setRoller(Voltage volts) {
     leftRollerMotor.setControl(rollerVoltageRequest.withOutput(volts));
+    //rightRollerMotor.setControl(new Follower(leftRollerCanID, MotorAlignmentValue.Opposed));
   }
 
   @Override
   public void setRoller(Current current) {
     leftRollerMotor.setControl(rollTorqueCurrentRequest.withOutput(current));
+    //rightRollerMotor.setControl(new Follower(leftRollerCanID, MotorAlignmentValue.Opposed));
   }
 }
