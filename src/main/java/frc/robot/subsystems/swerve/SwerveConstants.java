@@ -41,7 +41,7 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Time;
-import frc.robot.util.PhoenixUtil.ClosedLoopControlType;
+import frc.robot.lib.util.PhoenixUtil.ClosedLoopControlType;
 
 public final class SwerveConstants {
   private SwerveConstants() {}
