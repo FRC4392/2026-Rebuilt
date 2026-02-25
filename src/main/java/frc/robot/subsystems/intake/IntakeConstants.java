@@ -56,8 +56,6 @@ public class IntakeConstants {
   public static final double extensionKs = 0.0;
   public static final double extensionKa = 0.0;
 
-  public static final Voltage extensionTestVoltage = Volts.of(3);
-
   public static final LinearVelocity extensionMaxSpeed = InchesPerSecond.of(1);
   public static final LinearAcceleration extensionMaxAcceleration = InchesPerSecondPerSecond.of(1);
 
@@ -82,6 +80,12 @@ public class IntakeConstants {
   public static final InvertedValue rightRollerInverted = InvertedValue.Clockwise_Positive;
   public static final NeutralModeValue rollerNeutralMode = NeutralModeValue.Brake;
 
+  // Roller Voltages
   public static final Voltage intakeVoltage = Volts.of(10);
   public static final Voltage outtakeVoltage = Volts.of(-10);
+
+  // Extension Positions Table
+  public static final Distance extendedDistance = Inches.of(10);
+  public static final Distance stowedDistance = Inches.of(0);
+  public static final Voltage extensionTestVoltage = Volts.of(3);
 }

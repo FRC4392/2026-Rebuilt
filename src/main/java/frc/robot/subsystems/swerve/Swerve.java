@@ -48,7 +48,6 @@ import frc.robot.DeceiverRobotState;
 import frc.robot.RobotConstants;
 import frc.robot.RobotConstants.Mode;
 import frc.robot.lib.pathplanner.LocalADStarAK;
-
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;

@@ -9,12 +9,14 @@ import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import org.littletonrobotics.junction.AutoLog;
 
+/** Interface for all the inake subsystem IO */
 public interface IntakeIO {
+
+  /** Intake subsystem inputs */
   @AutoLog
   public static class IntakeIOInputs {
     public boolean extensionMotorConnected = false;
@@ -39,13 +41,38 @@ public interface IntakeIO {
     public Temperature rightRollerMotorTemp = Celsius.of(0.0);
   }
 
+  /**
+   * Update all inputs from subsystem
+   *
+   * @param inputs Inputs for subsystem to update
+   */
   public default void updateInputs(IntakeIOInputs inputs) {}
 
+  /**
+   * Set the voltage of the extension motor
+   *
+   * @param volts Voltage for the extension motor to run at
+   */
   public default void setExtension(Voltage volts) {}
 
-  public default void setExtension(Distance distance) {}
+  /**
+   * Set target angle of the extension drive system
+   *
+   * @param angle target angle for drive system
+   */
+  public default void setExtension(Angle angle) {}
 
+  /**
+   * Set the voltage of the roller motor
+   *
+   * @param volts Voltage for the roller motor to run at
+   */
   public default void setRoller(Voltage volts) {}
 
+  /**
+   * Set the current for the roller motor
+   *
+   * @param current Current for the roller motor to run at
+   */
   public default void setRoller(Current current) {}
 }

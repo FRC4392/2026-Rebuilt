@@ -1,7 +1,5 @@
 package frc.robot.subsystems.intake;
 
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Radians;
 import static frc.robot.lib.util.PhoenixUtil.tryUntilOk;
 import static frc.robot.subsystems.intake.IntakeConstants.*;
 
@@ -27,7 +25,6 @@ import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 
@@ -69,6 +66,7 @@ public class IntakeIOReal implements IntakeIO {
   private final Debouncer leftRollerMotorConnectedDebouncer = new Debouncer(.25);
   private final Debouncer rightRollerMotorConnectedDebouncer = new Debouncer(.25);
 
+  /** Construct IO system for real robot */
   public IntakeIOReal() {
     // Extension Configuration
     extensionMotor = new TalonFX(extensionCanID);
@@ -116,12 +114,14 @@ public class IntakeIOReal implements IntakeIO {
 
     tryUntilOk(5, () -> extensionMotor.getConfigurator().apply(extensionConfiguration, 0.25));
 
+    // Extension signals
     extensionPosition = extensionMotor.getPosition();
     extensionVelocity = extensionMotor.getVelocity();
     extensionVoltage = extensionMotor.getMotorVoltage();
     extensionCurrent = extensionMotor.getStatorCurrent();
     extensionTemperature = extensionMotor.getDeviceTemp();
 
+    // Extension requests
     extensionVoltageRequest.EnableFOC = true;
     extensionPositionRequest.EnableFOC = true;
     extensionPositionRequest.Slot = 0;
@@ -164,6 +164,7 @@ public class IntakeIOReal implements IntakeIO {
     tryUntilOk(5, () -> leftRollerMotor.getConfigurator().apply(leftRollerConfiguration));
     tryUntilOk(5, () -> rightRollerMotor.getConfigurator().apply(rightRollerConfiguration));
 
+    // Roller Signals
     leftRollerPosition = leftRollerMotor.getPosition();
     leftRollerVelocity = leftRollerMotor.getVelocity();
     leftRollerVoltage = leftRollerMotor.getMotorVoltage();
@@ -176,8 +177,10 @@ public class IntakeIOReal implements IntakeIO {
     rightRollerCurrent = rightRollerMotor.getStatorCurrent();
     rightRollerTemperature = rightRollerMotor.getDeviceTemp();
 
+    // Roller requests
     rollerVoltageRequest.EnableFOC = true;
 
+    // Optimize bus utilization
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
         extensionPosition,
@@ -197,11 +200,17 @@ public class IntakeIOReal implements IntakeIO {
         rightRollerTemperature);
     ParentDevice.optimizeBusUtilizationForAll(extensionMotor, leftRollerMotor, rightRollerMotor);
 
-    tryUntilOk(5, () -> rightRollerMotor.setControl(new Follower(leftRollerCanID, MotorAlignmentValue.Opposed)));
+    // Follower mode
+    tryUntilOk(
+        5,
+        () ->
+            rightRollerMotor.setControl(
+                new Follower(leftRollerCanID, MotorAlignmentValue.Opposed)));
   }
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
+    // Update extension motor inputs
     var extensionStatus =
         BaseStatusSignal.refreshAll(
             extensionPosition,
@@ -218,6 +227,7 @@ public class IntakeIOReal implements IntakeIO {
     inputs.extensionMotorCurrent = extensionCurrent.getValue();
     inputs.extensionMotorTemp = extensionTemperature.getValue();
 
+    // Update left roller motor inputs
     var leftRollerStatus =
         BaseStatusSignal.refreshAll(
             leftRollerPosition,
@@ -234,6 +244,7 @@ public class IntakeIOReal implements IntakeIO {
     inputs.leftRollerMotorCurrent = leftRollerCurrent.getValue();
     inputs.leftRollerMotorTemp = leftRollerTemperature.getValue();
 
+    // Update right motor roller inputs
     var rightRollerStatus =
         BaseStatusSignal.refreshAll(
             rightRollerPosition,
@@ -257,20 +268,21 @@ public class IntakeIOReal implements IntakeIO {
   }
 
   @Override
-  public void setExtension(Distance distance) {
-    Angle position = Radians.of(distance.in(Meters) / (extensionDriveDiameter.in(Meters) / 2.0));
-    extensionMotor.setControl(extensionPositionRequest.withPosition(position));
+  public void setExtension(Angle angle) {
+    extensionMotor.setControl(extensionPositionRequest.withPosition(angle));
   }
 
   @Override
   public void setRoller(Voltage volts) {
     leftRollerMotor.setControl(rollerVoltageRequest.withOutput(volts));
-    //rightRollerMotor.setControl(new Follower(leftRollerCanID, MotorAlignmentValue.Opposed));
+    // Uncoment if follower in the constructor doesn't work
+    // rightRollerMotor.setControl(new Follower(leftRollerCanID, MotorAlignmentValue.Opposed));
   }
 
   @Override
   public void setRoller(Current current) {
     leftRollerMotor.setControl(rollTorqueCurrentRequest.withOutput(current));
-    //rightRollerMotor.setControl(new Follower(leftRollerCanID, MotorAlignmentValue.Opposed));
+    // Uncoment if follower in the constructor doesn't work
+    // rightRollerMotor.setControl(new Follower(leftRollerCanID, MotorAlignmentValue.Opposed));
   }
 }
