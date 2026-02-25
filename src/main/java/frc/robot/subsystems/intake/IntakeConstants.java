@@ -78,7 +78,7 @@ public class IntakeConstants {
 
   public static final InvertedValue leftRollerInverted = InvertedValue.CounterClockwise_Positive;
   public static final InvertedValue rightRollerInverted = InvertedValue.Clockwise_Positive;
-  public static final NeutralModeValue rollerNeutralMode = NeutralModeValue.Brake;
+  public static final NeutralModeValue rollerNeutralMode = NeutralModeValue.Coast;
 
   // Roller Voltages
   public static final Voltage intakeVoltage = Volts.of(10);

@@ -127,7 +127,7 @@ public class IntakeIOReal implements IntakeIO {
     extensionPositionRequest.Slot = 0;
 
     // Roller Configuration
-    leftRollerMotor = new TalonFX(rightRollerCanID);
+    leftRollerMotor = new TalonFX(leftRollerCanID);
     rightRollerMotor = new TalonFX(rightRollerCanID);
 
     TalonFXConfiguration leftRollerConfiguration =
