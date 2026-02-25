@@ -38,9 +38,9 @@ public class IntakeConstants {
   public static final int rightRollerCanID = 23;
 
   // Extension Parameters
-  public static final Current extenstionStatorCurrentLimit = Amps.of(30);
-  public static final Current extensionMotorSupplyLimitHigh = Amps.of(30);
-  public static final Current extensionMotorSupplyLimitLow = Amps.of(20);
+  public static final Current extenstionStatorCurrentLimit = Amps.of(35);
+  public static final Current extensionMotorSupplyLimitHigh = Amps.of(35);
+  public static final Current extensionMotorSupplyLimitLow = Amps.of(25);
   public static final Time extensionSupplyCurrentLowerTime = Seconds.of(1);
 
   public static final double extensionMotorReduction = 56.0 / 10.0;

@@ -170,11 +170,11 @@ public class OperatorInterface extends SubsystemBase {
   }
 
   public Trigger intakeButton() {
-    return operatorController.leftTrigger(0.1);
+    return operatorController.leftBumper();
   }
 
   public Trigger outtakeButton() {
-    return operatorController.leftBumper();
+    return operatorController.leftTrigger(0.1);
   }
 
   public Trigger extendButton() {
