@@ -63,6 +63,7 @@ public class Shooter extends SubsystemBase {
 
   public void setShooter(Voltage volts) {
     shooterIO.setShooter(volts);
+    shooterIO.setTurret(volts);
   }
 
   public void setShooter(AngularVelocity velocity) {

@@ -81,8 +81,8 @@ public class IntakeConstants {
   public static final NeutralModeValue rollerNeutralMode = NeutralModeValue.Coast;
 
   // Roller Voltages
-  public static final Voltage intakeVoltage = Volts.of(10);
-  public static final Voltage outtakeVoltage = Volts.of(-10);
+  public static final Voltage intakeVoltage = Volts.of(-10);
+  public static final Voltage outtakeVoltage = Volts.of(10);
 
   // Extension Positions Table
   public static final Distance extendedDistance = Inches.of(10);

@@ -132,11 +132,12 @@ public class RobotContainer {
     operatorInterface.hopperButton().whileTrue(hopper.runTestVoltage());
     operatorInterface.climberButton().whileTrue(climber.runTestVoltage());
     operatorInterface.indexerButton().whileTrue(indexer.runTestVoltage());
-    operatorInterface.shooterButton().whileTrue(shooter.shooterVelocityTuneCommand());
+    // operatorInterface.shooterButton().whileTrue(shooter.shooterVelocityTuneCommand());
     operatorInterface.intakeButton().whileTrue(intake.runRollerIntake());
     operatorInterface.outtakeButton().whileTrue(intake.runRollerOuttake());
     operatorInterface.retractButton().whileTrue(intake.runExtensionInManual());
     operatorInterface.extendButton().whileTrue(intake.runExtensionOutManual());
+    shooter.setDefaultCommand(shooter.runTurret(operatorInterface.turretSpeedSupplier()));
   }
 
   public Command getAutonomousCommand() {

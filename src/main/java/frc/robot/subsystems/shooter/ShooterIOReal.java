@@ -357,6 +357,7 @@ public class ShooterIOReal implements ShooterIO {
     shooterMotor2.setControl(shooterVelocityRequest.withVelocity(velocity));
   }
 
+  @Override
   public void setTurret(Voltage volts) {
     turretMotor.setControl(turretvoltageRequest.withOutput(volts));
   }

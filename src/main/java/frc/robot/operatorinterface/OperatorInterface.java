@@ -174,7 +174,7 @@ public class OperatorInterface extends SubsystemBase {
   }
 
   public Trigger outtakeButton() {
-    return operatorController.leftTrigger(0.1);
+    return operatorController.rightBumper();
   }
 
   public Trigger extendButton() {

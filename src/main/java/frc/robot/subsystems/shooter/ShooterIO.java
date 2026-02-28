@@ -52,6 +52,9 @@ public interface ShooterIO {
   public default void setShooter(AngularVelocity velocity) {}
   ;
 
+  public default void setTurret(Voltage volts) {}
+  ;
+
   public default void setPID(double kp, double ki, double kd, double ks, double kv, double ka) {}
   ;
 }
