@@ -357,18 +357,6 @@ public class Swerve extends SubsystemBase {
   /// Commands
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  /**
-   * Helper function to get linear velocity of the joysticks.
-   *
-   * <p>Takes raw inputs from a joysticks axis and converts them to a linear movement. Deadband is
-   * applied to the linear distance and then the the value is squared to give the driver finer
-   * control.
-   *
-   * @param x Position of the x axis of the joystick in range -1 to 1
-   * @param y Position of the x axis of the joystick in range -1 to 1
-   * @return Translation2D that represents the linear velocity from the joysticks
-   */
-
   /** Returns a command to run a quasistatic test in the specified direction. */
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return run(() -> runCharacterization(Volts.of(0)))
@@ -383,6 +371,17 @@ public class Swerve extends SubsystemBase {
         .andThen(sysId.dynamic(direction));
   }
 
+    /**
+   * Helper function to get linear velocity of the joysticks.
+   *
+   * <p>Takes raw inputs from a joysticks axis and converts them to a linear movement. Deadband is
+   * applied to the linear distance and then the the value is squared to give the driver finer
+   * control.
+   *
+   * @param x Position of the x axis of the joystick in range -1 to 1
+   * @param y Position of the y axis of the joystick in range -1 to 1
+   * @return Translation2D that represents the linear velocity from the joysticks
+   */
   private static Translation2d getLinearVelocityFromJoysticks(double x, double y) {
     // Apply deadband
     double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), controllerDeadband);
