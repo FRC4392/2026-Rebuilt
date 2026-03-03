@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static frc.robot.lib.util.PhoenixUtil.tryUntilOk;
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
@@ -8,10 +9,12 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.AudioConfigs;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.ParentDevice;
@@ -35,6 +38,8 @@ public class ShooterIOReal implements ShooterIO {
   private final VoltageOut voltageRequest = new VoltageOut(0);
   private final VoltageOut turretvoltageRequest = new VoltageOut(0);
   private final VelocityTorqueCurrentFOC shooterVelocityRequest = new VelocityTorqueCurrentFOC(0);
+
+  private final MotionMagicVoltage turrMotionMagic = new MotionMagicVoltage(0);
 
   // Status Signals
   private final StatusSignal<Angle> shooterMotor1Position;
@@ -222,9 +227,15 @@ public class ShooterIOReal implements ShooterIO {
             .withTorqueCurrent(
                 new TorqueCurrentConfigs()
                     .withPeakForwardTorqueCurrent(turretMotorStatorCurrentLimit)
-                    .withPeakReverseTorqueCurrent(turretMotorStatorCurrentLimit.unaryMinus()));
+                    .withPeakReverseTorqueCurrent(turretMotorStatorCurrentLimit.unaryMinus()))
+            .withMotionMagic(
+                new MotionMagicConfigs()
+                    .withMotionMagicCruiseVelocity(turretcruiseVelocity)
+                    .withMotionMagicAcceleration(turretAcceleration));
 
     tryUntilOk(5, () -> turretMotor.getConfigurator().apply(turretConfiguration, 0.25));
+
+    turretMotor.setPosition(Degrees.of(0));
 
     turretPosition = turretMotor.getPosition();
     turretVelocity = turretMotor.getVelocity();
@@ -360,6 +371,11 @@ public class ShooterIOReal implements ShooterIO {
   @Override
   public void setTurret(Voltage volts) {
     turretMotor.setControl(turretvoltageRequest.withOutput(volts));
+  }
+
+  @Override
+  public void setTurret(Angle angle) {
+    turretMotor.setControl(turrMotionMagic.withPosition(angle));
   }
 
   @Override

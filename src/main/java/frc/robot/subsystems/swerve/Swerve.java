@@ -371,7 +371,7 @@ public class Swerve extends SubsystemBase {
         .andThen(sysId.dynamic(direction));
   }
 
-    /**
+  /**
    * Helper function to get linear velocity of the joysticks.
    *
    * <p>Takes raw inputs from a joysticks axis and converts them to a linear movement. Deadband is

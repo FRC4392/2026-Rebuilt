@@ -7,6 +7,7 @@ package frc.robot.subsystems.shooter;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -63,7 +64,7 @@ public class Shooter extends SubsystemBase {
 
   public void setShooter(Voltage volts) {
     shooterIO.setShooter(volts);
-    shooterIO.setTurret(volts);
+    shooterIO.setShooter(volts);
   }
 
   public void setShooter(AngularVelocity velocity) {
@@ -77,6 +78,10 @@ public class Shooter extends SubsystemBase {
   public Command runTurret(DoubleSupplier voltage) {
     return this.runEnd(
         () -> setShooter(Volts.of(voltage.getAsDouble())), () -> setShooter(Volts.of(0)));
+  }
+
+  public Command runTurret(Angle angle) {
+    return this.run(() -> shooterIO.setTurret(angle));
   }
 
   public Command shooterVelocityTuneCommand() {

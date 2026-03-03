@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Volts;
+
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.operatorinterface.OperatorInterface;
@@ -132,12 +134,17 @@ public class RobotContainer {
     operatorInterface.hopperButton().whileTrue(hopper.runTestVoltage());
     operatorInterface.climberButton().whileTrue(climber.runTestVoltage());
     operatorInterface.indexerButton().whileTrue(indexer.runTestVoltage());
-    // operatorInterface.shooterButton().whileTrue(shooter.shooterVelocityTuneCommand());
+    operatorInterface.shooterButton().whileTrue(shooter.run(() -> shooter.setShooter(Volts.of(6))));
     operatorInterface.intakeButton().whileTrue(intake.runRollerIntake());
     operatorInterface.outtakeButton().whileTrue(intake.runRollerOuttake());
     operatorInterface.retractButton().whileTrue(intake.runExtensionInManual());
     operatorInterface.extendButton().whileTrue(intake.runExtensionOutManual());
-    shooter.setDefaultCommand(shooter.runTurret(operatorInterface.turretSpeedSupplier()));
+    // shooter.setDefaultCommand(shooter.runTurret(operatorInterface.turretSpeedSupplier()));
+
+    // operatorInterface.testLeftTurret().onTrue(shooter.runTurret(Degrees.of(-90)));
+    // operatorInterface.testRightTurret().onTrue(shooter.runTurret(Degrees.of(90)));
+    // operatorInterface.testUpTurret().onTrue(shooter.runTurret(Degrees.of(0)));
+    // operatorInterface.testDownTurret().onTrue(shooter.runTurret(Degrees.of(180)));
   }
 
   public Command getAutonomousCommand() {

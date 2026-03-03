@@ -178,11 +178,11 @@ public class OperatorInterface extends SubsystemBase {
   }
 
   public Trigger extendButton() {
-    return operatorController.x();
+    return operatorController.start();
   }
 
   public Trigger retractButton() {
-    return operatorController.b();
+    return operatorController.back();
   }
 
   public Trigger shooterButton() {
@@ -192,7 +192,23 @@ public class OperatorInterface extends SubsystemBase {
   public DoubleSupplier turretSpeedSupplier() {
     return () -> {
       return (operatorController.getRightTriggerAxis() - operatorController.getLeftTriggerAxis())
-          * 12.0;
+          * 5;
     };
+  }
+
+  public Trigger testLeftTurret() {
+    return operatorController.povLeft();
+  }
+
+  public Trigger testRightTurret() {
+    return operatorController.povRight();
+  }
+
+  public Trigger testUpTurret() {
+    return operatorController.povUp();
+  }
+
+  public Trigger testDownTurret() {
+    return operatorController.povDown();
   }
 }

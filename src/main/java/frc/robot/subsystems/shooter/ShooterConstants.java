@@ -5,10 +5,14 @@
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Time;
 
@@ -57,17 +61,20 @@ public class ShooterConstants {
   public static final Current turretMotorMotorSupplyLimitLow = Amps.of(30);
   public static final Time turretMotorSupplyCurrentLowerTime = Seconds.of(1);
 
-  public static final double turretMotorMotorReduction = 3.0;
+  public static final double turretMotorMotorReduction = (110.0 / 16.0) * (42.0 / 10.0);
 
   public static final InvertedValue turretMotorInverted = InvertedValue.Clockwise_Positive;
   public static final NeutralModeValue turretMotorNeutralMode = NeutralModeValue.Coast;
 
-  public static final double turretMotorKp = 0.0;
+  public static final double turretMotorKp = 100;
   public static final double turretMotorKi = 0.0;
-  public static final double turretMotorKd = 0.0;
-  public static final double turretMotorKv = 0.0;
-  public static final double turretMotorKs = 0.0;
+  public static final double turretMotorKd = 1;
+  public static final double turretMotorKv = 3.125;
+  public static final double turretMotorKs = 0.4;
   public static final double turretMotorKa = 0.0;
+
+  public static final AngularVelocity turretcruiseVelocity = RotationsPerSecond.of(3.5);
+  public static final AngularAcceleration turretAcceleration = RotationsPerSecondPerSecond.of(50);
 
   // Hood Motor
   public static final Current hoodStatorCurrentLimit = Amps.of(10);

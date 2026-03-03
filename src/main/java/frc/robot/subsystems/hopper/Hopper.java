@@ -32,6 +32,6 @@ public class Hopper extends SubsystemBase {
   }
 
   public Command runTestVoltage() {
-    return this.runEnd(() -> setVoltage(Volts.of(6)), () -> setVoltage(Volts.of(0)));
+    return this.runEnd(() -> setVoltage(Volts.of(8)), () -> setVoltage(Volts.of(0)));
   }
 }

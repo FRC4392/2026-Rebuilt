@@ -19,14 +19,14 @@ public class HopperConstants {
 
   public static final int hopperMotorCanID = 41;
 
-  public static final Current hopperStatorCurrentLimit = Amps.of(10);
-  public static final Current hopperMotorSupplyLimitHigh = Amps.of(10);
-  public static final Current hopperMotorSupplyLimitLow = Amps.of(10);
+  public static final Current hopperStatorCurrentLimit = Amps.of(100);
+  public static final Current hopperMotorSupplyLimitHigh = Amps.of(20);
+  public static final Current hopperMotorSupplyLimitLow = Amps.of(20);
   public static final Time hopperSupplyCurrentLowerTime = Seconds.of(1);
 
   public static final double hopperMotorReduction = 3.0;
 
-  public static final InvertedValue hopperInverted = InvertedValue.Clockwise_Positive;
+  public static final InvertedValue hopperInverted = InvertedValue.CounterClockwise_Positive;
   public static final NeutralModeValue hopperNeutralMode = NeutralModeValue.Coast;
 
   public static final double hopperKp = 0.0;
