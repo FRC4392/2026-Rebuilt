@@ -16,6 +16,14 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -26,6 +34,7 @@ import edu.wpi.first.units.measure.Voltage;
 public class HopperIOReal implements HopperIO {
   // Motors
   public final TalonFX hopperMotor;
+  public final SparkMax hopperTopMotor;
 
   // Conrtol Requests
   private final VoltageOut voltageRequest = new VoltageOut(0);
@@ -93,6 +102,14 @@ public class HopperIOReal implements HopperIO {
     ParentDevice.optimizeBusUtilizationForAll(hopperMotor);
 
     voltageRequest.EnableFOC = true;
+
+    hopperTopMotor = new SparkMax(topRollerCanID, MotorType.kBrushless);
+
+    SparkMaxConfig topMotorConfig = new SparkMaxConfig();
+    topMotorConfig.idleMode(topRollerIdleMode);
+    topMotorConfig.smartCurrentLimit(topRollerCurrentLimit);
+    topMotorConfig.inverted(topRollerInverted);
+    hopperTopMotor.configure(topMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   @Override
@@ -112,5 +129,6 @@ public class HopperIOReal implements HopperIO {
   @Override
   public void setVoltage(Voltage volts) {
     hopperMotor.setControl(voltageRequest.withOutput(volts));
+    hopperTopMotor.setVoltage(volts);
   }
 }
