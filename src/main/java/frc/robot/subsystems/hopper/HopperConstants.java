@@ -10,7 +10,6 @@ import static edu.wpi.first.units.Units.Seconds;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Time;
 
