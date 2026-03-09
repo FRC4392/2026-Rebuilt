@@ -45,6 +45,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.DeceiverRobotState;
+import frc.robot.FieldConstants;
 import frc.robot.RobotConstants;
 import frc.robot.RobotConstants.Mode;
 import frc.robot.lib.pathplanner.LocalADStarAK;
@@ -146,6 +147,9 @@ public class Swerve extends SubsystemBase {
 
   @Override
   public void periodic() {
+    Translation2d hubCenter = FieldConstants.Hub.topCenterPoint.toTranslation2d();
+    double hubDistance = hubCenter.getDistance(getPose().getTranslation());
+    Logger.recordOutput("HubDistance", hubDistance);
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);

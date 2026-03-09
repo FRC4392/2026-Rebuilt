@@ -4,8 +4,10 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.operatorinterface.OperatorInterface;
@@ -30,11 +32,14 @@ import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOReal;
 import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.swerve.GyroIO;
-import frc.robot.subsystems.swerve.GyroIONavx3;
+import frc.robot.subsystems.swerve.GyroIOPigeon2;
 import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.subsystems.swerve.SwerveModuleIO;
 import frc.robot.subsystems.swerve.SwerveModuleIODeceivers;
 import frc.robot.subsystems.swerve.SwerveModuleIOSim;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIOLimelight;
+import java.util.function.Supplier;
 
 public class RobotContainer {
   private final DeceiverRobotState robotState;
@@ -47,6 +52,7 @@ public class RobotContainer {
   public final Hopper hopper;
   public final Climber climber;
   public final Intake intake;
+  public final Vision vision;
 
   // Operator Interface
   private final OperatorInterface operatorInterface;
@@ -70,7 +76,7 @@ public class RobotContainer {
         // Real Robot, use real hardware interfaces
         swerve =
             new Swerve(
-                new GyroIONavx3(),
+                new GyroIOPigeon2(),
                 new SwerveModuleIODeceivers(0),
                 new SwerveModuleIODeceivers(1),
                 new SwerveModuleIODeceivers(2),
@@ -82,6 +88,11 @@ public class RobotContainer {
         climber = new Climber(new ClimberIOReal());
         hopper = new Hopper(new HopperIOReal());
         intake = new Intake(new IntakeIOReal(), state);
+        vision =
+            new Vision(
+                swerve::addVisionMeasurement,
+                new VisionIOLimelight("limelight-two", this.gyroTest()),
+                new VisionIOLimelight("limelight-three", this.gyroTest()));
         break;
       case SIM:
         // Simulated robot use simulation hardware interfaces
@@ -99,6 +110,7 @@ public class RobotContainer {
         climber = new Climber(new ClimberIOSim());
         hopper = new Hopper(new HopperIOSim());
         intake = new Intake(new IntakeIOSim(), state);
+        vision = new Vision(null, null);
         break;
       default:
         // Replay, don't use hardware
@@ -116,6 +128,7 @@ public class RobotContainer {
         climber = new Climber(new ClimberIO() {});
         hopper = new Hopper(new HopperIO() {});
         intake = new Intake(new IntakeIO() {}, state);
+        vision = new Vision(null, null);
     }
 
     // Create Operator Interface
@@ -129,16 +142,26 @@ public class RobotContainer {
   private void configureAutoModes() {}
 
   private void configureBindings() {
-    swerve.setDefaultCommand(swerve.joystickDrive(operatorInterface.getSwerveControlSignal()));
+    // swerve.setDefaultCommand(swerve.joystickDrive(operatorInterface.getSwerveControlSignal()));
 
-    operatorInterface.hopperButton().whileTrue(hopper.runTestVoltage());
-    operatorInterface.climberButton().whileTrue(climber.runTestVoltage());
+    // operatorInterface.hopperButton().whileTrue(hopper.runTestVoltage());
+    // operatorInterface.climberButton().whileTrue(climber.runTestVoltage());
     operatorInterface.indexerButton().whileTrue(indexer.runTestVoltage());
-    operatorInterface.shooterButton().whileTrue(shooter.run(() -> shooter.setShooter(Volts.of(6))));
-    operatorInterface.intakeButton().whileTrue(intake.runRollerIntake());
-    operatorInterface.outtakeButton().whileTrue(intake.runRollerOuttake());
-    operatorInterface.retractButton().whileTrue(intake.runExtensionInManual());
-    operatorInterface.extendButton().whileTrue(intake.runExtensionOutManual());
+    // operatorInterface
+    //     .shooterButton()
+    //     .whileTrue(shooter.run(() -> shooter.setShooter(RotationsPerSecond.of(80))));
+    // operatorInterface.intakeButton().whileTrue(intake.runRollerIntake());
+    // operatorInterface.outtakeButton().whileTrue(intake.runRollerOuttake());
+    // operatorInterface.retractButton().whileTrue(intake.runExtensionInManual());
+    // operatorInterface.extendButton().whileTrue(intake.runExtensionOutManual());
+
+    // shooter.setDefaultCommand(shooter.setHood(operatorInterface.turretSpeedSupplier()));
+
+    shooter.setDefaultCommand(
+        shooter.setPose(Degrees.of(30), Degrees.of(1), RotationsPerSecond.of(37)));
+
+    operatorInterface.extendButton().onTrue(shooter.setHood(Degrees.of(30)));
+    operatorInterface.retractButton().onTrue(shooter.setHood(Degrees.of(0)));
     // shooter.setDefaultCommand(shooter.runTurret(operatorInterface.turretSpeedSupplier()));
 
     // operatorInterface.testLeftTurret().onTrue(shooter.runTurret(Degrees.of(-90)));
@@ -149,5 +172,9 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     return operatorInterface.getAutoCommand();
+  }
+
+  public Supplier<Rotation2d> gyroTest() {
+    return () -> Rotation2d.kCW_90deg;
   }
 }

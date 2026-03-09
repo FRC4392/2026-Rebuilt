@@ -13,7 +13,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.LoggedTunableNumber;
-import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
@@ -64,7 +64,18 @@ public class Shooter extends SubsystemBase {
 
   public void setShooter(Voltage volts) {
     shooterIO.setShooter(volts);
-    shooterIO.setShooter(volts);
+  }
+
+  public void stop() {
+    shooterIO.setShooter(Volts.of(0));
+  }
+
+  public Command setShooter(Supplier<Voltage> volts) {
+    return this.runEnd(
+        () -> {
+          setShooter(volts.get());
+        },
+        this::stop);
   }
 
   public void setShooter(AngularVelocity velocity) {
@@ -75,9 +86,8 @@ public class Shooter extends SubsystemBase {
     return this.runEnd(() -> setShooter(Volts.of(12)), () -> setShooter(Volts.of(0)));
   }
 
-  public Command runTurret(DoubleSupplier voltage) {
-    return this.runEnd(
-        () -> setShooter(Volts.of(voltage.getAsDouble())), () -> setShooter(Volts.of(0)));
+  public Command runTurret(Supplier<Voltage> voltage) {
+    return this.runEnd(() -> setShooter(voltage.get()), () -> setShooter(Volts.of(0)));
   }
 
   public Command runTurret(Angle angle) {
@@ -88,5 +98,33 @@ public class Shooter extends SubsystemBase {
     return this.runEnd(
         () -> setShooter(RotationsPerSecond.of(4500.0 / 60.0)),
         () -> setShooter(RotationsPerSecond.of(0)));
+  }
+
+  public Command setHood(Supplier<Voltage> volts) {
+    return this.runEnd(
+        () -> {
+          shooterIO.setHood(volts.get());
+        },
+        () -> {
+          shooterIO.setHood(Volts.of(0));
+        });
+  }
+
+  public Command setHood(Angle angle) {
+    return this.runOnce(
+        () -> {
+          shooterIO.setHood(angle);
+        });
+  }
+
+  public Command setPose(Angle rotation, Angle hood, AngularVelocity speed) {
+    return this.runEnd(
+        () -> {
+          shooterIO.setHood(hood);
+          shooterIO.setShooter(speed);
+        },
+        () -> {
+          shooterIO.setShooter(RotationsPerSecond.of(0));
+        });
   }
 }

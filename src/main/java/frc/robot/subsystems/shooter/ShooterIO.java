@@ -60,4 +60,10 @@ public interface ShooterIO {
 
   public default void setPID(double kp, double ki, double kd, double ks, double kv, double ka) {}
   ;
+
+  public default void setHood(Voltage volts) {}
+  ;
+
+  public default void setHood(Angle angle) {}
+  ;
 }

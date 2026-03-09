@@ -1,8 +1,10 @@
 package frc.robot.operatorinterface;
 
+import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.operatorinterface.OperatorInterfaceConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -15,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.DeceiverRobotState;
 import frc.robot.subsystems.swerve.SwerveControlSignal;
-import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
@@ -189,10 +191,10 @@ public class OperatorInterface extends SubsystemBase {
     return operatorController.rightTrigger();
   }
 
-  public DoubleSupplier turretSpeedSupplier() {
+  public Supplier<Voltage> turretSpeedSupplier() {
     return () -> {
-      return (operatorController.getRightTriggerAxis() - operatorController.getLeftTriggerAxis())
-          * 5;
+      return Volts.of(
+          (operatorController.getRightTriggerAxis() - operatorController.getLeftTriggerAxis()) * 2);
     };
   }
 

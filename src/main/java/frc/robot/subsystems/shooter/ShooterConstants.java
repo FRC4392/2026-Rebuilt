@@ -37,11 +37,11 @@ public class ShooterConstants {
   public static final InvertedValue shooterMotor1Inverted = InvertedValue.Clockwise_Positive;
   public static final NeutralModeValue shooterMotor1NeutralMode = NeutralModeValue.Coast;
 
-  public static final double shooterKp = 0.0;
+  public static final double shooterKp = 0.5;
   public static final double shooterKi = 0.0;
   public static final double shooterKd = 0.0;
-  public static final double shooterKv = 0.0;
-  public static final double shooterKs = 0.0;
+  public static final double shooterKv = 0.126;
+  public static final double shooterKs = 0.2;
   public static final double shooterKa = 0.0;
 
   // Shooter Motor 2

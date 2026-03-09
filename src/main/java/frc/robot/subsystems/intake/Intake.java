@@ -17,6 +17,7 @@ import static frc.robot.subsystems.intake.IntakeConstants.outtakeVoltage;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.DeceiverRobotState;
 import frc.robot.DeceiverRobotState.IntakeExtensionStatus;
 import frc.robot.DeceiverRobotState.IntakeRollerStatus;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
@@ -175,6 +177,14 @@ public class Intake extends SubsystemBase {
         this::extensionStop);
   }
 
+  public Command runExtensionWithVoltage(Supplier<Voltage> volts) {
+    return this.runEnd(
+        () -> {
+          intakeIO.setExtension(volts.get());
+        },
+        this::extensionStop);
+  }
+
   /**
    * Command to run the intake extension in to the robot manually The extension runs at a fixed
    * voltage and stops when the command is interrupted
@@ -196,6 +206,10 @@ public class Intake extends SubsystemBase {
    */
   public Command stopAll() {
     return this.run(this::stop);
+  }
+
+  public Command setExtensionDistance(Distance distance) {
+    return this.runOnce(() -> intakeIO.setExtension(extensionDistanceToAngle(distance)));
   }
 
   // TODO: Command for extending the intake automatically

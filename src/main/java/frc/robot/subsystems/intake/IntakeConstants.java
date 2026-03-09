@@ -49,15 +49,16 @@ public class IntakeConstants {
   public static final InvertedValue extensionInverted = InvertedValue.Clockwise_Positive;
   public static final NeutralModeValue extensionNeutralMode = NeutralModeValue.Brake;
 
-  public static final double extensionKp = 0.0;
+  public static final double extensionKp = 50.0;
   public static final double extensionKi = 0.0;
-  public static final double extensionKd = 0.0;
-  public static final double extensionKv = 0.0;
-  public static final double extensionKs = 0.0;
+  public static final double extensionKd = 1;
+  public static final double extensionKv = .85;
+  public static final double extensionKs = 0.3;
   public static final double extensionKa = 0.0;
 
-  public static final LinearVelocity extensionMaxSpeed = InchesPerSecond.of(1);
-  public static final LinearAcceleration extensionMaxAcceleration = InchesPerSecondPerSecond.of(1);
+  public static final LinearVelocity extensionMaxSpeed = InchesPerSecond.of(30);
+  public static final LinearAcceleration extensionMaxAcceleration =
+      InchesPerSecondPerSecond.of(100);
 
   public static final AngularVelocity extensionMotorMaxSpeed =
       RadiansPerSecond.of(

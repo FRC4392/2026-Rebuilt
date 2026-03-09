@@ -113,6 +113,7 @@ public class IntakeIOReal implements IntakeIO {
                     .withPeakReverseTorqueCurrent(extenstionStatorCurrentLimit.unaryMinus()));
 
     tryUntilOk(5, () -> extensionMotor.getConfigurator().apply(extensionConfiguration, 0.25));
+    tryUntilOk(5, () -> extensionMotor.setPosition(0));
 
     // Extension signals
     extensionPosition = extensionMotor.getPosition();
