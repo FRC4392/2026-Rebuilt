@@ -150,8 +150,8 @@ public class RobotContainer {
     // operatorInterface
     //     .shooterButton()
     //     .whileTrue(shooter.run(() -> shooter.setShooter(RotationsPerSecond.of(80))));
-    // operatorInterface.intakeButton().whileTrue(intake.runRollerIntake());
-    // operatorInterface.outtakeButton().whileTrue(intake.runRollerOuttake());
+    operatorInterface.intakeButton().whileTrue(intake.runRollerIntake());
+    operatorInterface.outtakeButton().whileTrue(intake.runRollerOuttake());
     // operatorInterface.retractButton().whileTrue(intake.runExtensionInManual());
     // operatorInterface.extendButton().whileTrue(intake.runExtensionOutManual());
 
