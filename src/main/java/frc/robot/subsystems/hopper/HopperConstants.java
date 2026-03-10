@@ -31,7 +31,7 @@ public class HopperConstants {
   public static final InvertedValue hopperInverted = InvertedValue.CounterClockwise_Positive;
   public static final NeutralModeValue hopperNeutralMode = NeutralModeValue.Coast;
 
-  public static final boolean topRollerInverted = false;
+  public static final boolean topRollerInverted = true;
   public static final int topRollerCurrentLimit = 30;
   public static final IdleMode topRollerIdleMode = IdleMode.kCoast;
 
