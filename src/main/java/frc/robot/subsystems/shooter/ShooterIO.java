@@ -43,6 +43,8 @@ public interface ShooterIO {
     public Voltage hoodMotorAppliedVolts = Volts.of(0.0);
     public Current hoodMotorCurrent = Amps.of(0.0);
     public Temperature hoodMotorTemp = Celsius.of(0.0);
+
+    public Angle turretAbsoluteAngle = Degrees.of(0);
   }
 
   public default void updateInputs(ShooterIOInputs inputs) {}

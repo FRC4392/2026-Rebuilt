@@ -25,6 +25,7 @@ public class ShooterConstants {
   public static final int shooterMotor2CanID = 51;
   public static final int turretMotorCanID = 52;
   public static final int hoodMotorCanID = 53;
+  public static final int TurretEncoderPin = 0;
 
   // Shooter Motor 1
   public static final Current shooterMotor1StatorCurrentLimit = Amps.of(120);

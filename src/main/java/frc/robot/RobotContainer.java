@@ -5,16 +5,13 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.operatorinterface.OperatorInterface;
-import frc.robot.subsystems.climber.Climber;
-import frc.robot.subsystems.climber.ClimberIO;
-import frc.robot.subsystems.climber.ClimberIOReal;
-import frc.robot.subsystems.climber.ClimberIOSim;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperIO;
 import frc.robot.subsystems.hopper.HopperIOReal;
@@ -50,7 +47,7 @@ public class RobotContainer {
   public final Shooter shooter;
   public final Indexer indexer;
   public final Hopper hopper;
-  public final Climber climber;
+  // public final Climber climber;
   public final Intake intake;
   public final Vision vision;
 
@@ -85,7 +82,7 @@ public class RobotContainer {
 
         shooter = new Shooter(new ShooterIOReal());
         indexer = new Indexer(new IndexerIOReal());
-        climber = new Climber(new ClimberIOReal());
+        // climber = new Climber(new ClimberIOReal());
         hopper = new Hopper(new HopperIOReal());
         intake = new Intake(new IntakeIOReal(), state);
         vision =
@@ -107,7 +104,7 @@ public class RobotContainer {
 
         shooter = new Shooter(new ShooterIOSim());
         indexer = new Indexer(new IndexerIOSim());
-        climber = new Climber(new ClimberIOSim());
+        // climber = new Climber(new ClimberIOSim());
         hopper = new Hopper(new HopperIOSim());
         intake = new Intake(new IntakeIOSim(), state);
         vision = new Vision(null, null);
@@ -125,7 +122,7 @@ public class RobotContainer {
 
         shooter = new Shooter(new ShooterIO() {});
         indexer = new Indexer(new IndexerIO() {});
-        climber = new Climber(new ClimberIO() {});
+        // climber = new Climber(new ClimberIO() {});
         hopper = new Hopper(new HopperIO() {});
         intake = new Intake(new IntakeIO() {}, state);
         vision = new Vision(null, null);
@@ -160,8 +157,8 @@ public class RobotContainer {
     shooter.setDefaultCommand(
         shooter.setPose(Degrees.of(30), Degrees.of(1), RotationsPerSecond.of(37)));
 
-    operatorInterface.extendButton().onTrue(shooter.setHood(Degrees.of(30)));
-    operatorInterface.retractButton().onTrue(shooter.setHood(Degrees.of(0)));
+    operatorInterface.extendButton().onTrue(intake.setExtensionDistance(Inches.of(10)));
+    operatorInterface.retractButton().onTrue(intake.setExtensionDistance(Inches.of(0)));
     // shooter.setDefaultCommand(shooter.runTurret(operatorInterface.turretSpeedSupplier()));
 
     // operatorInterface.testLeftTurret().onTrue(shooter.runTurret(Degrees.of(-90)));

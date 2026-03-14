@@ -39,13 +39,17 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
 public class ShooterIOReal implements ShooterIO {
   // Motors
-  public final TalonFX shooterMotor1;
-  public final TalonFX shooterMotor2;
-  public final TalonFX turretMotor;
-  public final SparkMax hoodMotor;
+  private final TalonFX shooterMotor1;
+  private final TalonFX shooterMotor2;
+  private final TalonFX turretMotor;
+  private final SparkMax hoodMotor;
+
+  // Encoder
+  private final DutyCycleEncoder turretEncoder;
 
   // Conrtol Requests
   private final VoltageOut voltageRequest = new VoltageOut(0);
@@ -80,6 +84,8 @@ public class ShooterIOReal implements ShooterIO {
   private final Debouncer motorConnectDebouncer = new Debouncer(.25);
 
   public ShooterIOReal() {
+
+    turretEncoder = new DutyCycleEncoder(TurretEncoderPin, 1, 0);
 
     // Shooter Motor 1
     shooterMotor1 = new TalonFX(shooterMotor1CanID);
@@ -338,6 +344,8 @@ public class ShooterIOReal implements ShooterIO {
         Volts.of(hoodMotor.getAppliedOutput() * hoodMotor.getBusVoltage());
     inputs.hoodMotorCurrent = Amps.of(hoodMotor.getOutputCurrent());
     inputs.hoodMotorTemp = Celsius.of(hoodMotor.getMotorTemperature());
+
+    inputs.turretAbsoluteAngle = Rotations.of(turretEncoder.get());
   }
 
   @Override
