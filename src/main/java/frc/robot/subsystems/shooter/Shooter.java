@@ -7,11 +7,15 @@ package frc.robot.subsystems.shooter;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.DeceiverRobotState;
+import frc.robot.FieldConstants;
 import frc.robot.lib.LoggedTunableNumber;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -20,6 +24,8 @@ public class Shooter extends SubsystemBase {
 
   private final ShooterIO shooterIO;
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
+
+  private final DeceiverRobotState robotState;
 
   // PID stuff
   private LoggedTunableNumber shooterKP =
@@ -36,8 +42,9 @@ public class Shooter extends SubsystemBase {
       new LoggedTunableNumber("Shooter/ka", ShooterConstants.shooterKa);
 
   /** Creates a new Shooter. */
-  public Shooter(ShooterIO IO) {
+  public Shooter(DeceiverRobotState state, ShooterIO IO) {
     shooterIO = IO;
+    robotState = state;
   }
 
   @Override
@@ -126,5 +133,23 @@ public class Shooter extends SubsystemBase {
         () -> {
           shooterIO.setShooter(RotationsPerSecond.of(0));
         });
+  }
+
+  public Command aimAtHub() {
+    return this.runEnd(
+        () -> {
+          Translation2d robotLocation = robotState.getRobotTranslation();
+          Translation2d hubLocation = FieldConstants.Hub.innerCenterPoint.toTranslation2d();
+
+          Translation2d resultingTranslation = hubLocation.minus(robotLocation);
+          Logger.recordOutput("Resulting Tanslation", resultingTranslation);
+
+          Rotation2d shotAngle = resultingTranslation.getAngle();
+
+          Rotation2d turretAngle = shotAngle.minus(robotState.getRobotPose().getRotation());
+
+          Logger.recordOutput("Target Angle", turretAngle);
+        },
+        () -> {});
   }
 }

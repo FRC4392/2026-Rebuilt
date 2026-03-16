@@ -123,8 +123,8 @@ public class IntakeIOReal implements IntakeIO {
     extensionTemperature = extensionMotor.getDeviceTemp();
 
     // Extension requests
-    extensionVoltageRequest.EnableFOC = true;
-    extensionPositionRequest.EnableFOC = true;
+    extensionVoltageRequest.EnableFOC = false;
+    extensionPositionRequest.EnableFOC = false;
     extensionPositionRequest.Slot = 0;
 
     // Roller Configuration
@@ -179,7 +179,7 @@ public class IntakeIOReal implements IntakeIO {
     rightRollerTemperature = rightRollerMotor.getDeviceTemp();
 
     // Roller requests
-    rollerVoltageRequest.EnableFOC = true;
+    rollerVoltageRequest.EnableFOC = false;
 
     // Optimize bus utilization
     BaseStatusSignal.setUpdateFrequencyForAll(

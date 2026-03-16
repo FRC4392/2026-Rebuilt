@@ -32,6 +32,6 @@ public class Indexer extends SubsystemBase {
   }
 
   public Command runTestVoltage() {
-    return this.runEnd(() -> setVoltage(Volts.of(6)), () -> setVoltage(Volts.of(0)));
+    return this.runEnd(() -> setVoltage(Volts.of(10)), () -> setVoltage(Volts.of(0)));
   }
 }

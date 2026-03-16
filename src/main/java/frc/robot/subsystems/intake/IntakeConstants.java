@@ -69,9 +69,9 @@ public class IntakeConstants {
               / (extensionDriveDiameter.in(Meters) / 2.0));
 
   // Roller Parameters
-  public static final Current rollerStatorCurrentLimit = Amps.of(70);
+  public static final Current rollerStatorCurrentLimit = Amps.of(120);
   public static final Current rollerMotorSupplyLimitHigh = Amps.of(60);
-  public static final Current rollerMotorSupplyLimitLow = Amps.of(30);
+  public static final Current rollerMotorSupplyLimitLow = Amps.of(40);
   public static final Time rollerSupplyCurrentLowerTime = Seconds.of(1);
 
   public static final double rollerMotorReduction = 35.0 / 11.0;
@@ -82,8 +82,8 @@ public class IntakeConstants {
   public static final NeutralModeValue rollerNeutralMode = NeutralModeValue.Coast;
 
   // Roller Voltages
-  public static final Voltage intakeVoltage = Volts.of(-10);
-  public static final Voltage outtakeVoltage = Volts.of(10);
+  public static final Voltage intakeVoltage = Volts.of(-12);
+  public static final Voltage outtakeVoltage = Volts.of(12);
 
   // Extension Positions Table
   public static final Distance extendedDistance = Inches.of(10);

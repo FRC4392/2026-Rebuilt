@@ -4,11 +4,8 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.operatorinterface.OperatorInterface;
@@ -36,7 +33,6 @@ import frc.robot.subsystems.swerve.SwerveModuleIODeceivers;
 import frc.robot.subsystems.swerve.SwerveModuleIOSim;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIOLimelight;
-import java.util.function.Supplier;
 
 public class RobotContainer {
   private final DeceiverRobotState robotState;
@@ -80,7 +76,7 @@ public class RobotContainer {
                 new SwerveModuleIODeceivers(3),
                 state);
 
-        shooter = new Shooter(new ShooterIOReal());
+        shooter = new Shooter(robotState, new ShooterIOReal());
         indexer = new Indexer(new IndexerIOReal());
         // climber = new Climber(new ClimberIOReal());
         hopper = new Hopper(new HopperIOReal());
@@ -88,8 +84,10 @@ public class RobotContainer {
         vision =
             new Vision(
                 swerve::addVisionMeasurement,
-                new VisionIOLimelight("limelight-two", this.gyroTest()),
-                new VisionIOLimelight("limelight-three", this.gyroTest()));
+                new VisionIOLimelight("limelight-one", swerve::getRotation),
+                new VisionIOLimelight("limelight-two", swerve::getRotation),
+                new VisionIOLimelight("limelight-three", swerve::getRotation),
+                new VisionIOLimelight("limelight-four", swerve::getRotation));
         break;
       case SIM:
         // Simulated robot use simulation hardware interfaces
@@ -102,7 +100,7 @@ public class RobotContainer {
                 new SwerveModuleIOSim(),
                 state);
 
-        shooter = new Shooter(new ShooterIOSim());
+        shooter = new Shooter(robotState, new ShooterIOSim());
         indexer = new Indexer(new IndexerIOSim());
         // climber = new Climber(new ClimberIOSim());
         hopper = new Hopper(new HopperIOSim());
@@ -120,7 +118,7 @@ public class RobotContainer {
                 new SwerveModuleIO() {},
                 state);
 
-        shooter = new Shooter(new ShooterIO() {});
+        shooter = new Shooter(robotState, new ShooterIO() {});
         indexer = new Indexer(new IndexerIO() {});
         // climber = new Climber(new ClimberIO() {});
         hopper = new Hopper(new HopperIO() {});
@@ -139,7 +137,7 @@ public class RobotContainer {
   private void configureAutoModes() {}
 
   private void configureBindings() {
-    // swerve.setDefaultCommand(swerve.joystickDrive(operatorInterface.getSwerveControlSignal()));
+    swerve.setDefaultCommand(swerve.joystickDrive(operatorInterface.getSwerveControlSignal()));
 
     operatorInterface.hopperButton().whileTrue(hopper.runTestVoltage());
     // operatorInterface.climberButton().whileTrue(climber.runTestVoltage());
@@ -154,11 +152,10 @@ public class RobotContainer {
 
     // shooter.setDefaultCommand(shooter.setHood(operatorInterface.turretSpeedSupplier()));
 
-    shooter.setDefaultCommand(
-        shooter.setPose(Degrees.of(30), Degrees.of(1), RotationsPerSecond.of(37)));
+    shooter.setDefaultCommand(shooter.aimAtHub());
 
     operatorInterface.extendButton().onTrue(intake.setExtensionDistance(Inches.of(10)));
-    operatorInterface.retractButton().onTrue(intake.setExtensionDistance(Inches.of(0)));
+    operatorInterface.retractButton().onTrue(intake.setExtensionDistance(Inches.of(8)));
     // shooter.setDefaultCommand(shooter.runTurret(operatorInterface.turretSpeedSupplier()));
 
     // operatorInterface.testLeftTurret().onTrue(shooter.runTurret(Degrees.of(-90)));
@@ -169,9 +166,5 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     return operatorInterface.getAutoCommand();
-  }
-
-  public Supplier<Rotation2d> gyroTest() {
-    return () -> Rotation2d.kCW_90deg;
   }
 }

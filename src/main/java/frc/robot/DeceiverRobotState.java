@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -373,4 +375,8 @@ public class DeceiverRobotState {
   @Getter
   @Setter
   private IntakeRollerStatus intakeRolerStatus = IntakeRollerStatus.UNKOWN;
+
+  @Getter @Setter private Translation2d robotTranslation = new Translation2d();
+
+  @Getter @Setter private Pose2d robotPose = new Pose2d();
 }

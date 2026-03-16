@@ -203,6 +203,8 @@ public class Swerve extends SubsystemBase {
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.isConnected && RobotConstants.currentMode != Mode.SIM);
+
+    robotState.setRobotTranslation(getPose().getTranslation());
   }
 
   private void autoRunVelocity(ChassisSpeeds speeds) {
