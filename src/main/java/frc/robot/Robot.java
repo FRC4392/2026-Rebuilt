@@ -22,7 +22,7 @@ public class Robot extends LoggedRobot {
 
   public Robot() {
     robotState = DeceiverRobotState.getInstance();
-    robotContainer = new RobotContainer(robotState);
+    robotContainer = new RobotContainer();
     // Record metadata about the git version for future reference
     Logger.recordMetadata("RobotMode", RobotConstants.currentMode.toString());
     Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);

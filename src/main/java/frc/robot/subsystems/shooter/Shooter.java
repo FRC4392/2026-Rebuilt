@@ -14,11 +14,14 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.DeceiverRobotState;
 import frc.robot.FieldConstants;
 import frc.robot.lib.LoggedTunableNumber;
+import frc.robot.lib.geometry.AllianceFlipUtil;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -28,6 +31,18 @@ public class Shooter extends SubsystemBase {
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
   private final DeceiverRobotState robotState;
+
+  private final Alert shooter1DisconnectedAlert =
+      new Alert("Shooter Motor 1 Disconnected, expect reduced perfomance", AlertType.kError);
+  private final Alert shooter2DisconnectedAlert =
+      new Alert("Shooter Motor 2 Disconnected, expect reduced perfomance", AlertType.kError);
+  private final Alert turretDisconnectedAlert =
+      new Alert("Turret Motor Disconnected, Turret may not function", AlertType.kError);
+  private final Alert hoodDisconnectedAlert =
+      new Alert("Hood Motor Disconnected, hood may not function", AlertType.kError);
+  private final Alert encoderDisconnectedAlert =
+      new Alert(
+          " Turret Absolute Encoder Disconnected, turret may be inaccurate", AlertType.kError);
 
   // PID stuff
   private LoggedTunableNumber shooterKP =
@@ -44,15 +59,21 @@ public class Shooter extends SubsystemBase {
       new LoggedTunableNumber("Shooter/ka", ShooterConstants.shooterKa);
 
   /** Creates a new Shooter. */
-  public Shooter(DeceiverRobotState state, ShooterIO IO) {
+  public Shooter(ShooterIO IO) {
     shooterIO = IO;
-    robotState = state;
+    robotState = DeceiverRobotState.getInstance();
   }
 
   @Override
   public void periodic() {
     shooterIO.updateInputs(inputs);
     Logger.processInputs("Shooter", inputs);
+
+    shooter1DisconnectedAlert.set(!inputs.shooterMotor1Connected);
+    shooter2DisconnectedAlert.set(!inputs.shooterMotor2Connected);
+    turretDisconnectedAlert.set(!inputs.turretMotorConnected);
+    hoodDisconnectedAlert.set(!inputs.hoodMotorConnected);
+    encoderDisconnectedAlert.set(!inputs.turretAbsoluteEncoderConnected);
 
     if (shooterKP.hasChanged(hashCode())
         || shooterKI.hasChanged(hashCode())
@@ -161,6 +182,14 @@ public class Shooter extends SubsystemBase {
   }
 
   private Translation2d getHubLocation() {
-    return FieldConstants.Hub.topCenterPoint.toTranslation2d();
+    return AllianceFlipUtil.apply(FieldConstants.Hub.topCenterPoint.toTranslation2d());
+  }
+
+  private Translation2d getLeftPassLocation() {
+    return AllianceFlipUtil.apply(FieldConstants.PassingPoint.leftPoint);
+  }
+
+  private Translation2d getRightPassLocation() {
+    return AllianceFlipUtil.apply(FieldConstants.PassingPoint.rightPoint);
   }
 }

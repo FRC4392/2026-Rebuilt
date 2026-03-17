@@ -7,24 +7,34 @@ package frc.robot.subsystems.climber;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.DeceiverRobotState;
 import org.littletonrobotics.junction.Logger;
 
 public class Climber extends SubsystemBase {
 
   private final ClimberIO climberIO;
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
+  private final DeceiverRobotState robotState;
+
+  private final Alert climberMotorDisconnectedAlert =
+      new Alert("Climber Motor Disconnected, may not be able to climb", AlertType.kError);
 
   /** Creates a new Climber. */
   public Climber(ClimberIO IO) {
     climberIO = IO;
+    robotState = DeceiverRobotState.getInstance();
   }
 
   @Override
   public void periodic() {
     climberIO.updateInputs(inputs);
     Logger.processInputs("Climber", inputs);
+
+    climberMotorDisconnectedAlert.set(!inputs.motorConnected);
   }
 
   public void setVoltage(Voltage volts) {

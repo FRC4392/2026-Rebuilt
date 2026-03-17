@@ -58,8 +58,8 @@ public class RobotContainer {
    *
    * @param state RobotState object to track the state of the robot
    */
-  public RobotContainer(DeceiverRobotState state) {
-    robotState = state;
+  public RobotContainer() {
+    robotState = DeceiverRobotState.getInstance();
 
     // Lower brownout voltage
     RobotController.setBrownoutVoltage(6.0);
@@ -76,14 +76,13 @@ public class RobotContainer {
                 new SwerveModuleIODeceivers(0),
                 new SwerveModuleIODeceivers(1),
                 new SwerveModuleIODeceivers(2),
-                new SwerveModuleIODeceivers(3),
-                state);
+                new SwerveModuleIODeceivers(3));
 
-        shooter = new Shooter(robotState, new ShooterIOReal());
+        shooter = new Shooter(new ShooterIOReal());
         indexer = new Indexer(new IndexerIOReal());
         // climber = new Climber(new ClimberIOReal());
         hopper = new Hopper(new HopperIOReal());
-        intake = new Intake(new IntakeIOReal(), state);
+        intake = new Intake(new IntakeIOReal());
         vision =
             new Vision(
                 swerve::addVisionMeasurement,
@@ -100,14 +99,13 @@ public class RobotContainer {
                 new SwerveModuleIOSim(),
                 new SwerveModuleIOSim(),
                 new SwerveModuleIOSim(),
-                new SwerveModuleIOSim(),
-                state);
+                new SwerveModuleIOSim());
 
-        shooter = new Shooter(robotState, new ShooterIOSim());
+        shooter = new Shooter(new ShooterIOSim());
         indexer = new Indexer(new IndexerIOSim());
         // climber = new Climber(new ClimberIOSim());
         hopper = new Hopper(new HopperIOSim());
-        intake = new Intake(new IntakeIOSim(), state);
+        intake = new Intake(new IntakeIOSim());
         vision =
             new Vision(
                 swerve::addVisionMeasurement,
@@ -121,14 +119,13 @@ public class RobotContainer {
                 new SwerveModuleIO() {},
                 new SwerveModuleIO() {},
                 new SwerveModuleIO() {},
-                new SwerveModuleIO() {},
-                state);
+                new SwerveModuleIO() {});
 
-        shooter = new Shooter(robotState, new ShooterIO() {});
+        shooter = new Shooter(new ShooterIO() {});
         indexer = new Indexer(new IndexerIO() {});
         // climber = new Climber(new ClimberIO() {});
         hopper = new Hopper(new HopperIO() {});
-        intake = new Intake(new IntakeIO() {}, state);
+        intake = new Intake(new IntakeIO() {});
         vision = new Vision(swerve::addVisionMeasurement, new VisionIO() {});
     }
 

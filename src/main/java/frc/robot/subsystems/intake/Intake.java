@@ -49,9 +49,9 @@ public class Intake extends SubsystemBase {
    * @param IO IO interface for intake
    * @param state Robot state to track different robot states
    */
-  public Intake(IntakeIO IO, DeceiverRobotState state) {
+  public Intake(IntakeIO IO) {
     intakeIO = IO;
-    robotState = state;
+    robotState = DeceiverRobotState.getInstance();
   }
 
   @Override

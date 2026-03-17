@@ -12,6 +12,7 @@ import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -91,21 +92,16 @@ public class ShooterConstants {
   public static final AngularAcceleration turretAcceleration = RotationsPerSecondPerSecond.of(50);
 
   // Hood Motor
-  public static final Current hoodStatorCurrentLimit = Amps.of(10);
-  public static final Current hoodMotorSupplyLimitHigh = Amps.of(10);
-  public static final Current hoodMotorSupplyLimitLow = Amps.of(10);
-  public static final Time hoodSupplyCurrentLowerTime = Seconds.of(1);
+  public static final int hoodStatorCurrentLimit = 20;
+  public static final double hoodMotorReduction = (18.0 * 18.0 * 15.0) / (40.0 * 43.0 * 298.0);
+  public static final boolean hoodInverted = true;
+  public static final IdleMode hoodNeutralMode = IdleMode.kBrake;
 
-  public static final double hoodMotorReduction = 3.0;
-
-  public static final InvertedValue hoodInverted = InvertedValue.Clockwise_Positive;
-  public static final NeutralModeValue hoodNeutralMode = NeutralModeValue.Coast;
-
-  public static final double hoodKp = 0.0;
+  public static final double hoodKp = 100.0;
   public static final double hoodKi = 0.0;
-  public static final double hoodKd = 0.0;
+  public static final double hoodKd = 1.0;
   public static final double hoodKv = 0.0;
-  public static final double hoodKs = 0.0;
+  public static final double hoodKs = 0.1;
   public static final double hoodKa = 0.0;
 
   // Shot calculator parameters

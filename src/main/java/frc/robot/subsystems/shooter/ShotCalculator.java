@@ -5,15 +5,7 @@ import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
-import static frc.robot.subsystems.shooter.ShooterConstants.ShooterTransorm;
-import static frc.robot.subsystems.shooter.ShooterConstants.flywheelSpeedMap;
-import static frc.robot.subsystems.shooter.ShooterConstants.hoodAngleMap;
-import static frc.robot.subsystems.shooter.ShooterConstants.passingFlywheelSpeedMap;
-import static frc.robot.subsystems.shooter.ShooterConstants.passingHoodAngleMap;
-import static frc.robot.subsystems.shooter.ShooterConstants.passingTimeOfFlightMap;
-import static frc.robot.subsystems.shooter.ShooterConstants.phaseDelay;
-import static frc.robot.subsystems.shooter.ShooterConstants.shooterTranslation;
-import static frc.robot.subsystems.shooter.ShooterConstants.timeOfFlightMap;
+import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -26,7 +18,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
 import frc.robot.DeceiverRobotState;
-import frc.robot.subsystems.shooter.ShooterConstants.*;
 
 public class ShotCalculator {
 

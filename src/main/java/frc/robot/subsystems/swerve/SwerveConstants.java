@@ -77,7 +77,7 @@ public final class SwerveConstants {
   public static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   public static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
   public static final double SLOW_SPEED_PERCENTAGE =
-      0.75; // Percentage of full speed when in slow mode
+      0.5; // Percentage of full speed when in slow mode
 
   // Zeroed rotation values for each module, see setup instructions
   public static final Rotation2d frontLeftZeroRotation = new Rotation2d(0.0);

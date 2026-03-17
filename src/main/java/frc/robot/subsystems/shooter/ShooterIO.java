@@ -45,6 +45,7 @@ public interface ShooterIO {
     public Temperature hoodMotorTemp = Celsius.of(0.0);
 
     public Angle turretAbsoluteAngle = Degrees.of(0);
+    public boolean turretAbsoluteEncoderConnected = false;
   }
 
   public default void updateInputs(ShooterIOInputs inputs) {}

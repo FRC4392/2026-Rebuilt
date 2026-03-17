@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Meters;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -307,7 +309,12 @@ public class FieldConstants {
         new Translation2d(0, AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(29).get().getY());
   }
 
-  public static class PassingPoint {}
+  public static class PassingPoint {
+    public static final Translation2d leftPoint =
+        new Translation2d(Meters.of(1.5), Meters.of(fieldWidth - 1.5));
+    public static final Translation2d rightPoint =
+        new Translation2d(Meters.of(1.5), Meters.of(1.5));
+  }
 
   @RequiredArgsConstructor
   public enum FieldType {

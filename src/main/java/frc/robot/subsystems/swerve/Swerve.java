@@ -99,15 +99,14 @@ public class Swerve extends SubsystemBase {
       SwerveModuleIO flModuleIO,
       SwerveModuleIO frModuleIO,
       SwerveModuleIO blModuleIO,
-      SwerveModuleIO brModuleIO,
-      DeceiverRobotState robotState) {
+      SwerveModuleIO brModuleIO) {
     this.gyroIO = gyroIO;
     modules[0] = new SwerveModule(flModuleIO, 0);
     modules[1] = new SwerveModule(frModuleIO, 1);
     modules[2] = new SwerveModule(blModuleIO, 2);
     modules[3] = new SwerveModule(brModuleIO, 3);
 
-    this.robotState = robotState;
+    robotState = DeceiverRobotState.getInstance();
 
     // Start odometry thread
     SwerveOdometryThread.getInstance().start();

@@ -34,6 +34,7 @@ public class HopperConstants {
   public static final boolean topRollerInverted = true;
   public static final int topRollerCurrentLimit = 30;
   public static final IdleMode topRollerIdleMode = IdleMode.kCoast;
+  public static final double topRollerRatio = (12.0 / 26.0);
 
   public static final double hopperKp = 0.0;
   public static final double hopperKi = 0.0;

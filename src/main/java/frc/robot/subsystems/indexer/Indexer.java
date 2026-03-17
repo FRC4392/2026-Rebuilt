@@ -7,24 +7,34 @@ package frc.robot.subsystems.indexer;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.DeceiverRobotState;
 import org.littletonrobotics.junction.Logger;
 
 public class Indexer extends SubsystemBase {
 
   private final IndexerIO indexerIO;
   private final IndexerIOInputsAutoLogged inputs = new IndexerIOInputsAutoLogged();
+  private final DeceiverRobotState robotState;
+
+  private final Alert indexerMotorDisconnectedAlert =
+      new Alert("Feeder Motor Disconnected, may not be able to feed balls", AlertType.kError);
 
   /** Creates a new Indexer. */
   public Indexer(IndexerIO IO) {
     indexerIO = IO;
+    robotState = DeceiverRobotState.getInstance();
   }
 
   @Override
   public void periodic() {
     indexerIO.updateInputs(inputs);
     Logger.processInputs("Indexer", inputs);
+
+    indexerMotorDisconnectedAlert.set(!inputs.motorConnected);
   }
 
   public void setVoltage(Voltage volts) {
