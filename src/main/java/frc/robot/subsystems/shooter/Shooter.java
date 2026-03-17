@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.DeceiverRobotState;
 import frc.robot.FieldConstants;
-import frc.robot.lib.LoggedTunableNumber;
 import frc.robot.lib.geometry.AllianceFlipUtil;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -44,19 +43,19 @@ public class Shooter extends SubsystemBase {
       new Alert(
           " Turret Absolute Encoder Disconnected, turret may be inaccurate", AlertType.kError);
 
-  // PID stuff
-  private LoggedTunableNumber shooterKP =
-      new LoggedTunableNumber("Shooter/kp", ShooterConstants.shooterKp);
-  private LoggedTunableNumber shooterKI =
-      new LoggedTunableNumber("Shooter/ki", ShooterConstants.shooterKi);
-  private LoggedTunableNumber shooterKD =
-      new LoggedTunableNumber("Shooter/kd", ShooterConstants.shooterKd);
-  private LoggedTunableNumber shooterKS =
-      new LoggedTunableNumber("Shooter/ks", ShooterConstants.shooterKs);
-  private LoggedTunableNumber shooterKV =
-      new LoggedTunableNumber("Shooter/kv", ShooterConstants.shooterKv);
-  private LoggedTunableNumber shooterKA =
-      new LoggedTunableNumber("Shooter/ka", ShooterConstants.shooterKa);
+  // // PID stuff
+  // private LoggedTunableNumber shooterKP =
+  //     new LoggedTunableNumber("Shooter/kp", ShooterConstants.shooterKp);
+  // private LoggedTunableNumber shooterKI =
+  //     new LoggedTunableNumber("Shooter/ki", ShooterConstants.shooterKi);
+  // private LoggedTunableNumber shooterKD =
+  //     new LoggedTunableNumber("Shooter/kd", ShooterConstants.shooterKd);
+  // private LoggedTunableNumber shooterKS =
+  //     new LoggedTunableNumber("Shooter/ks", ShooterConstants.shooterKs);
+  // private LoggedTunableNumber shooterKV =
+  //     new LoggedTunableNumber("Shooter/kv", ShooterConstants.shooterKv);
+  // private LoggedTunableNumber shooterKA =
+  //     new LoggedTunableNumber("Shooter/ka", ShooterConstants.shooterKa);
 
   /** Creates a new Shooter. */
   public Shooter(ShooterIO IO) {
@@ -75,21 +74,21 @@ public class Shooter extends SubsystemBase {
     hoodDisconnectedAlert.set(!inputs.hoodMotorConnected);
     encoderDisconnectedAlert.set(!inputs.turretAbsoluteEncoderConnected);
 
-    if (shooterKP.hasChanged(hashCode())
-        || shooterKI.hasChanged(hashCode())
-        || shooterKD.hasChanged(hashCode())
-        || shooterKS.hasChanged(hashCode())
-        || shooterKV.hasChanged(hashCode())
-        || shooterKA.hasChanged(hashCode())) {
-      // double kp, double ki, double kd, double ks, double kv, double ka
-      shooterIO.setPID(
-          shooterKP.get(),
-          shooterKI.get(),
-          shooterKD.get(),
-          shooterKS.get(),
-          shooterKV.get(),
-          shooterKA.get());
-    }
+    // if (shooterKP.hasChanged(hashCode())
+    //     || shooterKI.hasChanged(hashCode())
+    //     || shooterKD.hasChanged(hashCode())
+    //     || shooterKS.hasChanged(hashCode())
+    //     || shooterKV.hasChanged(hashCode())
+    //     || shooterKA.hasChanged(hashCode())) {
+    //   // double kp, double ki, double kd, double ks, double kv, double ka
+    //   shooterIO.setPID(
+    //       shooterKP.get(),
+    //       shooterKI.get(),
+    //       shooterKD.get(),
+    //       shooterKS.get(),
+    //       shooterKV.get(),
+    //       shooterKA.get());
+    // }
   }
 
   public void setShooter(Voltage volts) {
