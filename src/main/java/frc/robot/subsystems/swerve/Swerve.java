@@ -205,6 +205,8 @@ public class Swerve extends SubsystemBase {
     gyroDisconnectedAlert.set(!gyroInputs.isConnected && RobotConstants.currentMode != Mode.SIM);
 
     robotState.setRobotTranslation(getPose().getTranslation());
+    robotState.setRobotPose(this.getPose());
+    robotState.setRobotSpeeds(this.getChassisSpeeds());
   }
 
   private void autoRunVelocity(ChassisSpeeds speeds) {
@@ -222,6 +224,8 @@ public class Swerve extends SubsystemBase {
     ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, maxSpeed);
+
+    robotState.setSetpointsSpeeds(discreteSpeeds);
 
     // Log unoptimized setpoints
     Logger.recordOutput("SwerveStates/Setpoints", setpointStates);

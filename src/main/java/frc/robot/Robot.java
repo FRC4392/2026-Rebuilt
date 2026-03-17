@@ -16,11 +16,13 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 public class Robot extends LoggedRobot {
-  private final DeceiverRobotState robotState = new DeceiverRobotState();
-  private final RobotContainer robotContainer = new RobotContainer(robotState);
+  private final DeceiverRobotState robotState;
+  private final RobotContainer robotContainer;
   private Command autonomousCommand;
 
   public Robot() {
+    robotState = DeceiverRobotState.getInstance();
+    robotContainer = new RobotContainer(robotState);
     // Record metadata about the git version for future reference
     Logger.recordMetadata("RobotMode", RobotConstants.currentMode.toString());
     Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);

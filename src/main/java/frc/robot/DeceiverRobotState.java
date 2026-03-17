@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -14,6 +15,18 @@ import org.littletonrobotics.junction.AutoLogOutput;
 
 /** Used to track various robot states and status */
 public class DeceiverRobotState {
+
+  private DeceiverRobotState() {}
+
+  private static DeceiverRobotState instance;
+
+  public static DeceiverRobotState getInstance() {
+    if (instance == null) {
+      instance = new DeceiverRobotState();
+    }
+
+    return instance;
+  }
 
   // Standard robot state data
   private boolean wasEnabled = false;
@@ -379,4 +392,8 @@ public class DeceiverRobotState {
   @Getter @Setter private Translation2d robotTranslation = new Translation2d();
 
   @Getter @Setter private Pose2d robotPose = new Pose2d();
+
+  @Getter @Setter private ChassisSpeeds robotSpeeds = new ChassisSpeeds();
+
+  @Getter @Setter private ChassisSpeeds setpointsSpeeds = new ChassisSpeeds();
 }

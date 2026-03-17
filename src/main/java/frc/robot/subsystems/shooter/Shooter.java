@@ -6,7 +6,9 @@ package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Angle;
@@ -138,18 +140,27 @@ public class Shooter extends SubsystemBase {
   public Command aimAtHub() {
     return this.runEnd(
         () -> {
-          Translation2d robotLocation = robotState.getRobotTranslation();
-          Translation2d hubLocation = FieldConstants.Hub.innerCenterPoint.toTranslation2d();
+          Pose2d robotLocation = robotState.getRobotPose();
+          Pose2d shooterLocation = robotLocation.transformBy(ShooterTransorm);
 
-          Translation2d resultingTranslation = hubLocation.minus(robotLocation);
+          Logger.recordOutput("ShooterLocation", shooterLocation);
+          Translation2d hubLocation = getHubLocation();
+          Logger.recordOutput("Hub Location", FieldConstants.Hub.innerCenterPoint);
+
+          Translation2d resultingTranslation = hubLocation.minus(shooterLocation.getTranslation());
           Logger.recordOutput("Resulting Tanslation", resultingTranslation);
 
           Rotation2d shotAngle = resultingTranslation.getAngle();
 
-          Rotation2d turretAngle = shotAngle.minus(robotState.getRobotPose().getRotation());
+          Rotation2d turretAngle =
+              shotAngle.minus(robotState.getRobotPose().getRotation()).plus(Rotation2d.kPi);
 
           Logger.recordOutput("Target Angle", turretAngle);
         },
         () -> {});
+  }
+
+  private Translation2d getHubLocation() {
+    return FieldConstants.Hub.topCenterPoint.toTranslation2d();
   }
 }

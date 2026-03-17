@@ -307,6 +307,8 @@ public class FieldConstants {
         new Translation2d(0, AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(29).get().getY());
   }
 
+  public static class PassingPoint {}
+
   @RequiredArgsConstructor
   public enum FieldType {
     ANDYMARK("andymark"),

@@ -5,12 +5,19 @@
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
+import edu.wpi.first.math.interpolation.InverseInterpolator;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -18,6 +25,12 @@ import edu.wpi.first.units.measure.Time;
 
 /** Add your docs here. */
 public class ShooterConstants {
+
+  // Shooter Offset
+  public static final Translation2d shooterTranslation =
+      new Translation2d(Meters.of(-0.090488), Meters.of(0));
+  public static final Transform2d ShooterTransorm =
+      new Transform2d(Meters.of(-0.090488), Meters.of(0), new Rotation2d());
 
   public static boolean enableBeeps = true;
 
@@ -94,4 +107,25 @@ public class ShooterConstants {
   public static final double hoodKv = 0.0;
   public static final double hoodKs = 0.0;
   public static final double hoodKa = 0.0;
+
+  // Shot calculator parameters
+  public static final double phaseDelay = 0.03;
+
+  // Launching Maps
+  public static final InterpolatingTreeMap<Double, Rotation2d> hoodAngleMap =
+      new InterpolatingTreeMap<>(InverseInterpolator.forDouble(), Rotation2d::interpolate);
+  public static final InterpolatingDoubleTreeMap flywheelSpeedMap =
+      new InterpolatingDoubleTreeMap();
+  public static final InterpolatingDoubleTreeMap timeOfFlightMap = new InterpolatingDoubleTreeMap();
+
+  // Passing Maps
+  public static final InterpolatingTreeMap<Double, Rotation2d> passingHoodAngleMap =
+      new InterpolatingTreeMap<>(InverseInterpolator.forDouble(), Rotation2d::interpolate);
+  public static final InterpolatingDoubleTreeMap passingFlywheelSpeedMap =
+      new InterpolatingDoubleTreeMap();
+  public static final InterpolatingDoubleTreeMap passingTimeOfFlightMap =
+      new InterpolatingDoubleTreeMap();
+
+  static {
+  }
 }

@@ -6,6 +6,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Inches;
 
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.operatorinterface.OperatorInterface;
@@ -32,7 +33,9 @@ import frc.robot.subsystems.swerve.SwerveModuleIO;
 import frc.robot.subsystems.swerve.SwerveModuleIODeceivers;
 import frc.robot.subsystems.swerve.SwerveModuleIOSim;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 
 public class RobotContainer {
   private final DeceiverRobotState robotState;
@@ -105,7 +108,10 @@ public class RobotContainer {
         // climber = new Climber(new ClimberIOSim());
         hopper = new Hopper(new HopperIOSim());
         intake = new Intake(new IntakeIOSim(), state);
-        vision = new Vision(null, null);
+        vision =
+            new Vision(
+                swerve::addVisionMeasurement,
+                new VisionIOPhotonVisionSim("Camera1", new Transform3d(), swerve::getPose));
         break;
       default:
         // Replay, don't use hardware
@@ -123,7 +129,7 @@ public class RobotContainer {
         // climber = new Climber(new ClimberIO() {});
         hopper = new Hopper(new HopperIO() {});
         intake = new Intake(new IntakeIO() {}, state);
-        vision = new Vision(null, null);
+        vision = new Vision(swerve::addVisionMeasurement, new VisionIO() {});
     }
 
     // Create Operator Interface
