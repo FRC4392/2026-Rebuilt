@@ -79,7 +79,7 @@ public class ShooterConstants {
   public static final double turretMotorMotorReduction = (110.0 / 16.0) * (42.0 / 10.0);
 
   public static final InvertedValue turretMotorInverted = InvertedValue.Clockwise_Positive;
-  public static final NeutralModeValue turretMotorNeutralMode = NeutralModeValue.Coast;
+  public static final NeutralModeValue turretMotorNeutralMode = NeutralModeValue.Brake;
 
   public static final double turretMotorKp = 100;
   public static final double turretMotorKi = 0.0;

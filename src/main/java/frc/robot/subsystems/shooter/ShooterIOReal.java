@@ -91,10 +91,11 @@ public class ShooterIOReal implements ShooterIO {
   private final Debouncer turretMotorConnectedDebouncer = new Debouncer(.25);
   private final Debouncer hoodMotorConnectedDebouncer = new Debouncer(.25);
   private final Debouncer turretAbsoluteEncoderDebouncer = new Debouncer(.25);
+  private boolean turretInitialized = false;
 
   public ShooterIOReal() {
 
-    turretEncoder = new DutyCycleEncoder(TurretEncoderPin, 1, 0);
+    turretEncoder = new DutyCycleEncoder(TurretEncoderPin, 1, 0.6316);
 
     // Shooter Motor 1
     shooterMotor1 = new TalonFX(shooterMotor1CanID);
@@ -264,7 +265,7 @@ public class ShooterIOReal implements ShooterIO {
 
     tryUntilOk(5, () -> turretMotor.getConfigurator().apply(turretConfiguration, 0.25));
 
-    turretMotor.setPosition(Degrees.of(0));
+    turretMotor.setPosition(Rotations.of(turretEncoder.get()));
 
     turretPosition = turretMotor.getPosition();
     turretVelocity = turretMotor.getVelocity();
@@ -385,6 +386,14 @@ public class ShooterIOReal implements ShooterIO {
     inputs.turretAbsoluteEncoderConnected =
         turretAbsoluteEncoderDebouncer.calculate(turretEncoder.isConnected());
     inputs.turretAbsoluteAngle = Rotations.of(turretEncoder.get());
+
+    if (!turretInitialized) {
+      turretMotor.setPosition(Rotations.of(turretEncoder.get()));
+
+      if (turretPosition.getValue().isNear(Rotations.of(turretEncoder.get()), Degrees.of(.5))) {
+        turretInitialized = true;
+      }
+    }
   }
 
   @Override
