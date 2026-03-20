@@ -18,6 +18,7 @@ public class Climber extends SubsystemBase {
 
   private final ClimberIO climberIO;
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
+  @SuppressWarnings("unused")
   private final DeceiverRobotState robotState;
 
   private final Alert climberMotorDisconnectedAlert =

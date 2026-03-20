@@ -162,10 +162,10 @@ public class Shooter extends SubsystemBase {
         () -> {
           Pose2d robotLocation = robotState.getRobotPose();
           Pose2d shooterLocation = robotLocation.transformBy(ShooterTransorm);
-
           Logger.recordOutput("ShooterLocation", shooterLocation);
-          Translation2d hubLocation = getHubLocation();
-          Logger.recordOutput("Hub Location", FieldConstants.Hub.innerCenterPoint);
+
+
+          Translation2d hubLocation = getTargetTanslation(TargetLocation.Hub);
 
           Translation2d resultingTranslation = hubLocation.minus(shooterLocation.getTranslation());
           Logger.recordOutput("Resulting Tanslation", resultingTranslation);
@@ -190,5 +190,24 @@ public class Shooter extends SubsystemBase {
 
   private Translation2d getRightPassLocation() {
     return AllianceFlipUtil.apply(FieldConstants.PassingPoint.rightPoint);
+  }
+
+  public enum TargetLocation {
+    Hub,
+    LeftPass,
+    RightPass
+  };
+
+  private Translation2d getTargetTanslation(TargetLocation location){
+    switch (location) {
+      case Hub:
+      return getHubLocation();
+      case LeftPass:
+      return getLeftPassLocation();
+      case RightPass:
+      return getRightPassLocation();
+      default:
+        return new Translation2d();
+    }
   }
 }

@@ -18,6 +18,7 @@ public class Indexer extends SubsystemBase {
 
   private final IndexerIO indexerIO;
   private final IndexerIOInputsAutoLogged inputs = new IndexerIOInputsAutoLogged();
+  @SuppressWarnings("unused")
   private final DeceiverRobotState robotState;
 
   private final Alert indexerMotorDisconnectedAlert =

@@ -18,6 +18,7 @@ public class Hopper extends SubsystemBase {
 
   private final HopperIO hopperIO;
   private final HopperIOInputsAutoLogged inputs = new HopperIOInputsAutoLogged();
+  @SuppressWarnings("unused")
   private final DeceiverRobotState robotState;
 
   private final Alert bottomHopperMotorDisconnectedAlert =
@@ -38,6 +39,9 @@ public class Hopper extends SubsystemBase {
   public void periodic() {
     hopperIO.updateInputs(inputs);
     Logger.processInputs("Hopper", inputs);
+
+    topHopperMotorDisconnectedAlert.set(!inputs.topMotorConnected);
+    bottomHopperMotorDisconnectedAlert.set(!inputs.bottomMotorConnected);
   }
 
   public void setVoltage(Voltage volts) {
