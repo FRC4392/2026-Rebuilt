@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.Inches;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.operatorinterface.OperatorInterface;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperIO;
@@ -52,6 +53,9 @@ public class RobotContainer {
 
   // Operator Interface
   private final OperatorInterface operatorInterface;
+
+  private double testAngle = 0.0;
+  private double testSpeed = 0.0;
 
   /**
    * Constructor
@@ -142,14 +146,16 @@ public class RobotContainer {
   private void configureBindings() {
     swerve.setDefaultCommand(swerve.joystickDrive(operatorInterface.getSwerveControlSignal()));
 
-    operatorInterface.hopperButton().whileTrue(hopper.runTestVoltage());
+    operatorInterface
+        .hopperButton()
+        .whileTrue(hopper.runTestVoltage().alongWith(indexer.runTestVoltage()));
     // operatorInterface.climberButton().whileTrue(climber.runTestVoltage());
-    operatorInterface.indexerButton().whileTrue(indexer.runTestVoltage());
+    // operatorInterface.indexerButton().whileTrue(indexer.runTestVoltage());
     // operatorInterface
     //     .shooterButton()
     //     .whileTrue(shooter.run(() -> shooter.setShooter(RotationsPerSecond.of(80))));
     operatorInterface.intakeButton().whileTrue(intake.runRollerIntake());
-    operatorInterface.outtakeButton().whileTrue(intake.runRollerOuttake());
+    // operatorInterface.outtakeButton().whileTrue(intake.runRollerOuttake());
     // operatorInterface.retractButton().whileTrue(intake.runExtensionInManual());
     // operatorInterface.extendButton().whileTrue(intake.runExtensionOutManual());
 
@@ -158,13 +164,43 @@ public class RobotContainer {
     shooter.setDefaultCommand(shooter.aimAtHub());
 
     operatorInterface.extendButton().onTrue(intake.setExtensionDistance(Inches.of(10)));
-    operatorInterface.retractButton().onTrue(intake.setExtensionDistance(Inches.of(8)));
+    // operatorInterface.retractButton().onTrue(intake.setExtensionDistance(Inches.of(8)));
     // shooter.setDefaultCommand(shooter.runTurret(operatorInterface.turretSpeedSupplier()));
 
     // operatorInterface.testLeftTurret().onTrue(shooter.runTurret(Degrees.of(-90)));
     // operatorInterface.testRightTurret().onTrue(shooter.runTurret(Degrees.of(90)));
     // operatorInterface.testUpTurret().onTrue(shooter.runTurret(Degrees.of(0)));
     // operatorInterface.testDownTurret().onTrue(shooter.runTurret(Degrees.of(180)));
+
+    operatorInterface
+        .testUpTurret()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  testAngle = testAngle + 0.5;
+                }));
+    operatorInterface
+        .testDownTurret()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  testAngle = testAngle - 0.5;
+                }));
+
+    operatorInterface
+        .testLeftTurret()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  testSpeed = testSpeed - 1;
+                }));
+    operatorInterface
+        .testRightTurret()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  testSpeed = testSpeed + 1;
+                }));
   }
 
   public Command getAutonomousCommand() {

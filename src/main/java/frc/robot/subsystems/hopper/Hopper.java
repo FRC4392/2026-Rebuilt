@@ -18,6 +18,7 @@ public class Hopper extends SubsystemBase {
 
   private final HopperIO hopperIO;
   private final HopperIOInputsAutoLogged inputs = new HopperIOInputsAutoLogged();
+
   @SuppressWarnings("unused")
   private final DeceiverRobotState robotState;
 

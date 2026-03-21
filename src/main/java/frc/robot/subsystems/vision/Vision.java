@@ -55,7 +55,7 @@ public class Vision extends SubsystemBase {
       allowedPoseTypes.put(poseType, false);
     }
     // Default to using megatag 1
-    allowedPoseTypes.put(PoseObservationType.MEGATAG_1, true);
+    allowedPoseTypes.put(PoseObservationType.MEGATAG_2, true);
 
     // Initialize inputs
     this.inputs = new VisionIOInputsAutoLogged[io.length];

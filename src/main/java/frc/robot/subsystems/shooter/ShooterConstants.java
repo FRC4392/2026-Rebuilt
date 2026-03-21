@@ -5,6 +5,7 @@
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
@@ -123,5 +124,12 @@ public class ShooterConstants {
       new InterpolatingDoubleTreeMap();
 
   static {
+    hoodAngleMap.put(1.12, new Rotation2d(Degrees.of(2)));
+    flywheelSpeedMap.put(1.12, 31.0);
+    timeOfFlightMap.put(1.12, 2.1825);
+
+    hoodAngleMap.put(5.56, new Rotation2d(Degrees.of(30)));
+    flywheelSpeedMap.put(5.56, 42.0);
+    timeOfFlightMap.put(5.56, 2.1825); // TODO: get time
   }
 }

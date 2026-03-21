@@ -18,6 +18,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
 import frc.robot.DeceiverRobotState;
+import org.littletonrobotics.junction.Logger;
 
 public class ShotCalculator {
 
@@ -172,6 +173,17 @@ public class ShotCalculator {
         shotType == ShotType.Pass
             ? RotationsPerSecond.of(passingFlywheelSpeedMap.get(lookaheadShooterToTargetDistance))
             : RotationsPerSecond.of(flywheelSpeedMap.get(shooterToTargetDistance));
+
+    Logger.recordOutput("Shooter/Shot Calculator/Angle", turretAngle);
+    Logger.recordOutput("Shooter/Shot Calculator/Velocity", flywheelVelocity);
+    Logger.recordOutput("Shooter/Shot Calculator/Hood", hoodAngle);
+    Logger.recordOutput("Shooter/Shot Calculator/Shot Type", shotType);
+    Logger.recordOutput(
+        "Shooter/Shot Calculator/Shooter Distance", Meters.of(shooterToTargetDistance));
+    Logger.recordOutput(
+        "Shooter/Shot Calculator/Lookahead Shooter Distance",
+        Meters.of(lookaheadShooterToTargetDistance));
+    Logger.recordOutput("Shooter/Shot Calculator/Lookahead Pose", lookaheadPose);
 
     latestParameters =
         new ShotParameters(

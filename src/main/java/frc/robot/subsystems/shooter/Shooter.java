@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -20,7 +21,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.DeceiverRobotState;
 import frc.robot.FieldConstants;
+import frc.robot.FieldConstants.Hub;
 import frc.robot.lib.geometry.AllianceFlipUtil;
+import frc.robot.subsystems.shooter.ShotCalculator.ShotParameters;
+import frc.robot.subsystems.shooter.ShotCalculator.ShotType;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -30,6 +34,8 @@ public class Shooter extends SubsystemBase {
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
   private final DeceiverRobotState robotState;
+
+  private final LinearFilter shotDistanceFilter = LinearFilter.movingAverage(5);
 
   private final Alert shooter1DisconnectedAlert =
       new Alert("Shooter Motor 1 Disconnected, expect reduced perfomance", AlertType.kError);
@@ -73,6 +79,22 @@ public class Shooter extends SubsystemBase {
     turretDisconnectedAlert.set(!inputs.turretMotorConnected);
     hoodDisconnectedAlert.set(!inputs.hoodMotorConnected);
     encoderDisconnectedAlert.set(!inputs.turretAbsoluteEncoderConnected);
+
+    Pose2d robotLocation = robotState.getRobotPose();
+    Pose2d shooterLocation = robotLocation.transformBy(ShooterTransorm);
+    Logger.recordOutput("Shooter/ShooterLocation", shooterLocation);
+
+    Translation2d hubLocation = getTargetTanslation(TargetLocation.Hub);
+
+    Translation2d resultingTranslation = hubLocation.minus(shooterLocation.getTranslation());
+    Logger.recordOutput("Shooter/Resulting Tanslation", resultingTranslation);
+
+    Rotation2d shotAngle = resultingTranslation.getAngle();
+    Logger.recordOutput("Shooter/Shot Angle", shotAngle);
+
+    Logger.recordOutput(
+        "Shooter/Shot Distance",
+        shotDistanceFilter.calculate(resultingTranslation.getDistance(new Translation2d())));
 
     // if (shooterKP.hasChanged(hashCode())
     //     || shooterKI.hasChanged(hashCode())
@@ -146,11 +168,12 @@ public class Shooter extends SubsystemBase {
         });
   }
 
-  public Command setPose(Angle rotation, Angle hood, AngularVelocity speed) {
+  public Command setPose(
+      Supplier<Angle> rotation, Supplier<Angle> hood, Supplier<AngularVelocity> speed) {
     return this.runEnd(
         () -> {
-          shooterIO.setHood(hood);
-          shooterIO.setShooter(speed);
+          shooterIO.setHood(hood.get());
+          shooterIO.setShooter(speed.get());
         },
         () -> {
           shooterIO.setShooter(RotationsPerSecond.of(0));
@@ -160,22 +183,12 @@ public class Shooter extends SubsystemBase {
   public Command aimAtHub() {
     return this.runEnd(
         () -> {
-          Pose2d robotLocation = robotState.getRobotPose();
-          Pose2d shooterLocation = robotLocation.transformBy(ShooterTransorm);
-          Logger.recordOutput("ShooterLocation", shooterLocation);
-
-
-          Translation2d hubLocation = getTargetTanslation(TargetLocation.Hub);
-
-          Translation2d resultingTranslation = hubLocation.minus(shooterLocation.getTranslation());
-          Logger.recordOutput("Resulting Tanslation", resultingTranslation);
-
-          Rotation2d shotAngle = resultingTranslation.getAngle();
-
-          Rotation2d turretAngle =
-              shotAngle.minus(robotState.getRobotPose().getRotation()).plus(Rotation2d.kPi);
-
-          Logger.recordOutput("Target Angle", turretAngle);
+          ShotParameters parameters =
+              ShotCalculator.getInstance()
+                  .getParameters(getTargetTanslation(TargetLocation.Hub), ShotType.Shot);
+          shooterIO.setHood(parameters.hoodAngle());
+          shooterIO.setShooter(parameters.flywheelSpeed());
+          ShotCalculator.getInstance().clearLaunchingParameters();
         },
         () -> {});
   }
@@ -198,14 +211,14 @@ public class Shooter extends SubsystemBase {
     RightPass
   };
 
-  private Translation2d getTargetTanslation(TargetLocation location){
+  private Translation2d getTargetTanslation(TargetLocation location) {
     switch (location) {
       case Hub:
-      return getHubLocation();
+        return getHubLocation();
       case LeftPass:
-      return getLeftPassLocation();
+        return getLeftPassLocation();
       case RightPass:
-      return getRightPassLocation();
+        return getRightPassLocation();
       default:
         return new Translation2d();
     }

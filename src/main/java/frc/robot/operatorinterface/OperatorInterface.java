@@ -154,13 +154,13 @@ public class OperatorInterface extends SubsystemBase {
         () -> -driverController.getLeftY(),
         () -> -driverController.getLeftX(),
         () -> -driverController.getRightX(),
-        () -> driverController.getHID().getAButton());
+        () -> driverController.getHID().getBButton());
   }
 
   // Game Controls (vary by year)
 
   public Trigger hopperButton() {
-    return operatorController.b();
+    return operatorController.start();
   }
 
   public Trigger climberButton() {
@@ -168,11 +168,11 @@ public class OperatorInterface extends SubsystemBase {
   }
 
   public Trigger indexerButton() {
-    return operatorController.y();
+    return operatorController.start();
   }
 
   public Trigger intakeButton() {
-    return operatorController.leftBumper();
+    return operatorController.y();
   }
 
   public Trigger outtakeButton() {
@@ -180,11 +180,11 @@ public class OperatorInterface extends SubsystemBase {
   }
 
   public Trigger extendButton() {
-    return operatorController.start();
+    return operatorController.b();
   }
 
   public Trigger retractButton() {
-    return operatorController.back();
+    return operatorController.b();
   }
 
   public Trigger shooterButton() {
