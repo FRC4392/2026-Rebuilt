@@ -10,6 +10,9 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.lib.geometry.AllianceFlipUtil;
+import frc.robot.lib.geometry.Bounds;
 import frc.robot.operatorinterface.OperatorInterface;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperIO;
@@ -24,6 +27,7 @@ import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.Shooter.TargetLocation;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOReal;
 import frc.robot.subsystems.shooter.ShooterIOSim;
@@ -53,9 +57,6 @@ public class RobotContainer {
 
   // Operator Interface
   private final OperatorInterface operatorInterface;
-
-  private double testAngle = 0.0;
-  private double testSpeed = 0.0;
 
   /**
    * Constructor
@@ -144,63 +145,93 @@ public class RobotContainer {
   private void configureAutoModes() {}
 
   private void configureBindings() {
+    // Swerve Controls
     swerve.setDefaultCommand(swerve.joystickDrive(operatorInterface.getSwerveControlSignal()));
+    operatorInterface.restGyroTrigger().onTrue(Commands.runOnce(() -> swerve.resetGyro()));
+    operatorInterface.stopWithXTrigger().whileTrue(swerve.stopWithX());
+
+    // Location Based Commands
+    Bounds shotBounds =
+        new Bounds(0.0, FieldConstants.LinesVertical.hubCenter, 0.0, FieldConstants.fieldWidth);
+
+    Bounds passLeftBounds =
+        new Bounds(
+            FieldConstants.LinesVertical.hubCenter,
+            FieldConstants.fieldLength,
+            FieldConstants.LinesHorizontal.center,
+            FieldConstants.fieldWidth);
+
+    Bounds passRightBounds =
+        new Bounds(
+            FieldConstants.LinesVertical.hubCenter,
+            FieldConstants.fieldLength,
+            0.0,
+            FieldConstants.LinesHorizontal.center);
+
+    Trigger shootHubZoneTrigger =
+        new Trigger(
+            () -> {
+              Bounds allianceBounds = AllianceFlipUtil.apply(shotBounds);
+              return allianceBounds.contains(robotState.getRobotPose().getTranslation())
+                  && robotState.isEnabled();
+            });
+
+    Trigger passLeftZoneTrigger =
+        new Trigger(
+            () -> {
+              Bounds allianceBounds = AllianceFlipUtil.apply(passLeftBounds);
+              return allianceBounds.contains(robotState.getRobotPose().getTranslation())
+                  && robotState.isEnabled();
+            });
+
+    Trigger passRightZoneTrigger =
+        new Trigger(
+            () -> {
+              Bounds allianceBounds = AllianceFlipUtil.apply(passRightBounds);
+              return allianceBounds.contains(robotState.getRobotPose().getTranslation())
+                  && robotState.isEnabled();
+            });
 
     operatorInterface
-        .hopperButton()
-        .whileTrue(hopper.runTestVoltage().alongWith(indexer.runTestVoltage()));
-    // operatorInterface.climberButton().whileTrue(climber.runTestVoltage());
-    // operatorInterface.indexerButton().whileTrue(indexer.runTestVoltage());
-    // operatorInterface
-    //     .shooterButton()
-    //     .whileTrue(shooter.run(() -> shooter.setShooter(RotationsPerSecond.of(80))));
+        .forceHub()
+        .or(shootHubZoneTrigger)
+        .and(operatorInterface.trenchMode().negate())
+        .whileTrue(shooter.aimAtTarget(TargetLocation.Hub));
+
+    operatorInterface
+        .forceFeedLeft()
+        .or(passLeftZoneTrigger)
+        .and(operatorInterface.trenchMode().negate())
+        .whileTrue(shooter.aimAtTarget(TargetLocation.LeftPass));
+
+    operatorInterface
+        .forceFeedRight()
+        .or(passRightZoneTrigger)
+        .and(operatorInterface.trenchMode().negate())
+        .whileTrue(shooter.aimAtTarget(TargetLocation.RightPass));
+
+    // Feed Controls
+    operatorInterface
+        .feedStop()
+        .toggleOnTrue(hopper.runTestVoltage().alongWith(indexer.runTestVoltage()));
+
+    // Intake Controls
     operatorInterface.intakeButton().whileTrue(intake.runRollerIntake());
-    // operatorInterface.outtakeButton().whileTrue(intake.runRollerOuttake());
-    // operatorInterface.retractButton().whileTrue(intake.runExtensionInManual());
-    // operatorInterface.extendButton().whileTrue(intake.runExtensionOutManual());
-
-    // shooter.setDefaultCommand(shooter.setHood(operatorInterface.turretSpeedSupplier()));
-
-    shooter.setDefaultCommand(shooter.aimAtHub());
-
     operatorInterface.extendButton().onTrue(intake.setExtensionDistance(Inches.of(10)));
-    // operatorInterface.retractButton().onTrue(intake.setExtensionDistance(Inches.of(8)));
-    // shooter.setDefaultCommand(shooter.runTurret(operatorInterface.turretSpeedSupplier()));
+    operatorInterface.retractButton().onTrue(intake.setExtensionDistance(Inches.of(0)));
 
-    // operatorInterface.testLeftTurret().onTrue(shooter.runTurret(Degrees.of(-90)));
-    // operatorInterface.testRightTurret().onTrue(shooter.runTurret(Degrees.of(90)));
-    // operatorInterface.testUpTurret().onTrue(shooter.runTurret(Degrees.of(0)));
-    // operatorInterface.testDownTurret().onTrue(shooter.runTurret(Degrees.of(180)));
+    // operatorInterface
+    //     .trenchMode()
+    //     .whileTrue(shooter.setPose(Degrees.of(0), Degrees.of(0), RotationsPerSecond.of(32)));
 
-    operatorInterface
-        .testUpTurret()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  testAngle = testAngle + 0.5;
-                }));
-    operatorInterface
-        .testDownTurret()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  testAngle = testAngle - 0.5;
-                }));
+    Trigger enableTrigger = new Trigger(() -> robotState.isEnabled());
 
-    operatorInterface
-        .testLeftTurret()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  testSpeed = testSpeed - 1;
-                }));
-    operatorInterface
-        .testRightTurret()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  testSpeed = testSpeed + 1;
-                }));
+    enableTrigger.onTrue(
+        Commands.runOnce(
+            () -> {
+              HubShiftUtil.initialize();
+              System.out.println("Enabled");
+            }));
   }
 
   public Command getAutonomousCommand() {

@@ -4,12 +4,10 @@
 
 package frc.robot.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
-import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
-import edu.wpi.first.math.filter.LinearFilter;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Angle;
@@ -21,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.DeceiverRobotState;
 import frc.robot.FieldConstants;
-import frc.robot.FieldConstants.Hub;
 import frc.robot.lib.geometry.AllianceFlipUtil;
 import frc.robot.subsystems.shooter.ShotCalculator.ShotParameters;
 import frc.robot.subsystems.shooter.ShotCalculator.ShotType;
@@ -33,9 +30,8 @@ public class Shooter extends SubsystemBase {
   private final ShooterIO shooterIO;
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
+  @SuppressWarnings("unused")
   private final DeceiverRobotState robotState;
-
-  private final LinearFilter shotDistanceFilter = LinearFilter.movingAverage(5);
 
   private final Alert shooter1DisconnectedAlert =
       new Alert("Shooter Motor 1 Disconnected, expect reduced perfomance", AlertType.kError);
@@ -48,20 +44,6 @@ public class Shooter extends SubsystemBase {
   private final Alert encoderDisconnectedAlert =
       new Alert(
           " Turret Absolute Encoder Disconnected, turret may be inaccurate", AlertType.kError);
-
-  // // PID stuff
-  // private LoggedTunableNumber shooterKP =
-  //     new LoggedTunableNumber("Shooter/kp", ShooterConstants.shooterKp);
-  // private LoggedTunableNumber shooterKI =
-  //     new LoggedTunableNumber("Shooter/ki", ShooterConstants.shooterKi);
-  // private LoggedTunableNumber shooterKD =
-  //     new LoggedTunableNumber("Shooter/kd", ShooterConstants.shooterKd);
-  // private LoggedTunableNumber shooterKS =
-  //     new LoggedTunableNumber("Shooter/ks", ShooterConstants.shooterKs);
-  // private LoggedTunableNumber shooterKV =
-  //     new LoggedTunableNumber("Shooter/kv", ShooterConstants.shooterKv);
-  // private LoggedTunableNumber shooterKA =
-  //     new LoggedTunableNumber("Shooter/ka", ShooterConstants.shooterKa);
 
   /** Creates a new Shooter. */
   public Shooter(ShooterIO IO) {
@@ -79,42 +61,6 @@ public class Shooter extends SubsystemBase {
     turretDisconnectedAlert.set(!inputs.turretMotorConnected);
     hoodDisconnectedAlert.set(!inputs.hoodMotorConnected);
     encoderDisconnectedAlert.set(!inputs.turretAbsoluteEncoderConnected);
-
-    Pose2d robotLocation = robotState.getRobotPose();
-    Pose2d shooterLocation = robotLocation.transformBy(ShooterTransorm);
-    Logger.recordOutput("Shooter/ShooterLocation", shooterLocation);
-
-    Translation2d hubLocation = getTargetTanslation(TargetLocation.Hub);
-
-    Translation2d resultingTranslation = hubLocation.minus(shooterLocation.getTranslation());
-    Logger.recordOutput("Shooter/Resulting Tanslation", resultingTranslation);
-
-    Rotation2d shotAngle = resultingTranslation.getAngle();
-    Logger.recordOutput("Shooter/Shot Angle", shotAngle);
-
-    Logger.recordOutput(
-        "Shooter/Shot Distance",
-        shotDistanceFilter.calculate(resultingTranslation.getDistance(new Translation2d())));
-
-    // if (shooterKP.hasChanged(hashCode())
-    //     || shooterKI.hasChanged(hashCode())
-    //     || shooterKD.hasChanged(hashCode())
-    //     || shooterKS.hasChanged(hashCode())
-    //     || shooterKV.hasChanged(hashCode())
-    //     || shooterKA.hasChanged(hashCode())) {
-    //   // double kp, double ki, double kd, double ks, double kv, double ka
-    //   shooterIO.setPID(
-    //       shooterKP.get(),
-    //       shooterKI.get(),
-    //       shooterKD.get(),
-    //       shooterKS.get(),
-    //       shooterKV.get(),
-    //       shooterKA.get());
-    // }
-  }
-
-  public void setShooter(Voltage volts) {
-    shooterIO.setShooter(volts);
   }
 
   public void stop() {
@@ -124,7 +70,7 @@ public class Shooter extends SubsystemBase {
   public Command setShooter(Supplier<Voltage> volts) {
     return this.runEnd(
         () -> {
-          setShooter(volts.get());
+          shooterIO.setShooter(volts.get());
         },
         this::stop);
   }
@@ -133,15 +79,12 @@ public class Shooter extends SubsystemBase {
     shooterIO.setShooter(velocity);
   }
 
-  public Command runTestVoltage() {
-    return this.runEnd(() -> setShooter(Volts.of(12)), () -> setShooter(Volts.of(0)));
+  public Command setTurret(Supplier<Voltage> voltage) {
+    return this.runEnd(
+        () -> shooterIO.setShooter(voltage.get()), () -> shooterIO.setShooter(Volts.of(0)));
   }
 
-  public Command runTurret(Supplier<Voltage> voltage) {
-    return this.runEnd(() -> setShooter(voltage.get()), () -> setShooter(Volts.of(0)));
-  }
-
-  public Command runTurret(Angle angle) {
+  public Command setTurret(Angle angle) {
     return this.run(() -> shooterIO.setTurret(angle));
   }
 
@@ -168,33 +111,51 @@ public class Shooter extends SubsystemBase {
         });
   }
 
-  public Command setPose(
-      Supplier<Angle> rotation, Supplier<Angle> hood, Supplier<AngularVelocity> speed) {
-    return this.runEnd(
+  public Command setPose(Angle rotation, Angle hood, AngularVelocity speed) {
+    return this.run(
         () -> {
-          shooterIO.setHood(hood.get());
-          shooterIO.setShooter(speed.get());
-        },
-        () -> {
-          shooterIO.setShooter(RotationsPerSecond.of(0));
+          shooterIO.setHood(hood);
+          shooterIO.setShooter(speed);
+          // shooterIO.setTurret(rotation);
         });
   }
 
-  public Command aimAtHub() {
+  public Command aimAtTarget(TargetLocation targetLocation) {
     return this.runEnd(
         () -> {
-          ShotParameters parameters =
-              ShotCalculator.getInstance()
-                  .getParameters(getTargetTanslation(TargetLocation.Hub), ShotType.Shot);
-          shooterIO.setHood(parameters.hoodAngle());
-          shooterIO.setShooter(parameters.flywheelSpeed());
+          Translation2d targetTranslation = getTargetTanslation(targetLocation);
+          ShotType shotType = targetLocation == TargetLocation.Hub ? ShotType.Shot : ShotType.Pass;
+          ShotParameters shotParameters =
+              ShotCalculator.getInstance().getParameters(targetTranslation, shotType);
+          shooterIO.setHood(shotParameters.hoodAngle());
+          shooterIO.setShooter(shotParameters.flywheelSpeed());
+          Rotation2d turretSetpoint =
+              robotState.getRobotPose().getRotation().minus(shotParameters.turretAngle());
+
+          Angle setpoint = turretSetpoint.getMeasure();
+
+          if (setpoint.in(Degrees) < 0) {
+            setpoint = setpoint.plus(Degrees.of(360));
+          }
+
+          Logger.recordOutput("Shot Angle", shotParameters.turretAngle());
+          Logger.recordOutput("Turret Setpoint", setpoint);
+
+          if (setpoint.in(Degrees) > 270) {
+            setpoint = Degrees.of(270);
+          }
+
+          if (setpoint.in(Degrees) < 90) {
+            setpoint = Degrees.of(90);
+          }
+          shooterIO.setTurret(setpoint);
           ShotCalculator.getInstance().clearLaunchingParameters();
         },
         () -> {});
   }
 
   private Translation2d getHubLocation() {
-    return AllianceFlipUtil.apply(FieldConstants.Hub.topCenterPoint.toTranslation2d());
+    return AllianceFlipUtil.apply(FieldConstants.Hub.innerCenterPoint.toTranslation2d());
   }
 
   private Translation2d getLeftPassLocation() {

@@ -104,7 +104,7 @@ public final class SwerveConstants {
   public static final Current driveMotorSupplyLimitLow = Amps.of(40);
   public static final Time driveSupplyCurrentLowerTime = Seconds.of(1);
   public static final Distance wheelDiameter = Inches.of(3.0); // 2.84
-  public static final Distance wheelRadius = wheelDiameter.div(2);
+  public static final Distance wheelRadius = wheelDiameter.div(2.0);
   public static final double driveMotorReduction = (45.0 * 28.0) / (20.0 * 15.0);
   public static final DCMotor driveGearbox = DCMotor.getKrakenX60Foc(1);
   public static final InvertedValue driveMotorLeftDirection = InvertedValue.Clockwise_Positive;

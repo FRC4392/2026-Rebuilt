@@ -172,15 +172,15 @@ public class OperatorInterface extends SubsystemBase {
   }
 
   public Trigger intakeButton() {
-    return operatorController.y();
+    return operatorController.y().or(driverController.leftTrigger());
   }
 
-  public Trigger outtakeButton() {
-    return operatorController.rightBumper();
-  }
+  // public Trigger outtakeButton() {
+  //   return operatorController.rightBumper();
+  // }
 
   public Trigger extendButton() {
-    return operatorController.b();
+    return operatorController.a();
   }
 
   public Trigger retractButton() {
@@ -212,5 +212,26 @@ public class OperatorInterface extends SubsystemBase {
 
   public Trigger testDownTurret() {
     return operatorController.povDown();
+  }
+
+  public Trigger feedStop() {
+    return operatorController.leftBumper();
+  }
+
+  // Force Triggers
+  public Trigger forceHub() {
+    return operatorController.rightBumper();
+  }
+
+  public Trigger forceFeedLeft() {
+    return operatorController.leftTrigger(0.1);
+  }
+
+  public Trigger forceFeedRight() {
+    return operatorController.rightTrigger(0.1);
+  }
+
+  public Trigger trenchMode() {
+    return operatorController.x().or(driverController.leftBumper());
   }
 }

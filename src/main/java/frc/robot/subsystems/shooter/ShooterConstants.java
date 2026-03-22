@@ -89,7 +89,7 @@ public class ShooterConstants {
   public static final double turretMotorKs = 0.4;
   public static final double turretMotorKa = 0.0;
 
-  public static final AngularVelocity turretcruiseVelocity = RotationsPerSecond.of(3.5);
+  public static final AngularVelocity turretcruiseVelocity = RotationsPerSecond.of(1); // 3.5
   public static final AngularAcceleration turretAcceleration = RotationsPerSecondPerSecond.of(50);
 
   // Hood Motor
@@ -126,10 +126,18 @@ public class ShooterConstants {
   static {
     hoodAngleMap.put(1.12, new Rotation2d(Degrees.of(2)));
     flywheelSpeedMap.put(1.12, 31.0);
-    timeOfFlightMap.put(1.12, 2.1825);
+    timeOfFlightMap.put(1.12, .56);
 
     hoodAngleMap.put(5.56, new Rotation2d(Degrees.of(30)));
     flywheelSpeedMap.put(5.56, 42.0);
-    timeOfFlightMap.put(5.56, 2.1825); // TODO: get time
+    timeOfFlightMap.put(5.56, .89);
+
+    passingHoodAngleMap.put(3.05, new Rotation2d(Degrees.of(30)));
+    passingFlywheelSpeedMap.put(3.05, 22.0);
+    passingTimeOfFlightMap.put(3.05, 1.0);
+
+    passingHoodAngleMap.put(14.25, new Rotation2d(Degrees.of(31)));
+    passingFlywheelSpeedMap.put(14.25, 73.0);
+    passingTimeOfFlightMap.put(14.25, 1.0);
   }
 }

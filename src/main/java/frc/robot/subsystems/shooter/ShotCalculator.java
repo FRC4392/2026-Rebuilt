@@ -118,6 +118,10 @@ public class ShotCalculator {
 
     // Calculate field relative launcher velocity
     var robotVelocity = robotState.getSetpointsSpeeds();
+
+    robotVelocity =
+        ChassisSpeeds.fromRobotRelativeSpeeds(
+            robotState.getSetpointsSpeeds(), robotState.getRobotPose().getRotation());
     var robotAngle = robotState.getRobotPose().getRotation();
 
     ChassisSpeeds shooterVelocity =
@@ -174,15 +178,6 @@ public class ShotCalculator {
             ? RotationsPerSecond.of(passingFlywheelSpeedMap.get(lookaheadShooterToTargetDistance))
             : RotationsPerSecond.of(flywheelSpeedMap.get(shooterToTargetDistance));
 
-    Logger.recordOutput("Shooter/Shot Calculator/Angle", turretAngle);
-    Logger.recordOutput("Shooter/Shot Calculator/Velocity", flywheelVelocity);
-    Logger.recordOutput("Shooter/Shot Calculator/Hood", hoodAngle);
-    Logger.recordOutput("Shooter/Shot Calculator/Shot Type", shotType);
-    Logger.recordOutput(
-        "Shooter/Shot Calculator/Shooter Distance", Meters.of(shooterToTargetDistance));
-    Logger.recordOutput(
-        "Shooter/Shot Calculator/Lookahead Shooter Distance",
-        Meters.of(lookaheadShooterToTargetDistance));
     Logger.recordOutput("Shooter/Shot Calculator/Lookahead Pose", lookaheadPose);
 
     latestParameters =
@@ -197,6 +192,8 @@ public class ShotCalculator {
             Meters.of(shooterToTargetDistance),
             Seconds.of(timeOfFlight),
             shotType == ShotType.Pass);
+
+    Logger.recordOutput("Shooter/Shot Calculator/Shot Parameters", shooterToTargetDistance);
 
     return latestParameters;
   }

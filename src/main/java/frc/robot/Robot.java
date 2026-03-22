@@ -85,6 +85,8 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+    HubShiftUtil.getOfficialShiftInfo();
+    HubShiftUtil.getShiftedShiftInfo();
   }
 
   @Override

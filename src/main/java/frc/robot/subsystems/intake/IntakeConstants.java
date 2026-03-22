@@ -70,7 +70,7 @@ public class IntakeConstants {
 
   // Roller Parameters
   public static final Current rollerStatorCurrentLimit = Amps.of(120);
-  public static final Current rollerMotorSupplyLimitHigh = Amps.of(60);
+  public static final Current rollerMotorSupplyLimitHigh = Amps.of(80);
   public static final Current rollerMotorSupplyLimitLow = Amps.of(40);
   public static final Time rollerSupplyCurrentLowerTime = Seconds.of(1);
 

@@ -2,7 +2,6 @@ package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Celsius;
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
@@ -91,11 +90,12 @@ public class ShooterIOReal implements ShooterIO {
   private final Debouncer turretMotorConnectedDebouncer = new Debouncer(.25);
   private final Debouncer hoodMotorConnectedDebouncer = new Debouncer(.25);
   private final Debouncer turretAbsoluteEncoderDebouncer = new Debouncer(.25);
-  private boolean turretInitialized = false;
+//   private boolean turretInitialized = false;
 
   public ShooterIOReal() {
 
-    turretEncoder = new DutyCycleEncoder(TurretEncoderPin, 1, 0.6316);
+    turretEncoder = new DutyCycleEncoder(TurretEncoderPin, 1, 0.639);
+    turretEncoder.setInverted(true);
 
     // Shooter Motor 1
     shooterMotor1 = new TalonFX(shooterMotor1CanID);
@@ -265,7 +265,7 @@ public class ShooterIOReal implements ShooterIO {
 
     tryUntilOk(5, () -> turretMotor.getConfigurator().apply(turretConfiguration, 0.25));
 
-    turretMotor.setPosition(Rotations.of(turretEncoder.get()));
+    tryUntilOk(5, () -> turretMotor.setPosition(Rotations.of(0.5)));
 
     turretPosition = turretMotor.getPosition();
     turretVelocity = turretMotor.getVelocity();
@@ -387,13 +387,13 @@ public class ShooterIOReal implements ShooterIO {
         turretAbsoluteEncoderDebouncer.calculate(turretEncoder.isConnected());
     inputs.turretAbsoluteAngle = Rotations.of(turretEncoder.get());
 
-    if (!turretInitialized) {
-      turretMotor.setPosition(Rotations.of(turretEncoder.get()));
+    // if (!turretInitialized) {
+    //   turretMotor.setPosition(Rotations.of(turretEncoder.get()));
 
-      if (turretPosition.getValue().isNear(Rotations.of(turretEncoder.get()), Degrees.of(.5))) {
-        turretInitialized = true;
-      }
-    }
+    //   if (turretPosition.getValue().isNear(Rotations.of(turretEncoder.get()), Degrees.of(.5))) {
+    //     turretInitialized = true;
+    //   }
+    // }
   }
 
   @Override
