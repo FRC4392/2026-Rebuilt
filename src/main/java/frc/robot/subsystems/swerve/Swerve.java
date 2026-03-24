@@ -10,14 +10,12 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
+import choreo.trajectory.SwerveSample;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.pathfinding.Pathfinding;
-import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -46,7 +44,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.DeceiverRobotState;
 import frc.robot.RobotConstants;
 import frc.robot.RobotConstants.Mode;
-import frc.robot.lib.pathplanner.LocalADStarAK;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -82,6 +79,10 @@ public class Swerve extends SubsystemBase {
 
   private SwerveState state = SwerveState.other;
 
+  private final PIDController xController = new PIDController(4.0, 0, 0);
+  private final PIDController yController = new PIDController(4.0, 0, 0);
+  private final PIDController rotationController = new PIDController(4.0, 0, 0);
+
   /**
    * Create a new swerve subsystem
    *
@@ -110,26 +111,26 @@ public class Swerve extends SubsystemBase {
     // SwerveOdometryThread.getInstance().start();
 
     // Configure AutoBuilder for PathPlanner
-    AutoBuilder.configure(
-        this::getPose,
-        this::setPose,
-        this::getChassisSpeeds,
-        this::autoRunVelocity,
-        new PPHolonomicDriveController(
-            new PIDConstants(4, 0.0, 0.0), new PIDConstants(4, 0.0, 0.0)),
-        ppConfig,
-        () -> robotState.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
-        this);
-    Pathfinding.setPathfinder(new LocalADStarAK());
-    PathPlannerLogging.setLogActivePathCallback(
-        (activePath) -> {
-          Logger.recordOutput(
-              "Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
-        });
-    PathPlannerLogging.setLogTargetPoseCallback(
-        (targetPose) -> {
-          Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
-        });
+    // AutoBuilder.configure(
+    //     this::getPose,
+    //     this::setPose,
+    //     this::getChassisSpeeds,
+    //     this::autoRunVelocity,
+    //     new PPHolonomicDriveController(
+    //         new PIDConstants(4, 0.0, 0.0), new PIDConstants(4, 0.0, 0.0)),
+    //     ppConfig,
+    //     () -> robotState.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+    //     this);
+    // Pathfinding.setPathfinder(new LocalADStarAK());
+    // PathPlannerLogging.setLogActivePathCallback(
+    //     (activePath) -> {
+    //       Logger.recordOutput(
+    //           "Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
+    //     });
+    // PathPlannerLogging.setLogTargetPoseCallback(
+    //     (targetPose) -> {
+    //       Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
+    //     });
 
     // Configure SysId
     sysId =
@@ -140,6 +141,8 @@ public class Swerve extends SubsystemBase {
                 null,
                 (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism((voltage) -> runCharacterization(voltage), null, this));
+
+    rotationController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   @Override
@@ -205,6 +208,21 @@ public class Swerve extends SubsystemBase {
     robotState.setRobotTranslation(getPose().getTranslation());
     robotState.setRobotPose(this.getPose());
     robotState.setRobotSpeeds(this.getChassisSpeeds());
+  }
+
+  public void followTrajectory(SwerveSample sample) {
+    Pose2d pose = sample.getPose();
+
+    // Field relative chasis speeds
+    ChassisSpeeds speeds =
+        new ChassisSpeeds(
+            sample.vx + xController.calculate(pose.getX(), sample.x),
+            sample.vy + xController.calculate(pose.getY(), sample.y),
+            sample.omega + xController.calculate(pose.getRotation().getRadians(), sample.heading));
+
+    speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getRotation());
+
+    autoRunVelocity(speeds);
   }
 
   private void autoRunVelocity(ChassisSpeeds speeds) {

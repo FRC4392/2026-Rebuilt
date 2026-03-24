@@ -4,12 +4,18 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import choreo.auto.AutoFactory;
+import choreo.auto.AutoRoutine;
+import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.lib.geometry.AllianceFlipUtil;
 import frc.robot.lib.geometry.Bounds;
@@ -26,6 +32,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.Shooter.TargetLocation;
 import frc.robot.subsystems.shooter.ShooterIO;
@@ -41,6 +48,7 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import java.util.Optional;
 
 public class RobotContainer {
   private final DeceiverRobotState robotState;
@@ -54,6 +62,9 @@ public class RobotContainer {
   // public final Climber climber;
   public final Intake intake;
   public final Vision vision;
+  public final Leds leds;
+
+  public final AutoFactory autoFactory;
 
   // Operator Interface
   private final OperatorInterface operatorInterface;
@@ -68,6 +79,8 @@ public class RobotContainer {
 
     // Lower brownout voltage
     RobotController.setBrownoutVoltage(6.0);
+
+    leds = new Leds();
 
     // Create subsystem hardware
     switch (RobotConstants.currentMode) {
@@ -138,11 +151,19 @@ public class RobotContainer {
     // TODO: Sim operator interface
     operatorInterface = new OperatorInterface(robotState);
 
+    // Auto Factory
+    autoFactory =
+        new AutoFactory(swerve::getPose, swerve::setPose, swerve::followTrajectory, true, swerve);
+
     configureAutoModes();
     configureBindings();
   }
 
-  private void configureAutoModes() {}
+  private void configureAutoModes() {
+    operatorInterface.addAutoOption("Left Trench", leftTrenchAutoRoutine());
+
+    operatorInterface.addAutoOption("Right Trench", rightTrenchAutoRoutine());
+  }
 
   private void configureBindings() {
     // Swerve Controls
@@ -220,21 +241,55 @@ public class RobotContainer {
     operatorInterface.extendButton().onTrue(intake.setExtensionDistance(Inches.of(10)));
     operatorInterface.retractButton().onTrue(intake.setExtensionDistance(Inches.of(0)));
 
-    // operatorInterface
-    //     .trenchMode()
-    //     .whileTrue(shooter.setPose(Degrees.of(0), Degrees.of(0), RotationsPerSecond.of(32)));
+    operatorInterface
+        .trenchMode()
+        .whileTrue(shooter.setPose(Degrees.of(0), Degrees.of(0), RotationsPerSecond.of(32)));
 
-    Trigger enableTrigger = new Trigger(() -> robotState.isEnabled());
+    HubShiftUtil.setAllianceWinOverride(
+        () -> Optional.of(operatorInterface.shiftOverride().getAsBoolean()));
 
-    enableTrigger.onTrue(
-        Commands.runOnce(
-            () -> {
-              HubShiftUtil.initialize();
-              System.out.println("Enabled");
-            }));
+    RobotModeTriggers.teleop()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  HubShiftUtil.initialize();
+                  System.out.println("Enabled");
+                }));
   }
 
   public Command getAutonomousCommand() {
     return operatorInterface.getAutoCommand();
+  }
+
+  // Autos
+  private Command leftTrenchAutoRoutine() {
+    AutoRoutine routine = autoFactory.newRoutine("Left Trench Auto");
+
+    AutoTrajectory leftTrenchTrajectory = routine.trajectory("Left_Path");
+
+    routine
+        .active()
+        .onTrue(
+            Commands.sequence(leftTrenchTrajectory.resetOdometry(), leftTrenchTrajectory.cmd()));
+
+    return routine.cmd();
+  }
+
+  private Command rightTrenchAutoRoutine() {
+    AutoRoutine routine = autoFactory.newRoutine("Right Trench Auto");
+
+    AutoTrajectory rightTrenchTrajectory1 = routine.trajectory("Right_Path", 0);
+    AutoTrajectory rightTrenchTrajectory2 = routine.trajectory("Right_Path", 1);
+
+    routine
+        .active()
+        .onTrue(
+            Commands.sequence(
+                rightTrenchTrajectory1.resetOdometry(),
+                rightTrenchTrajectory1.cmd(),
+                Commands.waitSeconds(5),
+                rightTrenchTrajectory2.cmd()));
+
+    return routine.cmd();
   }
 }

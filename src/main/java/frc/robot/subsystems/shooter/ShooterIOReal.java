@@ -90,7 +90,7 @@ public class ShooterIOReal implements ShooterIO {
   private final Debouncer turretMotorConnectedDebouncer = new Debouncer(.25);
   private final Debouncer hoodMotorConnectedDebouncer = new Debouncer(.25);
   private final Debouncer turretAbsoluteEncoderDebouncer = new Debouncer(.25);
-//   private boolean turretInitialized = false;
+  //   private boolean turretInitialized = false;
 
   public ShooterIOReal() {
 

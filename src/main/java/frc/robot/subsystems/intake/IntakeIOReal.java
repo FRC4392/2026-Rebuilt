@@ -1,5 +1,8 @@
 package frc.robot.subsystems.intake;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Radians;
 import static frc.robot.lib.util.PhoenixUtil.tryUntilOk;
 import static frc.robot.subsystems.intake.IntakeConstants.*;
 
@@ -25,6 +28,7 @@ import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 
@@ -113,7 +117,10 @@ public class IntakeIOReal implements IntakeIO {
                     .withPeakReverseTorqueCurrent(extenstionStatorCurrentLimit.unaryMinus()));
 
     tryUntilOk(5, () -> extensionMotor.getConfigurator().apply(extensionConfiguration, 0.25));
-    tryUntilOk(5, () -> extensionMotor.setPosition(0));
+    Distance distance = Inches.of(10);
+    Angle tempSetpoint =
+        Radians.of(distance.in(Meters) / (extensionDriveDiameter.in(Meters) / 2.0));
+    tryUntilOk(5, () -> extensionMotor.setPosition(tempSetpoint));
 
     // Extension signals
     extensionPosition = extensionMotor.getPosition();
