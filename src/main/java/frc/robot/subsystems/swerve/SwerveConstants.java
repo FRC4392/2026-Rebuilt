@@ -46,7 +46,7 @@ import frc.robot.lib.util.PhoenixUtil.ClosedLoopControlType;
 public final class SwerveConstants {
   private SwerveConstants() {}
 
-  public static final LinearVelocity maxSpeed = MetersPerSecond.of(4.8);
+  public static final LinearVelocity maxSpeed = MetersPerSecond.of(5.4);
   public static final double odometryFrequencyHz = 100.0; // Hz
   public static final Distance trackWidth = Inches.of(22.5);
   public static final Distance wheelBase = Inches.of(22.5);
@@ -114,12 +114,12 @@ public final class SwerveConstants {
       ClosedLoopControlType.Voltage;
 
   // Drive PID configuration
-  public static final double driveKp = 0.05;
+  public static final double driveKp = 1;
   public static final double driveKi = 0.0;
   public static final double driveKd = 0.0;
 
   public static final double driveKs = 0.15;
-  public static final double driveKv = 0.5;
+  public static final double driveKv = 0.67;
   public static final double driveKa = 0.0;
 
   public static final double driveSimP = 0.05;

@@ -144,10 +144,31 @@ public class Intake extends SubsystemBase {
    */
   public Command runRollerIntake() {
     return this.runEnd(
+            () -> {
+              intakeIO.setRoller(intakeVoltage);
+            },
+            this::rollerStop)
+        .withName("RollerIntake");
+  }
+
+  public Command runIntakeAuto() {
+    return this.runEnd(
+            () -> {
+              intakeIO.setRoller(intakeVoltage);
+            },
+            () -> {
+              intakeIO.setExtension(extensionDistanceToAngle(Inches.of(6)));
+              intakeIO.setRoller(Volts.of(2));
+            })
+        .beforeStarting(setExtensionDistance(extendedDistance))
+        .withName("RollerIntake");
+  }
+
+  public Command runRollerIntakeAuto() {
+    return this.run(
         () -> {
           intakeIO.setRoller(intakeVoltage);
-        },
-        this::rollerStop);
+        });
   }
 
   /**
@@ -210,6 +231,18 @@ public class Intake extends SubsystemBase {
 
   public Command setExtensionDistance(Distance distance) {
     return this.runOnce(() -> intakeIO.setExtension(extensionDistanceToAngle(distance)));
+  }
+
+  public Command feedMode() {
+    return this.runEnd(
+        () -> {
+          intakeIO.setExtension(extensionDistanceToAngle(Inches.of(6)));
+          intakeIO.setRoller(Volts.of(2));
+        },
+        () -> {
+          intakeIO.setExtension(extensionDistanceToAngle(Inches.of(10)));
+          intakeIO.setRoller(Volts.of(0));
+        });
   }
 
   // TODO: Command for extending the intake automatically

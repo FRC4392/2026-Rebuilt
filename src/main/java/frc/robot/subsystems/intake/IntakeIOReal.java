@@ -44,7 +44,9 @@ public class IntakeIOReal implements IntakeIO {
   private final MotionMagicVoltage extensionPositionRequest = new MotionMagicVoltage(0);
 
   private final VoltageOut rollerVoltageRequest = new VoltageOut(0);
+  private final VoltageOut rollerVoltageRequest2 = new VoltageOut(0);
   private final TorqueCurrentFOC rollTorqueCurrentRequest = new TorqueCurrentFOC(0);
+  private final TorqueCurrentFOC rollTorqueCurrentRequest2 = new TorqueCurrentFOC(0);
 
   // Status Signals
   private final StatusSignal<Angle> extensionPosition;
@@ -117,7 +119,7 @@ public class IntakeIOReal implements IntakeIO {
                     .withPeakReverseTorqueCurrent(extenstionStatorCurrentLimit.unaryMinus()));
 
     tryUntilOk(5, () -> extensionMotor.getConfigurator().apply(extensionConfiguration, 0.25));
-    Distance distance = Inches.of(10);
+    Distance distance = Inches.of(0);
     Angle tempSetpoint =
         Radians.of(distance.in(Meters) / (extensionDriveDiameter.in(Meters) / 2.0));
     tryUntilOk(5, () -> extensionMotor.setPosition(tempSetpoint));
@@ -166,7 +168,7 @@ public class IntakeIOReal implements IntakeIO {
                     .withPeakForwardTorqueCurrent(rollerStatorCurrentLimit)
                     .withPeakReverseTorqueCurrent(rollerStatorCurrentLimit.unaryMinus()));
 
-    TalonFXConfiguration rightRollerConfiguration = leftRollerConfiguration;
+    TalonFXConfiguration rightRollerConfiguration = leftRollerConfiguration.clone();
     rightRollerConfiguration.MotorOutput.Inverted = rightRollerInverted;
 
     tryUntilOk(5, () -> leftRollerMotor.getConfigurator().apply(leftRollerConfiguration));
@@ -186,7 +188,8 @@ public class IntakeIOReal implements IntakeIO {
     rightRollerTemperature = rightRollerMotor.getDeviceTemp();
 
     // Roller requests
-    rollerVoltageRequest.EnableFOC = false;
+    rollerVoltageRequest.EnableFOC = true;
+    rollerVoltageRequest2.EnableFOC = true;
 
     // Optimize bus utilization
     BaseStatusSignal.setUpdateFrequencyForAll(
@@ -284,13 +287,13 @@ public class IntakeIOReal implements IntakeIO {
   public void setRoller(Voltage volts) {
     leftRollerMotor.setControl(rollerVoltageRequest.withOutput(volts));
     // Uncoment if follower in the constructor doesn't work
-    // rightRollerMotor.setControl(new Follower(leftRollerCanID, MotorAlignmentValue.Opposed));
+    rightRollerMotor.setControl(rollerVoltageRequest2.withOutput(volts));
   }
 
   @Override
   public void setRoller(Current current) {
     leftRollerMotor.setControl(rollTorqueCurrentRequest.withOutput(current));
     // Uncoment if follower in the constructor doesn't work
-    // rightRollerMotor.setControl(new Follower(leftRollerCanID, MotorAlignmentValue.Opposed));
+    rightRollerMotor.setControl(rollTorqueCurrentRequest2.withOutput(current));
   }
 }

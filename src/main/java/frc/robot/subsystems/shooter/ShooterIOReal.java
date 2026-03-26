@@ -2,6 +2,7 @@ package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Celsius;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
@@ -25,6 +26,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -83,6 +85,8 @@ public class ShooterIOReal implements ShooterIO {
 
   private final SparkClosedLoopController hoodPIDController;
   private final RelativeEncoder hoodEncoder;
+
+  private AbsoluteEncoder turretEncoderSpark;
 
   // Debouncers
   private final Debouncer shooterMotor1ConnectedDebouncer = new Debouncer(.25);
@@ -265,7 +269,7 @@ public class ShooterIOReal implements ShooterIO {
 
     tryUntilOk(5, () -> turretMotor.getConfigurator().apply(turretConfiguration, 0.25));
 
-    tryUntilOk(5, () -> turretMotor.setPosition(Rotations.of(0.5)));
+    // tryUntilOk(5, () -> turretMotor.setPosition(Rotations.of(0.5)));
 
     turretPosition = turretMotor.getPosition();
     turretVelocity = turretMotor.getVelocity();
@@ -394,6 +398,11 @@ public class ShooterIOReal implements ShooterIO {
     //     turretInitialized = true;
     //   }
     // }
+
+    if (!Rotations.of(turretEncoderSpark.getPosition())
+        .isNear(turretMotor.getPosition().getValue(), Degrees.of(10))) {
+      turretMotor.setPosition(Rotations.of(turretEncoderSpark.getPosition()));
+    }
   }
 
   @Override
@@ -434,5 +443,12 @@ public class ShooterIOReal implements ShooterIO {
   @Override
   public void setHood(Angle angle) {
     hoodPIDController.setSetpoint(angle.in(Rotations), ControlType.kPosition);
+  }
+
+  @Override
+  public void setTurretAbsoluteEncoder(AbsoluteEncoder encoder) {
+    turretEncoderSpark = encoder;
+
+    tryUntilOk(5, () -> turretMotor.setPosition(Rotations.of(encoder.getPosition())));
   }
 }

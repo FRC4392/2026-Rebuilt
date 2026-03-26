@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.revrobotics.AbsoluteEncoder;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -34,4 +35,8 @@ public interface HopperIO {
   public default void updateInputs(HopperIOInputs inputs) {}
 
   public default void setVoltage(Voltage volts) {}
+
+  public default AbsoluteEncoder getTurretAbsoluteEncoder() {
+    return null;
+  }
 }

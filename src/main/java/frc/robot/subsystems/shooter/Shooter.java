@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.revrobotics.AbsoluteEncoder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Angle;
@@ -46,13 +47,20 @@ public class Shooter extends SubsystemBase {
           " Turret Absolute Encoder Disconnected, turret may be inaccurate", AlertType.kError);
 
   /** Creates a new Shooter. */
-  public Shooter(ShooterIO IO) {
+  public Shooter(ShooterIO IO, Supplier<AbsoluteEncoder> turrentEncoder) {
     shooterIO = IO;
     robotState = DeceiverRobotState.getInstance();
+
+    shooterIO.setTurretAbsoluteEncoder(turrentEncoder.get());
   }
 
   @Override
   public void periodic() {
+    if (this.getCurrentCommand() != null) {
+      Logger.recordOutput("CurretCommand", this.getCurrentCommand().getName());
+    } else {
+      Logger.recordOutput("CurretCommand", "None");
+    }
     shooterIO.updateInputs(inputs);
     Logger.processInputs("Shooter", inputs);
 

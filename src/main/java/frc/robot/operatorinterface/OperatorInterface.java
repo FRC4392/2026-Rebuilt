@@ -3,6 +3,7 @@ package frc.robot.operatorinterface;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.operatorinterface.OperatorInterfaceConstants.*;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -56,7 +57,7 @@ public class OperatorInterface extends SubsystemBase {
     resetRobotStateBoolean.setDefault(false);
 
     // Set up auto chooser
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices");
+    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     autoChooser.addDefaultOption("None", noAuto);
 
     // Remove controller disconnected message, we handle this on our own
@@ -236,5 +237,9 @@ public class OperatorInterface extends SubsystemBase {
 
   public Trigger shiftOverride() {
     return operatorController.back();
+  }
+
+  public Trigger feedMode() {
+    return operatorController.povDown();
   }
 }

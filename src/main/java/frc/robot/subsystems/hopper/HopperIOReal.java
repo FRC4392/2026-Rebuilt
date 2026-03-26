@@ -22,6 +22,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -36,6 +37,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.lib.util.SparkUtil;
 import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.Logger;
 
 public class HopperIOReal implements HopperIO {
   // Motors
@@ -43,6 +45,8 @@ public class HopperIOReal implements HopperIO {
   public final SparkMax hopperTopMotor;
 
   public final RelativeEncoder hopperTopMotorEncoder;
+
+  public final AbsoluteEncoder turretAbsoluteEncoder;
 
   // Conrtol Requests
   private final VoltageOut voltageRequest = new VoltageOut(0);
@@ -120,6 +124,8 @@ public class HopperIOReal implements HopperIO {
     topMotorConfig.inverted(topRollerInverted);
     topMotorConfig.encoder.positionConversionFactor(topRollerRatio);
     topMotorConfig.encoder.velocityConversionFactor(topRollerRatio);
+    topMotorConfig.absoluteEncoder.inverted(true);
+    topMotorConfig.absoluteEncoder.positionConversionFactor(1.0);
 
     SparkUtil.tryUntilOk(
         hopperTopMotor,
@@ -129,6 +135,8 @@ public class HopperIOReal implements HopperIO {
                 topMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
 
     hopperTopMotorEncoder = hopperTopMotor.getEncoder();
+
+    turretAbsoluteEncoder = hopperTopMotor.getAbsoluteEncoder();
   }
 
   @Override
@@ -166,11 +174,18 @@ public class HopperIOReal implements HopperIO {
         hopperTopMotorEncoder::getVelocity,
         (value) -> inputs.topMotorVelocity = RotationsPerSecond.of(value * 60));
     inputs.topMotorConnected = topMotorConnectDebouncer.calculate(!sparkStickyFault);
+
+    Logger.recordOutput("Turret Rotation", Rotations.of(turretAbsoluteEncoder.getPosition()));
   }
 
   @Override
   public void setVoltage(Voltage volts) {
     bottomHopperMotor.setControl(voltageRequest.withOutput(volts));
     hopperTopMotor.setVoltage(volts);
+  }
+
+  @Override
+  public AbsoluteEncoder getTurretAbsoluteEncoder() {
+    return turretAbsoluteEncoder;
   }
 }

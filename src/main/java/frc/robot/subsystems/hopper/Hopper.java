@@ -6,6 +6,7 @@ package frc.robot.subsystems.hopper;
 
 import static edu.wpi.first.units.Units.Volts;
 
+import com.revrobotics.AbsoluteEncoder;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -51,5 +52,9 @@ public class Hopper extends SubsystemBase {
 
   public Command runTestVoltage() {
     return this.runEnd(() -> setVoltage(Volts.of(10)), () -> setVoltage(Volts.of(0)));
+  }
+
+  public AbsoluteEncoder getTurretAbsoluteEncoder() {
+    return hopperIO.getTurretAbsoluteEncoder();
   }
 }
