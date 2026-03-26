@@ -1,37 +1,67 @@
 package frc.robot.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Celsius;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.lib.util.PhoenixUtil.tryUntilOk;
+import static frc.robot.lib.util.SparkUtil.*;
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
-import static frc.robot.util.PhoenixUtil.tryUntilOk;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.AudioConfigs;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.FeedbackSensor;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import frc.robot.lib.util.SparkUtil;
+import java.util.function.DoubleSupplier;
 
 public class ShooterIOReal implements ShooterIO {
   // Motors
-  public final TalonFX shooterMotor1;
-  public final TalonFX shooterMotor2;
-  public final TalonFX turretMotor;
-  public final TalonFX hoodMotor;
+  private final TalonFX shooterMotor1;
+  private final TalonFX shooterMotor2;
+  private final TalonFX turretMotor;
+  private final SparkMax hoodMotor;
+
+  // Encoder
+  private final DutyCycleEncoder turretEncoder;
 
   // Conrtol Requests
-  private final VoltageOut voltageRequest = new VoltageOut(0);
+  private final VoltageOut shooterVoltageRequest = new VoltageOut(0);
+  private final VelocityVoltage shooterVelocityRequest = new VelocityVoltage(0);
+
+  private final VoltageOut shooter2VoltageRequest = new VoltageOut(0);
+  private final VelocityVoltage shooter2VelocityRequest = new VelocityVoltage(0);
+
+  private final MotionMagicVoltage turretMotionMagic = new MotionMagicVoltage(0);
   private final VoltageOut turretvoltageRequest = new VoltageOut(0);
 
   // Status Signals
@@ -53,16 +83,23 @@ public class ShooterIOReal implements ShooterIO {
   private final StatusSignal<Current> turretCurrent;
   private final StatusSignal<Temperature> turretTemperatre;
 
-  private final StatusSignal<Angle> hoodPosition;
-  private final StatusSignal<AngularVelocity> hoodVelocity;
-  private final StatusSignal<Voltage> hoodVoltage;
-  private final StatusSignal<Current> hoodCurrent;
-  private final StatusSignal<Temperature> hoodTemperatre;
+  private final SparkClosedLoopController hoodPIDController;
+  private final RelativeEncoder hoodEncoder;
+
+  private AbsoluteEncoder turretEncoderSpark;
 
   // Debouncers
-  private final Debouncer motorConnectDebouncer = new Debouncer(.25);
+  private final Debouncer shooterMotor1ConnectedDebouncer = new Debouncer(.25);
+  private final Debouncer shooterMotor2ConnectedDebouncer = new Debouncer(.25);
+  private final Debouncer turretMotorConnectedDebouncer = new Debouncer(.25);
+  private final Debouncer hoodMotorConnectedDebouncer = new Debouncer(.25);
+  private final Debouncer turretAbsoluteEncoderDebouncer = new Debouncer(.25);
+  //   private boolean turretInitialized = false;
 
   public ShooterIOReal() {
+
+    turretEncoder = new DutyCycleEncoder(TurretEncoderPin, 1, 0.639);
+    turretEncoder.setInverted(true);
 
     // Shooter Motor 1
     shooterMotor1 = new TalonFX(shooterMotor1CanID);
@@ -92,13 +129,13 @@ public class ShooterIOReal implements ShooterIO {
                     .withNeutralMode(shooterMotor1NeutralMode))
             .withSlot0(
                 new Slot0Configs()
-                    .withKP(shooterMotor1Kp)
-                    .withKI(shooterMotor1Ki)
-                    .withKD(shooterMotor1Kd)
+                    .withKP(shooterKp)
+                    .withKI(shooterKi)
+                    .withKD(shooterKd)
                     .withKG(0)
-                    .withKV(shooterMotor1Kv)
-                    .withKS(shooterMotor1Ks)
-                    .withKA(shooterMotor1Ka))
+                    .withKV(shooterKv)
+                    .withKS(shooterKs)
+                    .withKA(shooterKa))
             .withTorqueCurrent(
                 new TorqueCurrentConfigs()
                     .withPeakForwardTorqueCurrent(shooterMotor1StatorCurrentLimit)
@@ -121,7 +158,9 @@ public class ShooterIOReal implements ShooterIO {
         shooterMotor1Temperatre);
     ParentDevice.optimizeBusUtilizationForAll(shooterMotor1);
 
-    voltageRequest.EnableFOC = true;
+    // Disable FOC on all motors due to weird issues being reported
+    shooterVoltageRequest.EnableFOC = false;
+    shooterVelocityRequest.EnableFOC = false;
 
     // Shooter Motor 2
     shooterMotor2 = new TalonFX(shooterMotor2CanID);
@@ -151,13 +190,13 @@ public class ShooterIOReal implements ShooterIO {
                     .withNeutralMode(shooterMotor2NeutralMode))
             .withSlot0(
                 new Slot0Configs()
-                    .withKP(shooterMotor2Kp)
-                    .withKI(shooterMotor2Ki)
-                    .withKD(shooterMotor2Kd)
+                    .withKP(shooterKp)
+                    .withKI(shooterKi)
+                    .withKD(shooterKd)
                     .withKG(0)
-                    .withKV(shooterMotor2Kv)
-                    .withKS(shooterMotor2Ks)
-                    .withKA(shooterMotor2Ka))
+                    .withKV(shooterKv)
+                    .withKS(shooterKs)
+                    .withKA(shooterKa))
             .withTorqueCurrent(
                 new TorqueCurrentConfigs()
                     .withPeakForwardTorqueCurrent(shooterMotor2StatorCurrentLimit)
@@ -180,7 +219,9 @@ public class ShooterIOReal implements ShooterIO {
         shooterMotor2Temperatre);
     ParentDevice.optimizeBusUtilizationForAll(shooterMotor2);
 
-    voltageRequest.EnableFOC = true;
+    // Disable FOC on all motors due to weird issues being reported
+    shooter2VoltageRequest.EnableFOC = false;
+    shooter2VelocityRequest.EnableFOC = false;
 
     // Turret Motor
     turretMotor = new TalonFX(turretMotorCanID);
@@ -220,9 +261,15 @@ public class ShooterIOReal implements ShooterIO {
             .withTorqueCurrent(
                 new TorqueCurrentConfigs()
                     .withPeakForwardTorqueCurrent(turretMotorStatorCurrentLimit)
-                    .withPeakReverseTorqueCurrent(turretMotorStatorCurrentLimit.unaryMinus()));
+                    .withPeakReverseTorqueCurrent(turretMotorStatorCurrentLimit.unaryMinus()))
+            .withMotionMagic(
+                new MotionMagicConfigs()
+                    .withMotionMagicCruiseVelocity(turretcruiseVelocity)
+                    .withMotionMagicAcceleration(turretAcceleration));
 
     tryUntilOk(5, () -> turretMotor.getConfigurator().apply(turretConfiguration, 0.25));
+
+    // tryUntilOk(5, () -> turretMotor.setPosition(Rotations.of(0.5)));
 
     turretPosition = turretMotor.getPosition();
     turretVelocity = turretMotor.getVelocity();
@@ -234,61 +281,44 @@ public class ShooterIOReal implements ShooterIO {
         50.0, turretPosition, turretVelocity, turretVoltage, turretCurrent, turretTemperatre);
     ParentDevice.optimizeBusUtilizationForAll(turretMotor);
 
-    voltageRequest.EnableFOC = true;
+    // Disable FOC on all motors due to weird issues being reported
+    turretvoltageRequest.EnableFOC = false;
+    turretMotionMagic.EnableFOC = false;
 
     // Hood Motor
-    hoodMotor = new TalonFX(hoodMotorCanID);
+    hoodMotor = new SparkMax(hoodMotorCanID, MotorType.kBrushless);
 
-    TalonFXConfiguration hoodConfiguration =
-        new TalonFXConfiguration()
-            .withAudio(
-                new AudioConfigs()
-                    .withAllowMusicDurDisable(enableBeeps)
-                    .withBeepOnBoot(enableBeeps)
-                    .withBeepOnConfig(enableBeeps))
-            .withCurrentLimits(
-                new CurrentLimitsConfigs()
-                    .withStatorCurrentLimit(hoodStatorCurrentLimit)
-                    .withStatorCurrentLimitEnable(true)
-                    .withSupplyCurrentLimit(hoodMotorSupplyLimitHigh)
-                    .withSupplyCurrentLowerLimit(hoodMotorSupplyLimitLow)
-                    .withSupplyCurrentLowerTime(hoodSupplyCurrentLowerTime)
-                    .withSupplyCurrentLimitEnable(true))
-            .withFeedback(
-                new FeedbackConfigs()
-                    .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-                    .withSensorToMechanismRatio(hoodMotorReduction))
-            .withMotorOutput(
-                new MotorOutputConfigs()
-                    .withInverted(hoodInverted)
-                    .withNeutralMode(hoodNeutralMode))
-            .withSlot0(
-                new Slot0Configs()
-                    .withKP(hoodKp)
-                    .withKI(hoodKi)
-                    .withKD(hoodKd)
-                    .withKG(0)
-                    .withKV(hoodKv)
-                    .withKS(hoodKs)
-                    .withKA(hoodKa))
-            .withTorqueCurrent(
-                new TorqueCurrentConfigs()
-                    .withPeakForwardTorqueCurrent(hoodStatorCurrentLimit)
-                    .withPeakReverseTorqueCurrent(hoodStatorCurrentLimit.unaryMinus()));
+    SparkMaxConfig hoodMotorConfig = new SparkMaxConfig();
 
-    tryUntilOk(5, () -> hoodMotor.getConfigurator().apply(hoodConfiguration, 0.25));
+    hoodMotorConfig.idleMode(hoodNeutralMode);
+    hoodMotorConfig.inverted(hoodInverted);
+    hoodMotorConfig.smartCurrentLimit(hoodStatorCurrentLimit);
+    hoodMotorConfig.encoder.positionConversionFactor(hoodMotorReduction);
+    hoodMotorConfig.encoder.velocityConversionFactor(hoodMotorReduction);
+    hoodMotorConfig
+        .closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .p(hoodKp)
+        .i(hoodKi)
+        .d(hoodKd)
+        .outputRange(-1, 1)
+        .feedForward
+        .kS(hoodKs);
 
-    hoodPosition = hoodMotor.getPosition();
-    hoodVelocity = hoodMotor.getVelocity();
-    hoodVoltage = hoodMotor.getMotorVoltage();
-    hoodCurrent = hoodMotor.getStatorCurrent();
-    hoodTemperatre = hoodMotor.getDeviceTemp();
+    SparkUtil.tryUntilOk(
+        hoodMotor,
+        5,
+        () -> {
+          return hoodMotor.configure(
+              hoodMotorConfig,
+              com.revrobotics.ResetMode.kResetSafeParameters,
+              com.revrobotics.PersistMode.kPersistParameters);
+        });
 
-    BaseStatusSignal.setUpdateFrequencyForAll(
-        50.0, hoodPosition, hoodVelocity, hoodVoltage, hoodCurrent, hoodTemperatre);
-    ParentDevice.optimizeBusUtilizationForAll(hoodMotor);
+    hoodPIDController = hoodMotor.getClosedLoopController();
+    hoodEncoder = hoodMotor.getEncoder();
 
-    voltageRequest.EnableFOC = true;
+    hoodEncoder.setPosition(0);
   }
 
   @Override
@@ -310,46 +340,115 @@ public class ShooterIOReal implements ShooterIO {
     var turretMotorStatus =
         BaseStatusSignal.refreshAll(
             turretPosition, turretVelocity, turretVoltage, turretCurrent, turretTemperatre);
-    var hoodMotorStatus =
-        BaseStatusSignal.refreshAll(
-            hoodPosition, hoodVelocity, hoodVoltage, hoodCurrent, hoodTemperatre);
 
-    inputs.shooterMotor1Connected = motorConnectDebouncer.calculate(shooterMotor1Status.isOK());
+    inputs.shooterMotor1Connected =
+        shooterMotor1ConnectedDebouncer.calculate(shooterMotor1Status.isOK());
     inputs.shooterMotor1Position = shooterMotor1Position.getValue();
     inputs.shooterMotor1Velocity = shooterMotor1Velocity.getValue();
     inputs.shooterMotor1AppliedVolts = shooterMotor1Voltage.getValue();
     inputs.shooterMotor1Current = shooterMotor1Current.getValue();
     inputs.shooterMotor1Temp = shooterMotor1Temperatre.getValue();
 
-    inputs.shooterMotor2Connected = motorConnectDebouncer.calculate(shooterMotor2Status.isOK());
+    inputs.shooterMotor2Connected =
+        shooterMotor2ConnectedDebouncer.calculate(shooterMotor2Status.isOK());
     inputs.shooterMotor2Position = shooterMotor2Position.getValue();
     inputs.shooterMotor2Velocity = shooterMotor2Velocity.getValue();
     inputs.shooterMotor2AppliedVolts = shooterMotor2Voltage.getValue();
     inputs.shooterMotor2Current = shooterMotor2Current.getValue();
     inputs.shooterMotor2Temp = shooterMotor2Temperatre.getValue();
 
-    inputs.turretMotorConnected = motorConnectDebouncer.calculate(turretMotorStatus.isOK());
+    inputs.turretMotorConnected = turretMotorConnectedDebouncer.calculate(turretMotorStatus.isOK());
     inputs.turretMotorPosition = turretPosition.getValue();
     inputs.turretMotorVelocity = turretVelocity.getValue();
     inputs.turretMotorAppliedVolts = turretVoltage.getValue();
     inputs.turretMotorCurrent = turretCurrent.getValue();
     inputs.turretMotorTemp = turretTemperatre.getValue();
 
-    inputs.hoodMotorConnected = motorConnectDebouncer.calculate(hoodMotorStatus.isOK());
-    inputs.hoodMotorPosition = hoodPosition.getValue();
-    inputs.hoodMotorVelocity = hoodVelocity.getValue();
-    inputs.hoodMotorAppliedVolts = hoodVoltage.getValue();
-    inputs.hoodMotorCurrent = hoodCurrent.getValue();
-    inputs.hoodMotorTemp = hoodTemperatre.getValue();
+    sparkStickyFault = false;
+    ifOk(
+        hoodMotor,
+        hoodEncoder::getPosition,
+        (value) -> inputs.hoodMotorPosition = Rotations.of(value));
+    ifOk(
+        hoodMotor,
+        hoodEncoder::getVelocity,
+        (value) -> inputs.hoodMotorVelocity = RotationsPerSecond.of(value * 60));
+    ifOk(
+        hoodMotor,
+        new DoubleSupplier[] {hoodMotor::getAppliedOutput, hoodMotor::getBusVoltage},
+        (value) -> inputs.hoodMotorAppliedVolts = Volts.of(value[0] * value[1]));
+    ifOk(
+        hoodMotor,
+        hoodMotor::getOutputCurrent,
+        (value) -> inputs.hoodMotorCurrent = Amps.of(value));
+    ifOk(
+        hoodMotor,
+        hoodMotor::getMotorTemperature,
+        (value) -> inputs.hoodMotorTemp = Celsius.of(value));
+    inputs.hoodMotorConnected = hoodMotorConnectedDebouncer.calculate(!sparkStickyFault);
+
+    inputs.turretAbsoluteEncoderConnected =
+        turretAbsoluteEncoderDebouncer.calculate(turretEncoder.isConnected());
+    inputs.turretAbsoluteAngle = Rotations.of(turretEncoder.get());
+
+    // if (!turretInitialized) {
+    //   turretMotor.setPosition(Rotations.of(turretEncoder.get()));
+
+    //   if (turretPosition.getValue().isNear(Rotations.of(turretEncoder.get()), Degrees.of(.5))) {
+    //     turretInitialized = true;
+    //   }
+    // }
+
+    if (!Rotations.of(turretEncoderSpark.getPosition())
+        .isNear(turretMotor.getPosition().getValue(), Degrees.of(10))) {
+      turretMotor.setPosition(Rotations.of(turretEncoderSpark.getPosition()));
+    }
   }
 
   @Override
   public void setShooter(Voltage volts) {
-    shooterMotor1.setControl(voltageRequest.withOutput(volts));
-    shooterMotor2.setControl(voltageRequest.withOutput(volts));
+    shooterMotor1.setControl(shooterVoltageRequest.withOutput(volts));
+    shooterMotor2.setControl(shooterVoltageRequest.withOutput(volts));
   }
 
+  @Override
+  public void setShooter(AngularVelocity velocity) {
+    shooterMotor1.setControl(shooterVelocityRequest.withVelocity(velocity));
+    shooterMotor2.setControl(shooterVelocityRequest.withVelocity(velocity));
+  }
+
+  @Override
   public void setTurret(Voltage volts) {
     turretMotor.setControl(turretvoltageRequest.withOutput(volts));
+  }
+
+  @Override
+  public void setTurret(Angle angle) {
+    turretMotor.setControl(turretMotionMagic.withPosition(angle));
+  }
+
+  //   @Override
+  //   public void setPID(double kp, double ki, double kd, double ks, double kv, double ka) {
+  //     Slot0Configs newConfig =
+  //         new Slot0Configs().withKP(kp).withKI(ki).withKD(kd).withKS(ks).withKV(kv).withKA(ka);
+  //     shooterMotor1.getConfigurator().apply(newConfig);
+  //     shooterMotor2.getConfigurator().apply(newConfig);
+  //   }
+
+  @Override
+  public void setHood(Voltage volts) {
+    hoodMotor.setVoltage(volts);
+  }
+
+  @Override
+  public void setHood(Angle angle) {
+    hoodPIDController.setSetpoint(angle.in(Rotations), ControlType.kPosition);
+  }
+
+  @Override
+  public void setTurretAbsoluteEncoder(AbsoluteEncoder encoder) {
+    turretEncoderSpark = encoder;
+
+    tryUntilOk(5, () -> turretMotor.setPosition(Rotations.of(encoder.getPosition())));
   }
 }

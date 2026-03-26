@@ -1,7 +1,7 @@
 package frc.robot.subsystems.indexer;
 
+import static frc.robot.lib.util.PhoenixUtil.tryUntilOk;
 import static frc.robot.subsystems.indexer.IndexerConstants.*;
-import static frc.robot.util.PhoenixUtil.tryUntilOk;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -38,7 +38,7 @@ public class IndexerIOReal implements IndexerIO {
   private final StatusSignal<Temperature> indexerTemperatre;
 
   // Debouncers
-  private final Debouncer motorConnectDebouncer = new Debouncer(.25);
+  private final Debouncer IndexerMotorConnectDebouncer = new Debouncer(.25);
 
   public IndexerIOReal() {
     indexerMotor = new TalonFX(indexerMotorCanID);
@@ -101,7 +101,7 @@ public class IndexerIOReal implements IndexerIO {
         BaseStatusSignal.refreshAll(
             indexerPosition, indexerVelocity, indexerVoltage, indexerCurrent, indexerTemperatre);
 
-    inputs.motorConnected = motorConnectDebouncer.calculate(motorStatus.isOK());
+    inputs.motorConnected = IndexerMotorConnectDebouncer.calculate(motorStatus.isOK());
     inputs.motorPosition = indexerPosition.getValue();
     inputs.motorVelocity = indexerVelocity.getValue();
     inputs.motorAppliedVolts = indexerVoltage.getValue();
@@ -110,7 +110,7 @@ public class IndexerIOReal implements IndexerIO {
   }
 
   @Override
-  public void setIndexer(Voltage volts) {
+  public void setVoltage(Voltage volts) {
     indexerMotor.setControl(voltageRequest.withOutput(volts));
   }
 }

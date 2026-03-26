@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.revrobotics.AbsoluteEncoder;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -43,9 +44,33 @@ public interface ShooterIO {
     public Voltage hoodMotorAppliedVolts = Volts.of(0.0);
     public Current hoodMotorCurrent = Amps.of(0.0);
     public Temperature hoodMotorTemp = Celsius.of(0.0);
+
+    public Angle turretAbsoluteAngle = Degrees.of(0);
+    public boolean turretAbsoluteEncoderConnected = false;
   }
 
   public default void updateInputs(ShooterIOInputs inputs) {}
 
   public default void setShooter(Voltage volts) {}
+
+  public default void setShooter(AngularVelocity velocity) {}
+  ;
+
+  public default void setTurret(Voltage volts) {}
+  ;
+
+  public default void setTurret(Angle angle) {}
+  ;
+
+  // public default void setPID(double kp, double ki, double kd, double ks, double kv, double ka) {}
+  ;
+
+  public default void setHood(Voltage volts) {}
+  ;
+
+  public default void setHood(Angle angle) {}
+  ;
+
+  public default void setTurretAbsoluteEncoder(AbsoluteEncoder encoder) {}
+  ;
 }

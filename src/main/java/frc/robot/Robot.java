@@ -6,8 +6,10 @@ package frc.robot;
 
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.HubShiftUtil.ShiftInfo;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -16,11 +18,13 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 public class Robot extends LoggedRobot {
-  private final DeceiverRobotState robotState = new DeceiverRobotState();
-  private final RobotContainer robotContainer = new RobotContainer(robotState);
+  private final DeceiverRobotState robotState;
+  private final RobotContainer robotContainer;
   private Command autonomousCommand;
 
   public Robot() {
+    robotState = DeceiverRobotState.getInstance();
+    robotContainer = new RobotContainer();
     // Record metadata about the git version for future reference
     Logger.recordMetadata("RobotMode", RobotConstants.currentMode.toString());
     Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
@@ -83,6 +87,10 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+    ShiftInfo official = HubShiftUtil.getOfficialShiftInfo();
+    SmartDashboard.putString("Curret Shift", official.currentShift().name());
+    SmartDashboard.putNumber("Shift Time Remaining", official.remainingTime());
+    HubShiftUtil.getShiftedShiftInfo();
   }
 
   @Override

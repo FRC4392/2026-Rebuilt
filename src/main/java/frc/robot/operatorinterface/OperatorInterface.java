@@ -1,8 +1,10 @@
 package frc.robot.operatorinterface;
 
+import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.operatorinterface.OperatorInterfaceConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -15,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.DeceiverRobotState;
 import frc.robot.subsystems.swerve.SwerveControlSignal;
-import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
@@ -152,35 +154,92 @@ public class OperatorInterface extends SubsystemBase {
         () -> -driverController.getLeftY(),
         () -> -driverController.getLeftX(),
         () -> -driverController.getRightX(),
-        () -> driverController.getHID().getAButton());
+        () -> driverController.getHID().getBButton());
   }
 
   // Game Controls (vary by year)
 
   public Trigger hopperButton() {
-    return operatorController.b();
+    return operatorController.start();
   }
-  
+
   public Trigger climberButton() {
     return operatorController.rightStick();
   }
-  
+
   public Trigger indexerButton() {
-    return operatorController.y();
+    return operatorController.start();
   }
-    
+
   public Trigger intakeButton() {
+    return operatorController.y().or(driverController.leftTrigger());
+  }
+
+  // public Trigger outtakeButton() {
+  //   return operatorController.rightBumper();
+  // }
+
+  public Trigger extendButton() {
+    return operatorController.a();
+  }
+
+  public Trigger retractButton() {
+    return operatorController.b();
+  }
+
+  public Trigger shooterButton() {
+    return operatorController.rightTrigger();
+  }
+
+  public Supplier<Voltage> turretSpeedSupplier() {
+    return () -> {
+      return Volts.of(
+          (operatorController.getRightTriggerAxis() - operatorController.getLeftTriggerAxis()) * 2);
+    };
+  }
+
+  public Trigger testLeftTurret() {
+    return operatorController.povLeft();
+  }
+
+  public Trigger testRightTurret() {
+    return operatorController.povRight();
+  }
+
+  public Trigger testUpTurret() {
+    return operatorController.povUp();
+  }
+
+  public Trigger testDownTurret() {
+    return operatorController.povDown();
+  }
+
+  public Trigger feedStop() {
+    return operatorController.leftBumper();
+  }
+
+  // Force Triggers
+  public Trigger forceHub() {
+    return operatorController.rightBumper();
+  }
+
+  public Trigger forceFeedLeft() {
     return operatorController.leftTrigger(0.1);
   }
-    
-  public Trigger shooterButton() {
+
+  public Trigger forceFeedRight() {
     return operatorController.rightTrigger(0.1);
   }
 
-  public DoubleSupplier turretSpeedSupplier() {
-    return () -> {
-      return (operatorController.getRightTriggerAxis() - operatorController.getLeftTriggerAxis())
-          * 12.0;
-    };
+  public Trigger trenchMode() {
+    return operatorController.x().or(driverController.leftBumper());
+  }
+
+  public Trigger shiftOverride() {
+    return operatorController.back();
+  }
+
+  public Trigger feedMode() {
+    return operatorController.povDown();
   }
 }

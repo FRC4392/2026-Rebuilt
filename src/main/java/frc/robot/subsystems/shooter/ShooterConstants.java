@@ -5,15 +5,34 @@
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
+import edu.wpi.first.math.interpolation.InverseInterpolator;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Time;
 
 /** Add your docs here. */
 public class ShooterConstants {
+
+  // Shooter Offset
+  public static final Translation2d shooterTranslation =
+      new Translation2d(Meters.of(-0.090488), Meters.of(0));
+  public static final Transform2d ShooterTransorm =
+      new Transform2d(Meters.of(-0.090488), Meters.of(0), new Rotation2d());
 
   public static boolean enableBeeps = true;
 
@@ -21,11 +40,12 @@ public class ShooterConstants {
   public static final int shooterMotor2CanID = 51;
   public static final int turretMotorCanID = 52;
   public static final int hoodMotorCanID = 53;
+  public static final int TurretEncoderPin = 0;
 
   // Shooter Motor 1
   public static final Current shooterMotor1StatorCurrentLimit = Amps.of(120);
-  public static final Current shooterMotor1MotorSupplyLimitHigh = Amps.of(20);
-  public static final Current shooterMotor1MotorSupplyLimitLow = Amps.of(10);
+  public static final Current shooterMotor1MotorSupplyLimitHigh = Amps.of(80);
+  public static final Current shooterMotor1MotorSupplyLimitLow = Amps.of(40);
   public static final Time shooterMotor1SupplyCurrentLowerTime = Seconds.of(1);
 
   public static final double shooterMotor1MotorReduction = 1.0;
@@ -33,17 +53,17 @@ public class ShooterConstants {
   public static final InvertedValue shooterMotor1Inverted = InvertedValue.Clockwise_Positive;
   public static final NeutralModeValue shooterMotor1NeutralMode = NeutralModeValue.Coast;
 
-  public static final double shooterMotor1Kp = 0.0;
-  public static final double shooterMotor1Ki = 0.0;
-  public static final double shooterMotor1Kd = 0.0;
-  public static final double shooterMotor1Kv = 0.0;
-  public static final double shooterMotor1Ks = 0.0;
-  public static final double shooterMotor1Ka = 0.0;
+  public static final double shooterKp = 0.5;
+  public static final double shooterKi = 0.0;
+  public static final double shooterKd = 0.0;
+  public static final double shooterKv = 0.126;
+  public static final double shooterKs = 0.2;
+  public static final double shooterKa = 0.0;
 
   // Shooter Motor 2
-  public static final Current shooterMotor2StatorCurrentLimit = Amps.of(100);
-  public static final Current shooterMotor2MotorSupplyLimitHigh = Amps.of(20);
-  public static final Current shooterMotor2MotorSupplyLimitLow = Amps.of(10);
+  public static final Current shooterMotor2StatorCurrentLimit = Amps.of(120);
+  public static final Current shooterMotor2MotorSupplyLimitHigh = Amps.of(80);
+  public static final Current shooterMotor2MotorSupplyLimitLow = Amps.of(40);
   public static final Time shooterMotor2SupplyCurrentLowerTime = Seconds.of(1);
 
   public static final double shooterMotor2MotorReduction = 1.0;
@@ -51,46 +71,73 @@ public class ShooterConstants {
   public static final InvertedValue shooterMotor2Inverted = InvertedValue.CounterClockwise_Positive;
   public static final NeutralModeValue shooterMotor2NeutralMode = NeutralModeValue.Coast;
 
-  public static final double shooterMotor2Kp = 0.0;
-  public static final double shooterMotor2Ki = 0.0;
-  public static final double shooterMotor2Kd = 0.0;
-  public static final double shooterMotor2Kv = 0.0;
-  public static final double shooterMotor2Ks = 0.0;
-  public static final double shooterMotor2Ka = 0.0;
-
   // Turret Motor
   public static final Current turretMotorStatorCurrentLimit = Amps.of(100);
   public static final Current turretMotorMotorSupplyLimitHigh = Amps.of(40);
   public static final Current turretMotorMotorSupplyLimitLow = Amps.of(30);
   public static final Time turretMotorSupplyCurrentLowerTime = Seconds.of(1);
 
-  public static final double turretMotorMotorReduction = 3.0;
+  public static final double turretMotorMotorReduction = (110.0 / 16.0) * (42.0 / 10.0);
 
   public static final InvertedValue turretMotorInverted = InvertedValue.Clockwise_Positive;
   public static final NeutralModeValue turretMotorNeutralMode = NeutralModeValue.Brake;
 
-  public static final double turretMotorKp = 0.0;
+  public static final double turretMotorKp = 100;
   public static final double turretMotorKi = 0.0;
-  public static final double turretMotorKd = 0.0;
-  public static final double turretMotorKv = 0.0;
-  public static final double turretMotorKs = 0.0;
+  public static final double turretMotorKd = 1;
+  public static final double turretMotorKv = 3.125;
+  public static final double turretMotorKs = 0.4;
   public static final double turretMotorKa = 0.0;
 
+  public static final AngularVelocity turretcruiseVelocity = RotationsPerSecond.of(1); // 3.5
+  public static final AngularAcceleration turretAcceleration = RotationsPerSecondPerSecond.of(50);
+
   // Hood Motor
-  public static final Current hoodStatorCurrentLimit = Amps.of(10);
-  public static final Current hoodMotorSupplyLimitHigh = Amps.of(10);
-  public static final Current hoodMotorSupplyLimitLow = Amps.of(10);
-  public static final Time hoodSupplyCurrentLowerTime = Seconds.of(1);
+  public static final int hoodStatorCurrentLimit = 20;
+  public static final double hoodMotorReduction = (18.0 * 18.0 * 15.0) / (40.0 * 43.0 * 298.0);
+  public static final boolean hoodInverted = true;
+  public static final IdleMode hoodNeutralMode = IdleMode.kBrake;
 
-  public static final double hoodMotorReduction = 3.0;
-
-  public static final InvertedValue hoodInverted = InvertedValue.Clockwise_Positive;
-  public static final NeutralModeValue hoodNeutralMode = NeutralModeValue.Coast;
-
-  public static final double hoodKp = 0.0;
+  public static final double hoodKp = 100.0;
   public static final double hoodKi = 0.0;
-  public static final double hoodKd = 0.0;
+  public static final double hoodKd = 1.0;
   public static final double hoodKv = 0.0;
-  public static final double hoodKs = 0.0;
+  public static final double hoodKs = 0.1;
   public static final double hoodKa = 0.0;
+
+  // Shot calculator parameters
+  public static final double phaseDelay = 0.03;
+
+  // Launching Maps
+  public static final InterpolatingTreeMap<Double, Rotation2d> hoodAngleMap =
+      new InterpolatingTreeMap<>(InverseInterpolator.forDouble(), Rotation2d::interpolate);
+  public static final InterpolatingDoubleTreeMap flywheelSpeedMap =
+      new InterpolatingDoubleTreeMap();
+  public static final InterpolatingDoubleTreeMap timeOfFlightMap = new InterpolatingDoubleTreeMap();
+
+  // Passing Maps
+  public static final InterpolatingTreeMap<Double, Rotation2d> passingHoodAngleMap =
+      new InterpolatingTreeMap<>(InverseInterpolator.forDouble(), Rotation2d::interpolate);
+  public static final InterpolatingDoubleTreeMap passingFlywheelSpeedMap =
+      new InterpolatingDoubleTreeMap();
+  public static final InterpolatingDoubleTreeMap passingTimeOfFlightMap =
+      new InterpolatingDoubleTreeMap();
+
+  static {
+    hoodAngleMap.put(1.12, new Rotation2d(Degrees.of(2)));
+    flywheelSpeedMap.put(1.12, 31.0);
+    timeOfFlightMap.put(1.12, .56);
+
+    hoodAngleMap.put(5.56, new Rotation2d(Degrees.of(30)));
+    flywheelSpeedMap.put(5.56, 42.0);
+    timeOfFlightMap.put(5.56, .89);
+
+    passingHoodAngleMap.put(3.05, new Rotation2d(Degrees.of(30)));
+    passingFlywheelSpeedMap.put(3.05, 22.0);
+    passingTimeOfFlightMap.put(3.05, 1.0);
+
+    passingHoodAngleMap.put(14.25, new Rotation2d(Degrees.of(31)));
+    passingFlywheelSpeedMap.put(14.25, 73.0);
+    passingTimeOfFlightMap.put(14.25, 1.0);
+  }
 }

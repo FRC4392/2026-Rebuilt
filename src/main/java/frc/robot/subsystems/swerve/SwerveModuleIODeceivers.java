@@ -4,9 +4,8 @@
 
 package frc.robot.subsystems.swerve;
 
+import static frc.robot.lib.util.PhoenixUtil.*;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
-import static frc.robot.util.PhoenixUtil.*;
-import static frc.robot.util.PhoenixUtil.tryUntilOk;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;

@@ -41,12 +41,12 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Time;
-import frc.robot.util.PhoenixUtil.ClosedLoopControlType;
+import frc.robot.lib.util.PhoenixUtil.ClosedLoopControlType;
 
 public final class SwerveConstants {
   private SwerveConstants() {}
 
-  public static final LinearVelocity maxSpeed = MetersPerSecond.of(4.8);
+  public static final LinearVelocity maxSpeed = MetersPerSecond.of(5.4);
   public static final double odometryFrequencyHz = 100.0; // Hz
   public static final Distance trackWidth = Inches.of(22.5);
   public static final Distance wheelBase = Inches.of(22.5);
@@ -77,7 +77,7 @@ public final class SwerveConstants {
   public static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   public static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
   public static final double SLOW_SPEED_PERCENTAGE =
-      0.75; // Percentage of full speed when in slow mode
+      0.5; // Percentage of full speed when in slow mode
 
   // Zeroed rotation values for each module, see setup instructions
   public static final Rotation2d frontLeftZeroRotation = new Rotation2d(0.0);
@@ -86,7 +86,7 @@ public final class SwerveConstants {
   public static final Rotation2d backRightZeroRotation = new Rotation2d(0.0);
 
   // Device CAN IDs
-  public static final int gyroCanId = 0;
+  public static final int gyroCanId = 10;
 
   public static final int frontLeftDriveCanId = 11;
   public static final int backLeftDriveCanId = 13;
@@ -104,7 +104,7 @@ public final class SwerveConstants {
   public static final Current driveMotorSupplyLimitLow = Amps.of(40);
   public static final Time driveSupplyCurrentLowerTime = Seconds.of(1);
   public static final Distance wheelDiameter = Inches.of(3.0); // 2.84
-  public static final Distance wheelRadius = wheelDiameter.div(2);
+  public static final Distance wheelRadius = wheelDiameter.div(2.0);
   public static final double driveMotorReduction = (45.0 * 28.0) / (20.0 * 15.0);
   public static final DCMotor driveGearbox = DCMotor.getKrakenX60Foc(1);
   public static final InvertedValue driveMotorLeftDirection = InvertedValue.Clockwise_Positive;
@@ -114,12 +114,12 @@ public final class SwerveConstants {
       ClosedLoopControlType.Voltage;
 
   // Drive PID configuration
-  public static final double driveKp = 0.05;
+  public static final double driveKp = 1;
   public static final double driveKi = 0.0;
   public static final double driveKd = 0.0;
 
   public static final double driveKs = 0.15;
-  public static final double driveKv = 0.5;
+  public static final double driveKv = 0.67;
   public static final double driveKa = 0.0;
 
   public static final double driveSimP = 0.05;

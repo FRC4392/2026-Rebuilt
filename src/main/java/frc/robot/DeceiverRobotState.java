@@ -1,15 +1,32 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import java.util.Optional;
+import lombok.Getter;
+import lombok.Setter;
 import org.littletonrobotics.junction.AutoLogOutput;
 
 /** Used to track various robot states and status */
 public class DeceiverRobotState {
+
+  private DeceiverRobotState() {}
+
+  private static DeceiverRobotState instance;
+
+  public static DeceiverRobotState getInstance() {
+    if (instance == null) {
+      instance = new DeceiverRobotState();
+    }
+
+    return instance;
+  }
 
   // Standard robot state data
   private boolean wasEnabled = false;
@@ -31,7 +48,7 @@ public class DeceiverRobotState {
    *
    * @return True if the tobot has been enabled, false if not
    */
-  @AutoLogOutput(key = "RobotState/wasEnabled")
+  @AutoLogOutput(key = "RobotState/Mode/wasEnabled")
   public boolean getWasEnabled() {
     return wasEnabled;
   }
@@ -41,7 +58,7 @@ public class DeceiverRobotState {
    *
    * @return True if auto has been entered, false if not
    */
-  @AutoLogOutput(key = "RobotState/wasAuto")
+  @AutoLogOutput(key = "RobotState/Mode/wasAuto")
   public boolean getWasAuto() {
     return wasAuto;
   }
@@ -51,7 +68,7 @@ public class DeceiverRobotState {
    *
    * @return True if teleop has been entered, false if not
    */
-  @AutoLogOutput(key = "RobotState/wasTeleop")
+  @AutoLogOutput(key = "RobotState/Mode/wasTeleop")
   public boolean getWasTeleop() {
     return wasTeleop;
   }
@@ -61,7 +78,7 @@ public class DeceiverRobotState {
    *
    * @return True if test mode has been entered, false if not
    */
-  @AutoLogOutput(key = "RobotState/wasTest")
+  @AutoLogOutput(key = "RobotState/Mode/wasTest")
   public boolean isWasTest() {
     return wasTest;
   }
@@ -71,7 +88,7 @@ public class DeceiverRobotState {
    *
    * @return True when the robot is running test, false when it is not
    */
-  @AutoLogOutput(key = "RobotState/isTest")
+  @AutoLogOutput(key = "RobotState/Mode/isTest")
   public boolean isTest() {
     return isTest;
   }
@@ -103,7 +120,7 @@ public class DeceiverRobotState {
    *
    * @return True when the robot is running auto, false when it is not
    */
-  @AutoLogOutput(key = "RobotState/isAuto")
+  @AutoLogOutput(key = "RobotState/Mode/isAuto")
   public boolean isAuto() {
     return isAuto;
   }
@@ -135,7 +152,7 @@ public class DeceiverRobotState {
    *
    * @return True when the robot is running teleop, false when it is not
    */
-  @AutoLogOutput(key = "RobotState/isTeleop")
+  @AutoLogOutput(key = "RobotState/Mode/isTeleop")
   public boolean isTeleop() {
     return isTeleop;
   }
@@ -167,7 +184,7 @@ public class DeceiverRobotState {
    *
    * @return True when the robot is disabled, false when it is not
    */
-  @AutoLogOutput(key = "RobotState/isDisabled")
+  @AutoLogOutput(key = "RobotState/Mode/isDisabled")
   public boolean isDisabled() {
     return isDisabled;
   }
@@ -177,7 +194,7 @@ public class DeceiverRobotState {
    *
    * @return True when the robot is enabled, false when it is not
    */
-  @AutoLogOutput(key = "RobotState/isEnabled")
+  @AutoLogOutput(key = "RobotState/Mode/isEnabled")
   public boolean isEnabled() {
     return !isDisabled;
   }
@@ -209,7 +226,7 @@ public class DeceiverRobotState {
    *
    * @return time in seconds since the robot has been running in test mode, 0 if not in test mode
    */
-  @AutoLogOutput(key = "RobotState/testTime")
+  @AutoLogOutput(key = "RobotState/Timing/testTime")
   public double getTestTime() {
     if (isTest) {
       return Timer.getFPGATimestamp() - testStartTime;
@@ -223,7 +240,7 @@ public class DeceiverRobotState {
    *
    * @return time in seconds since the robot has been running in auto mode, 0 if not in auto mode
    */
-  @AutoLogOutput(key = "RobotState/autoTime")
+  @AutoLogOutput(key = "RobotState/Timing/autoTime")
   public double getAutoTime() {
     if (isAuto) {
       return Timer.getFPGATimestamp() - autoStartTime;
@@ -238,7 +255,7 @@ public class DeceiverRobotState {
    * @return time in seconds since the robot has been running in teleop mode, 0 if not in teleop
    *     mode
    */
-  @AutoLogOutput(key = "RobotState/teleopTime")
+  @AutoLogOutput(key = "RobotState/Timing/teleopTime")
   public double getTeleopTime() {
     if (isTeleop) {
       return Timer.getFPGATimestamp() - teleopStartTime;
@@ -253,7 +270,7 @@ public class DeceiverRobotState {
    * @return time in seconds since the robot has been running in disabled mode, 0 if not in disabled
    *     mode
    */
-  @AutoLogOutput(key = "RobotState/disabledTime")
+  @AutoLogOutput(key = "RobotState/Timing/disabledTime")
   public double getDisabledTime() {
     if (isDisabled) {
       return Timer.getFPGATimestamp() - disabledStartTime;
@@ -278,7 +295,7 @@ public class DeceiverRobotState {
    *
    * @return True if the robot is e-stopped, false otherwise.
    */
-  @AutoLogOutput(key = "RobotState/isEstopped")
+  @AutoLogOutput(key = "RobotState/Mode/isEstopped")
   public boolean getIsEstopped() {
     return DriverStation.isEStopped();
   }
@@ -288,7 +305,7 @@ public class DeceiverRobotState {
    *
    * @return True if the system is browned out
    */
-  @AutoLogOutput(key = "RobotState/isBrownedOut")
+  @AutoLogOutput(key = "RobotState/Power/isBrownedOut")
   public boolean getIsBrownedOut() {
     return RobotController.isBrownedOut();
   }
@@ -298,7 +315,7 @@ public class DeceiverRobotState {
    *
    * @return true if on red, false if not
    */
-  @AutoLogOutput(key = "RobotState/isRed")
+  @AutoLogOutput(key = "RobotState/Alliance/isRed")
   private boolean isRedAlliance() {
     if (getAlliance().isPresent()) {
       return getAlliance().get() == Alliance.Red;
@@ -312,7 +329,7 @@ public class DeceiverRobotState {
    *
    * @return true if on blue, false if not
    */
-  @AutoLogOutput(key = "RobotState/isBlue")
+  @AutoLogOutput(key = "RobotState/Alliance/isBlue")
   private boolean isBlueAlliance() {
     if (getAlliance().isPresent()) {
       return getAlliance().get() == Alliance.Blue;
@@ -346,4 +363,37 @@ public class DeceiverRobotState {
       testStartTime = 0.0;
     }
   }
+
+  public enum IntakeExtensionStatus {
+    Stowed,
+    Extended,
+    MovingExtend,
+    MovingStowed,
+    UNKOWN;
+  }
+
+  @AutoLogOutput(key = "RobotState/Intake/ExtensionStatus")
+  @Getter
+  @Setter
+  private IntakeExtensionStatus intakeExtensionStatus = IntakeExtensionStatus.UNKOWN;
+
+  public enum IntakeRollerStatus {
+    Intaking,
+    Outtaking,
+    Stopped,
+    UNKOWN;
+  }
+
+  @AutoLogOutput(key = "RobotState/Intake/RollerStatus")
+  @Getter
+  @Setter
+  private IntakeRollerStatus intakeRolerStatus = IntakeRollerStatus.UNKOWN;
+
+  @Getter @Setter private Translation2d robotTranslation = new Translation2d();
+
+  @Getter @Setter private Pose2d robotPose = new Pose2d();
+
+  @Getter @Setter private ChassisSpeeds robotSpeeds = new ChassisSpeeds();
+
+  @Getter @Setter private ChassisSpeeds setpointsSpeeds = new ChassisSpeeds();
 }

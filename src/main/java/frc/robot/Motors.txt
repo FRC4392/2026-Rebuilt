@@ -8,12 +8,15 @@ Indexer:
 1 Kraken
 
 Intake:
+2 Kraken
+
+Extension:
 1 Kraken
 
 Shooter:
 2 Shooter Kraken
 Turret Kraken
-Hood Spark Max
+Hood Spark Max😭
 
 Drivetrain:
 4 Kraken Steer

@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.revrobotics.AbsoluteEncoder;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -16,15 +17,26 @@ import org.littletonrobotics.junction.AutoLog;
 public interface HopperIO {
   @AutoLog
   public static class HopperIOInputs {
-    public boolean motorConnected = false;
-    public Angle motorPosition = Degrees.of(0);
-    public AngularVelocity motorVelocity = DegreesPerSecond.of(0.0);
-    public Voltage motorAppliedVolts = Volts.of(0.0);
-    public Current motorCurrent = Amps.of(0.0);
-    public Temperature motorTemp = Celsius.of(0.0);
+    public boolean topMotorConnected = false;
+    public Angle topMotorPosition = Degrees.of(0);
+    public AngularVelocity topMotorVelocity = DegreesPerSecond.of(0.0);
+    public Voltage topMotorAppliedVolts = Volts.of(0.0);
+    public Current topMotorCurrent = Amps.of(0.0);
+    public Temperature topMotorTemp = Celsius.of(0.0);
+
+    public boolean bottomMotorConnected = false;
+    public Angle bottomMotorPosition = Degrees.of(0);
+    public AngularVelocity bottomMotorVelocity = DegreesPerSecond.of(0.0);
+    public Voltage bottomMotorAppliedVolts = Volts.of(0.0);
+    public Current bottomMotorCurrent = Amps.of(0.0);
+    public Temperature bottomMotorTemp = Celsius.of(0.0);
   }
 
   public default void updateInputs(HopperIOInputs inputs) {}
 
   public default void setVoltage(Voltage volts) {}
+
+  public default AbsoluteEncoder getTurretAbsoluteEncoder() {
+    return null;
+  }
 }

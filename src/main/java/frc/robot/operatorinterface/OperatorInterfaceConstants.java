@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 public final class OperatorInterfaceConstants {
 
   public static final int DriverControllerPort = 0;
-  public static final int OperatorControllerPort = 0;
+  public static final int OperatorControllerPort = 1;
 
   public static final Command noAuto = Commands.none();
 }
