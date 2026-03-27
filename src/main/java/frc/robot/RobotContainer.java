@@ -6,9 +6,9 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.RobotController;
@@ -162,10 +162,6 @@ public class RobotContainer {
   }
 
   private void configureAutoModes() {
-    // operatorInterface.addAutoOption("Left Trench", leftTrenchAutoRoutine());
-
-    // operatorInterface.addAutoOption("Right Trench", rightTrenchAutoRoutine());
-
     new EventTrigger("Intake").whileTrue(intake.runIntakeAuto());
     new EventTrigger("Trench Mode")
         .whileTrue(shooter.setPose(Degrees.of(0), Degrees.of(0), RotationsPerSecond.of(30)));
@@ -173,17 +169,9 @@ public class RobotContainer {
         .whileTrue(
             Commands.deadline(
                 shooter.aimAtTarget(TargetLocation.Hub),
-                hopper.runTestVoltage(),
-                indexer.runTestVoltage(),
+                Commands.waitTime(Milliseconds.of(250)).andThen(hopper.runTestVoltage()),
+                Commands.waitTime(Milliseconds.of(250)).andThen(indexer.runTestVoltage()),
                 intake.feedMode()));
-
-    // NamedCommands.registerCommand("Intake", intake.runRollerIntakeAuto());
-    // NamedCommands.registerCommand(
-    //     "Trench Mode", shooter.setPose(Degrees.of(0), Degrees.of(0), RotationsPerSecond.of(30)));
-
-    PathPlannerAuto test = new PathPlannerAuto("Right Auto");
-
-    operatorInterface.addAutoOption("Comp Right", test);
   }
 
   private void configureBindings() {
