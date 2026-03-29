@@ -240,7 +240,7 @@ public class Intake extends SubsystemBase {
           intakeIO.setRoller(Volts.of(2));
         },
         () -> {
-          intakeIO.setExtension(extensionDistanceToAngle(Inches.of(10)));
+          intakeIO.setExtension(extensionDistanceToAngle(Inches.of(9.9)));
           intakeIO.setRoller(Volts.of(0));
         });
   }

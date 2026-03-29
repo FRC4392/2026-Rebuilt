@@ -188,8 +188,8 @@ public class IntakeIOReal implements IntakeIO {
     rightRollerTemperature = rightRollerMotor.getDeviceTemp();
 
     // Roller requests
-    rollerVoltageRequest.EnableFOC = true;
-    rollerVoltageRequest2.EnableFOC = true;
+    rollerVoltageRequest.EnableFOC = false;
+    rollerVoltageRequest2.EnableFOC = false;
 
     // Optimize bus utilization
     BaseStatusSignal.setUpdateFrequencyForAll(

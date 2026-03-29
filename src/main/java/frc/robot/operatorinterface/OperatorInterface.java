@@ -4,6 +4,8 @@ import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.operatorinterface.OperatorInterfaceConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -17,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.DeceiverRobotState;
 import frc.robot.subsystems.swerve.SwerveControlSignal;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
@@ -241,5 +244,26 @@ public class OperatorInterface extends SubsystemBase {
 
   public Trigger feedMode() {
     return operatorController.povDown();
+  }
+
+  public Supplier<Rotation2d> rotationSupplier() {
+    return () -> {
+      Rotation2d rotation =
+          new Rotation2d(operatorController.getRightY(), operatorController.getRightX());
+
+      return rotation;
+    };
+  }
+
+  public BooleanSupplier operatorIsAngle() {
+    return () -> {
+      Translation2d distance =
+          new Translation2d(driverController.getRightX(), driverController.getRightY());
+      return distance.getNorm() > 0.1;
+    };
+  }
+
+  public Trigger forceShoot() {
+    return operatorController.start();
   }
 }
