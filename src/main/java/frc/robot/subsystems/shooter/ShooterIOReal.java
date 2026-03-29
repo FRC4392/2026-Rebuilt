@@ -3,6 +3,7 @@ package frc.robot.subsystems.shooter;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Celsius;
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
@@ -13,6 +14,7 @@ import static frc.robot.subsystems.shooter.ShooterConstants.*;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.AudioConfigs;
+import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -20,12 +22,14 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.FeedbackSensor;
@@ -139,7 +143,9 @@ public class ShooterIOReal implements ShooterIO {
             .withTorqueCurrent(
                 new TorqueCurrentConfigs()
                     .withPeakForwardTorqueCurrent(shooterMotor1StatorCurrentLimit)
-                    .withPeakReverseTorqueCurrent(shooterMotor1StatorCurrentLimit.unaryMinus()));
+                    .withPeakReverseTorqueCurrent(shooterMotor1StatorCurrentLimit.unaryMinus()))
+            .withClosedLoopRamps(
+                new ClosedLoopRampsConfigs().withVoltageClosedLoopRampPeriod(Milliseconds.of(250)));
 
     tryUntilOk(5, () -> shooterMotor1.getConfigurator().apply(shooterMotor1Configuration, 0.25));
 
@@ -200,7 +206,9 @@ public class ShooterIOReal implements ShooterIO {
             .withTorqueCurrent(
                 new TorqueCurrentConfigs()
                     .withPeakForwardTorqueCurrent(shooterMotor2StatorCurrentLimit)
-                    .withPeakReverseTorqueCurrent(shooterMotor2StatorCurrentLimit.unaryMinus()));
+                    .withPeakReverseTorqueCurrent(shooterMotor2StatorCurrentLimit.unaryMinus()))
+            .withClosedLoopRamps(
+                new ClosedLoopRampsConfigs().withVoltageClosedLoopRampPeriod(Milliseconds.of(250)));
 
     tryUntilOk(5, () -> shooterMotor2.getConfigurator().apply(shooterMotor2Configuration, 0.25));
 
@@ -265,7 +273,9 @@ public class ShooterIOReal implements ShooterIO {
             .withMotionMagic(
                 new MotionMagicConfigs()
                     .withMotionMagicCruiseVelocity(turretcruiseVelocity)
-                    .withMotionMagicAcceleration(turretAcceleration));
+                    .withMotionMagicAcceleration(turretAcceleration))
+            .withClosedLoopRamps(
+                new ClosedLoopRampsConfigs().withVoltageClosedLoopRampPeriod(Milliseconds.of(250)));
 
     tryUntilOk(5, () -> turretMotor.getConfigurator().apply(turretConfiguration, 0.25));
 
@@ -403,18 +413,21 @@ public class ShooterIOReal implements ShooterIO {
         .isNear(turretMotor.getPosition().getValue(), Degrees.of(10))) {
       turretMotor.setPosition(Rotations.of(turretEncoderSpark.getPosition()));
     }
+
+    shooterMotor2.setControl(
+        new Follower(shooterMotor1.getDeviceID(), MotorAlignmentValue.Opposed));
   }
 
   @Override
   public void setShooter(Voltage volts) {
     shooterMotor1.setControl(shooterVoltageRequest.withOutput(volts));
-    shooterMotor2.setControl(shooterVoltageRequest.withOutput(volts));
+    // shooterMotor2.setControl(shooterVoltageRequest.withOutput(volts));
   }
 
   @Override
   public void setShooter(AngularVelocity velocity) {
     shooterMotor1.setControl(shooterVelocityRequest.withVelocity(velocity));
-    shooterMotor2.setControl(shooterVelocityRequest.withVelocity(velocity));
+    // shooterMotor2.setControl(shooterVelocityRequest.withVelocity(velocity));
   }
 
   @Override

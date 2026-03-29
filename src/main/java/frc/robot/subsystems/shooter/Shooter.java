@@ -149,12 +149,12 @@ public class Shooter extends SubsystemBase {
           Logger.recordOutput("Shot Angle", shotParameters.turretAngle());
           Logger.recordOutput("Turret Setpoint", setpoint);
 
-          if (setpoint.in(Degrees) > 345) {
-            setpoint = Degrees.of(345);
+          if (setpoint.in(Degrees) > 315) {
+            setpoint = Degrees.of(315);
           }
 
-          if (setpoint.in(Degrees) < 15) {
-            setpoint = Degrees.of(15);
+          if (setpoint.in(Degrees) < 225) {
+            setpoint = Degrees.of(225);
           }
           shooterIO.setTurret(setpoint);
           ShotCalculator.getInstance().clearLaunchingParameters();

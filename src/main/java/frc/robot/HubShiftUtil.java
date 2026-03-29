@@ -73,9 +73,9 @@ public class HubShiftUtil {
     if (message.length() > 0) {
       char character = message.charAt(0);
       if (character == 'R') {
-        return Alliance.Blue;
-      } else if (character == 'B') {
         return Alliance.Red;
+      } else if (character == 'B') {
+        return Alliance.Blue;
       }
     }
 

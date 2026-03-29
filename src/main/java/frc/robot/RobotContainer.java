@@ -47,7 +47,6 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
-import java.util.Optional;
 
 public class RobotContainer {
   private final DeceiverRobotState robotState;
@@ -177,11 +176,47 @@ public class RobotContainer {
   private void configureBindings() {
     // Swerve Controls
     swerve.setDefaultCommand(swerve.joystickDrive(operatorInterface.getSwerveControlSignal()));
+    // Trigger angleTrigger = new Trigger(operatorInterface.operatorIsAngle());
+    // angleTrigger.whileTrue(
+    //     swerve.joystickDriveAtAngle(
+    //         operatorInterface.getSwerveControlSignal().getxSignal(),
+    //         operatorInterface.getSwerveControlSignal().getySignal(),
+    //         operatorInterface.rotationSupplier(),
+    //         operatorInterface.getSwerveControlSignal().getAllowFullSpeedSignal()));
     operatorInterface.restGyroTrigger().onTrue(Commands.runOnce(() -> swerve.resetGyro()));
     operatorInterface.stopWithXTrigger().whileTrue(swerve.stopWithX());
 
-    RobotModeTriggers.teleop().onTrue(intake.setExtensionDistance(Inches.of(10)));
+    RobotModeTriggers.teleop().onTrue(intake.setExtensionDistance(Inches.of(9.9)));
     // Location Based Commands
+
+    Bounds trenchBoundsLeft =
+        new Bounds(
+            FieldConstants.LinesVertical.hubCenter - 2,
+            FieldConstants.LinesVertical.hubCenter + 2,
+            FieldConstants.LinesHorizontal.leftTrenchOpenEnd,
+            FieldConstants.LinesHorizontal.leftTrenchOpenStart);
+
+    Bounds trenchBoundsRight =
+        new Bounds(
+            FieldConstants.LinesVertical.hubCenter - 2,
+            FieldConstants.LinesVertical.hubCenter + 2,
+            FieldConstants.LinesHorizontal.rightTrenchOpenEnd,
+            FieldConstants.LinesHorizontal.rightTrenchOpenStart);
+
+    Bounds fippedTrenchLeft = AllianceFlipUtil.apply(trenchBoundsLeft);
+    Bounds fippedTrenchRight = AllianceFlipUtil.apply(trenchBoundsRight);
+
+    Trigger temp =
+        new Trigger(
+            () -> {
+              return trenchBoundsLeft.contains(robotState.getRobotPose().getTranslation())
+                  || trenchBoundsRight.contains(robotState.getRobotPose().getTranslation())
+                  || fippedTrenchLeft.contains(robotState.getRobotPose().getTranslation())
+                  || fippedTrenchRight.contains(robotState.getRobotPose().getTranslation());
+            });
+
+    Trigger isInTrench = temp.and(operatorInterface.forceShoot().negate());
+
     Bounds shotBounds =
         new Bounds(0.0, FieldConstants.LinesVertical.hubCenter, 0.0, FieldConstants.fieldWidth);
 
@@ -228,6 +263,7 @@ public class RobotContainer {
         .or(shootHubZoneTrigger)
         .and(operatorInterface.trenchMode().negate())
         .and(RobotModeTriggers.teleop())
+        .and(isInTrench.negate())
         .whileTrue(shooter.aimAtTarget(TargetLocation.Hub));
 
     operatorInterface
@@ -235,6 +271,7 @@ public class RobotContainer {
         .or(passLeftZoneTrigger)
         .and(operatorInterface.trenchMode().negate())
         .and(RobotModeTriggers.teleop())
+        .and(isInTrench.negate())
         .whileTrue(shooter.aimAtTarget(TargetLocation.LeftPass));
 
     operatorInterface
@@ -242,7 +279,13 @@ public class RobotContainer {
         .or(passRightZoneTrigger)
         .and(operatorInterface.trenchMode().negate())
         .and(RobotModeTriggers.teleop())
+        .and(isInTrench.negate())
         .whileTrue(shooter.aimAtTarget(TargetLocation.RightPass));
+
+    isInTrench
+        .and(passRightZoneTrigger)
+        .and(RobotModeTriggers.teleop())
+        .whileTrue(shooter.setPose(Degrees.of(0), Degrees.of(0), RotationsPerSecond.of(30)));
 
     // Feed Controls
     operatorInterface
@@ -267,12 +310,12 @@ public class RobotContainer {
 
     operatorInterface
         .trenchMode()
-        .whileTrue(shooter.setPose(Degrees.of(0), Degrees.of(0), RotationsPerSecond.of(32)));
+        .whileTrue(shooter.setPose(Degrees.of(0), Degrees.of(0), RotationsPerSecond.of(-32)));
 
-    HubShiftUtil.setAllianceWinOverride(
-        () -> Optional.of(operatorInterface.shiftOverride().getAsBoolean()));
+    // HubShiftUtil.setAllianceWinOverride(
+    //     () -> Optional.of(operatorInterface.shiftOverride().getAsBoolean()));
 
-    RobotModeTriggers.autonomous().onTrue(intake.setExtensionDistance(Inches.of(10)));
+    RobotModeTriggers.autonomous().onTrue(intake.setExtensionDistance(Inches.of(9.9)));
 
     RobotModeTriggers.teleop()
         .onTrue(

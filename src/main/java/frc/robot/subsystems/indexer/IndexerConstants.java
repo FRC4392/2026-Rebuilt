@@ -20,8 +20,8 @@ public class IndexerConstants {
   public static final int indexerMotorCanID = 31;
 
   public static final Current indexerStatorCurrentLimit = Amps.of(100);
-  public static final Current indexerMotorSupplyLimitHigh = Amps.of(80);
-  public static final Current indexerMotorSupplyLimitLow = Amps.of(40);
+  public static final Current indexerMotorSupplyLimitHigh = Amps.of(30);
+  public static final Current indexerMotorSupplyLimitLow = Amps.of(20);
   public static final Time indexerSupplyCurrentLowerTime = Seconds.of(1);
 
   public static final double indexerMotorReduction = 3.0;

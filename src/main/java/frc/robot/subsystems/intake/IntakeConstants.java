@@ -38,9 +38,9 @@ public class IntakeConstants {
   public static final int rightRollerCanID = 23;
 
   // Extension Parameters
-  public static final Current extenstionStatorCurrentLimit = Amps.of(100);
+  public static final Current extenstionStatorCurrentLimit = Amps.of(40);
   public static final Current extensionMotorSupplyLimitHigh = Amps.of(35);
-  public static final Current extensionMotorSupplyLimitLow = Amps.of(25);
+  public static final Current extensionMotorSupplyLimitLow = Amps.of(10);
   public static final Time extensionSupplyCurrentLowerTime = Seconds.of(1);
 
   public static final double extensionMotorReduction = 56.0 / 10.0;
@@ -69,9 +69,9 @@ public class IntakeConstants {
               / (extensionDriveDiameter.in(Meters) / 2.0));
 
   // Roller Parameters
-  public static final Current rollerStatorCurrentLimit = Amps.of(160);
-  public static final Current rollerMotorSupplyLimitHigh = Amps.of(80);
-  public static final Current rollerMotorSupplyLimitLow = Amps.of(40);
+  public static final Current rollerStatorCurrentLimit = Amps.of(100);
+  public static final Current rollerMotorSupplyLimitHigh = Amps.of(40);
+  public static final Current rollerMotorSupplyLimitLow = Amps.of(20);
   public static final Time rollerSupplyCurrentLowerTime = Seconds.of(1);
 
   public static final double rollerMotorReduction = 35.0 / 11.0;
@@ -86,7 +86,7 @@ public class IntakeConstants {
   public static final Voltage outtakeVoltage = Volts.of(12);
 
   // Extension Positions Table
-  public static final Distance extendedDistance = Inches.of(10);
+  public static final Distance extendedDistance = Inches.of(9.9);
   public static final Distance stowedDistance = Inches.of(0);
   public static final Voltage extensionTestVoltage = Volts.of(3);
 }
