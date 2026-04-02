@@ -34,8 +34,9 @@ public class IndexerIOReal implements IndexerIO {
   private final StatusSignal<Angle> indexerPosition;
   private final StatusSignal<AngularVelocity> indexerVelocity;
   private final StatusSignal<Voltage> indexerVoltage;
-  private final StatusSignal<Current> indexerCurrent;
+  private final StatusSignal<Current> indexerStatorCurrent;
   private final StatusSignal<Temperature> indexerTemperatre;
+  private final StatusSignal<Current> indexerSupplyCurrent;
 
   // Debouncers
   private final Debouncer IndexerMotorConnectDebouncer = new Debouncer(.25);
@@ -85,11 +86,17 @@ public class IndexerIOReal implements IndexerIO {
     indexerPosition = indexerMotor.getPosition();
     indexerVelocity = indexerMotor.getVelocity();
     indexerVoltage = indexerMotor.getMotorVoltage();
-    indexerCurrent = indexerMotor.getStatorCurrent();
+    indexerStatorCurrent = indexerMotor.getStatorCurrent();
     indexerTemperatre = indexerMotor.getDeviceTemp();
+    indexerSupplyCurrent = indexerMotor.getSupplyCurrent();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50.0, indexerPosition, indexerVelocity, indexerVoltage, indexerCurrent, indexerTemperatre);
+        50.0, indexerPosition,
+        indexerVelocity,
+        indexerVoltage,
+        indexerStatorCurrent,
+        indexerTemperatre,
+        indexerSupplyCurrent);
     ParentDevice.optimizeBusUtilizationForAll(indexerMotor);
 
     voltageRequest.EnableFOC = true;
@@ -99,14 +106,20 @@ public class IndexerIOReal implements IndexerIO {
   public void updateInputs(IndexerIOInputs inputs) {
     var motorStatus =
         BaseStatusSignal.refreshAll(
-            indexerPosition, indexerVelocity, indexerVoltage, indexerCurrent, indexerTemperatre);
+            indexerPosition,
+            indexerVelocity,
+            indexerVoltage,
+            indexerStatorCurrent,
+            indexerTemperatre,
+            indexerSupplyCurrent);
 
     inputs.motorConnected = IndexerMotorConnectDebouncer.calculate(motorStatus.isOK());
     inputs.motorPosition = indexerPosition.getValue();
     inputs.motorVelocity = indexerVelocity.getValue();
     inputs.motorAppliedVolts = indexerVoltage.getValue();
-    inputs.motorCurrent = indexerCurrent.getValue();
+    inputs.motorStatorCurrent = indexerStatorCurrent.getValue();
     inputs.motorTemp = indexerTemperatre.getValue();
+    inputs.motorSupplyCurrent = indexerSupplyCurrent.getValue();
   }
 
   @Override

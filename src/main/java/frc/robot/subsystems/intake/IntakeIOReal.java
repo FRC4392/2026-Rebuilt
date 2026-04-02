@@ -6,6 +6,8 @@ import static edu.wpi.first.units.Units.Radians;
 import static frc.robot.lib.util.PhoenixUtil.tryUntilOk;
 import static frc.robot.subsystems.intake.IntakeConstants.*;
 
+import java.io.ObjectInputFilter.Status;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.AudioConfigs;
@@ -52,20 +54,23 @@ public class IntakeIOReal implements IntakeIO {
   private final StatusSignal<Angle> extensionPosition;
   private final StatusSignal<AngularVelocity> extensionVelocity;
   private final StatusSignal<Voltage> extensionVoltage;
-  private final StatusSignal<Current> extensionCurrent;
+  private final StatusSignal<Current> extensionStatorCurrent;
   private final StatusSignal<Temperature> extensionTemperature;
+  private final StatusSignal<Current> extensionSupplyCurrent;
 
   private final StatusSignal<Angle> leftRollerPosition;
   private final StatusSignal<AngularVelocity> leftRollerVelocity;
   private final StatusSignal<Voltage> leftRollerVoltage;
-  private final StatusSignal<Current> leftRollerCurrent;
+  private final StatusSignal<Current> leftRollerStatorCurrent;
   private final StatusSignal<Temperature> leftRollerTemperature;
+  private final StatusSignal<Current> leftRollerSupplyCurrent;
 
   private final StatusSignal<Angle> rightRollerPosition;
   private final StatusSignal<AngularVelocity> rightRollerVelocity;
   private final StatusSignal<Voltage> rightRollerVoltage;
-  private final StatusSignal<Current> rightRollerCurrent;
+  private final StatusSignal<Current> rightRollerStatorCurrent;
   private final StatusSignal<Temperature> rightRollerTemperature;
+  private final StatusSignal<Current> rightRollerSupplyCurrent;
 
   // Debouncers
   private final Debouncer extensionMotorConnectedDebouncer = new Debouncer(.25);
@@ -128,8 +133,9 @@ public class IntakeIOReal implements IntakeIO {
     extensionPosition = extensionMotor.getPosition();
     extensionVelocity = extensionMotor.getVelocity();
     extensionVoltage = extensionMotor.getMotorVoltage();
-    extensionCurrent = extensionMotor.getStatorCurrent();
+    extensionStatorCurrent = extensionMotor.getStatorCurrent();
     extensionTemperature = extensionMotor.getDeviceTemp();
+    extensionSupplyCurrent = extensionMotor.getSupplyCurrent();
 
     // Extension requests
     extensionVoltageRequest.EnableFOC = false;
@@ -178,14 +184,16 @@ public class IntakeIOReal implements IntakeIO {
     leftRollerPosition = leftRollerMotor.getPosition();
     leftRollerVelocity = leftRollerMotor.getVelocity();
     leftRollerVoltage = leftRollerMotor.getMotorVoltage();
-    leftRollerCurrent = leftRollerMotor.getStatorCurrent();
+    leftRollerStatorCurrent = leftRollerMotor.getStatorCurrent();
     leftRollerTemperature = leftRollerMotor.getDeviceTemp();
+    leftRollerSupplyCurrent = leftRollerMotor.getSupplyCurrent();
 
     rightRollerPosition = rightRollerMotor.getPosition();
     rightRollerVelocity = rightRollerMotor.getVelocity();
     rightRollerVoltage = rightRollerMotor.getMotorVoltage();
-    rightRollerCurrent = rightRollerMotor.getStatorCurrent();
+    rightRollerStatorCurrent = rightRollerMotor.getStatorCurrent();
     rightRollerTemperature = rightRollerMotor.getDeviceTemp();
+    rightRollerSupplyCurrent = rightRollerMotor.getSupplyCurrent();
 
     // Roller requests
     rollerVoltageRequest.EnableFOC = false;
@@ -197,18 +205,21 @@ public class IntakeIOReal implements IntakeIO {
         extensionPosition,
         extensionVelocity,
         extensionVoltage,
-        extensionCurrent,
+        extensionStatorCurrent,
         extensionTemperature,
+        extensionSupplyCurrent,
         leftRollerPosition,
         leftRollerVelocity,
         leftRollerVoltage,
-        leftRollerCurrent,
+        leftRollerStatorCurrent,
         leftRollerTemperature,
+        leftRollerSupplyCurrent,
         rightRollerPosition,
         rightRollerVelocity,
         rightRollerVoltage,
-        rightRollerCurrent,
-        rightRollerTemperature);
+        rightRollerStatorCurrent,
+        rightRollerTemperature,
+        rightRollerSupplyCurrent);
     ParentDevice.optimizeBusUtilizationForAll(extensionMotor, leftRollerMotor, rightRollerMotor);
 
     // Follower mode
@@ -227,16 +238,18 @@ public class IntakeIOReal implements IntakeIO {
             extensionPosition,
             extensionVelocity,
             extensionVoltage,
-            extensionCurrent,
-            extensionTemperature);
+            extensionStatorCurrent,
+            extensionTemperature,
+            extensionSupplyCurrent);
 
     inputs.extensionMotorConnected =
         extensionMotorConnectedDebouncer.calculate(extensionStatus.isOK());
     inputs.extensionMotorPosition = extensionPosition.getValue();
     inputs.extensionMotorVelocity = extensionVelocity.getValue();
     inputs.extensionMotorAppliedVolts = extensionVoltage.getValue();
-    inputs.extensionMotorCurrent = extensionCurrent.getValue();
+    inputs.extensionMotorStatorCurrent = extensionStatorCurrent.getValue();
     inputs.extensionMotorTemp = extensionTemperature.getValue();
+    inputs.extensionMotorSupplyCurrent = extensionSupplyCurrent.getValue();
 
     // Update left roller motor inputs
     var leftRollerStatus =
@@ -244,16 +257,18 @@ public class IntakeIOReal implements IntakeIO {
             leftRollerPosition,
             leftRollerVelocity,
             leftRollerVoltage,
-            leftRollerCurrent,
-            leftRollerTemperature);
+            leftRollerStatorCurrent,
+            leftRollerTemperature,
+            leftRollerSupplyCurrent);
 
     inputs.leftRollerMotorConnected =
         leftRollerMotorConnectedDebouncer.calculate(leftRollerStatus.isOK());
     inputs.leftRollerMotorPosition = leftRollerPosition.getValue();
     inputs.leftRollerMotorVelocity = leftRollerVelocity.getValue();
     inputs.leftRollerMotorAppliedVolts = leftRollerVoltage.getValue();
-    inputs.leftRollerMotorCurrent = leftRollerCurrent.getValue();
+    inputs.leftRollerMotorStatorCurrent = leftRollerStatorCurrent.getValue();
     inputs.leftRollerMotorTemp = leftRollerTemperature.getValue();
+    inputs.leftRollerMotorSupplyCurrent = leftRollerSupplyCurrent.getValue();
 
     // Update right motor roller inputs
     var rightRollerStatus =
@@ -261,16 +276,18 @@ public class IntakeIOReal implements IntakeIO {
             rightRollerPosition,
             rightRollerVelocity,
             rightRollerVoltage,
-            rightRollerCurrent,
-            rightRollerTemperature);
+            rightRollerStatorCurrent,
+            rightRollerTemperature,
+            rightRollerSupplyCurrent);
 
     inputs.rightRollerMotorConnected =
         rightRollerMotorConnectedDebouncer.calculate(rightRollerStatus.isOK());
     inputs.rightRollerMotorPosition = rightRollerPosition.getValue();
     inputs.rightRollerMotorVelocity = rightRollerVelocity.getValue();
     inputs.rightRollerMotorAppliedVolts = rightRollerVoltage.getValue();
-    inputs.rightRollerMotorCurrent = rightRollerCurrent.getValue();
+    inputs.rightRollerMotorStatorCurrent = rightRollerStatorCurrent.getValue();
     inputs.rightRollerMotorTemp = rightRollerTemperature.getValue();
+    inputs.rightRollerMotorSupplyCurrent = rightRollerSupplyCurrent.getValue();
   }
 
   @Override

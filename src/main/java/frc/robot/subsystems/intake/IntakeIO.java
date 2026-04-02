@@ -23,22 +23,25 @@ public interface IntakeIO {
     public Angle extensionMotorPosition = Degrees.of(0);
     public AngularVelocity extensionMotorVelocity = DegreesPerSecond.of(0.0);
     public Voltage extensionMotorAppliedVolts = Volts.of(0.0);
-    public Current extensionMotorCurrent = Amps.of(0.0);
+    public Current extensionMotorStatorCurrent = Amps.of(0.0);
     public Temperature extensionMotorTemp = Celsius.of(0.0);
+    public Current extensionMotorSupplyCurrent = Amps.of(0.0);
 
     public boolean leftRollerMotorConnected = false;
     public Angle leftRollerMotorPosition = Degrees.of(0);
     public AngularVelocity leftRollerMotorVelocity = DegreesPerSecond.of(0.0);
     public Voltage leftRollerMotorAppliedVolts = Volts.of(0.0);
-    public Current leftRollerMotorCurrent = Amps.of(0.0);
+    public Current leftRollerMotorStatorCurrent = Amps.of(0.0);
     public Temperature leftRollerMotorTemp = Celsius.of(0.0);
+    public Current leftRollerMotorSupplyCurrent = Amps.of(0.0);
 
     public boolean rightRollerMotorConnected = false;
     public Angle rightRollerMotorPosition = Degrees.of(0);
     public AngularVelocity rightRollerMotorVelocity = DegreesPerSecond.of(0.0);
     public Voltage rightRollerMotorAppliedVolts = Volts.of(0.0);
-    public Current rightRollerMotorCurrent = Amps.of(0.0);
+    public Current rightRollerMotorStatorCurrent = Amps.of(0.0);
     public Temperature rightRollerMotorTemp = Celsius.of(0.0);
+    public Current rightRollerMotorSupplyCurrent = Amps.of(0.0);
   }
 
   /**
