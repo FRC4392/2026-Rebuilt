@@ -60,22 +60,22 @@ public class HubShiftUtil {
   public static Alliance getFirstActiveAlliance() {
     var alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
 
-    // Return override value
-    var winOverride = getAllianceWinOverride();
-    if (!winOverride.isEmpty()) {
-      return winOverride.get()
-          ? (alliance == Alliance.Blue ? Alliance.Red : Alliance.Blue)
-          : (alliance == Alliance.Blue ? Alliance.Blue : Alliance.Red);
-    }
+    // // Return override value
+    // var winOverride = getAllianceWinOverride();
+    // if (!winOverride.isEmpty()) {
+    //   return winOverride.get()
+    //       ? (alliance == Alliance.Blue ? Alliance.Red : Alliance.Blue)
+    //       : (alliance == Alliance.Blue ? Alliance.Blue : Alliance.Red);
+    // }
 
     // Return FMS value
     String message = DriverStation.getGameSpecificMessage();
     if (message.length() > 0) {
       char character = message.charAt(0);
       if (character == 'R') {
-        return Alliance.Red;
-      } else if (character == 'B') {
         return Alliance.Blue;
+      } else if (character == 'B') {
+        return Alliance.Red;
       }
     }
 
