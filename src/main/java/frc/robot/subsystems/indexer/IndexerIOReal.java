@@ -35,7 +35,7 @@ public class IndexerIOReal implements IndexerIO {
   private final StatusSignal<AngularVelocity> indexerVelocity;
   private final StatusSignal<Voltage> indexerVoltage;
   private final StatusSignal<Current> indexerStatorCurrent;
-  private final StatusSignal<Temperature> indexerTemperatre;
+  private final StatusSignal<Temperature> indexerTemperature;
   private final StatusSignal<Current> indexerSupplyCurrent;
 
   // Debouncers
@@ -87,7 +87,7 @@ public class IndexerIOReal implements IndexerIO {
     indexerVelocity = indexerMotor.getVelocity();
     indexerVoltage = indexerMotor.getMotorVoltage();
     indexerStatorCurrent = indexerMotor.getStatorCurrent();
-    indexerTemperatre = indexerMotor.getDeviceTemp();
+    indexerTemperature = indexerMotor.getDeviceTemp();
     indexerSupplyCurrent = indexerMotor.getSupplyCurrent();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
@@ -95,7 +95,7 @@ public class IndexerIOReal implements IndexerIO {
         indexerVelocity,
         indexerVoltage,
         indexerStatorCurrent,
-        indexerTemperatre,
+        indexerTemperature,
         indexerSupplyCurrent);
     ParentDevice.optimizeBusUtilizationForAll(indexerMotor);
 
@@ -110,7 +110,7 @@ public class IndexerIOReal implements IndexerIO {
             indexerVelocity,
             indexerVoltage,
             indexerStatorCurrent,
-            indexerTemperatre,
+            indexerTemperature,
             indexerSupplyCurrent);
 
     inputs.motorConnected = IndexerMotorConnectDebouncer.calculate(motorStatus.isOK());
@@ -118,7 +118,7 @@ public class IndexerIOReal implements IndexerIO {
     inputs.motorVelocity = indexerVelocity.getValue();
     inputs.motorAppliedVolts = indexerVoltage.getValue();
     inputs.motorStatorCurrent = indexerStatorCurrent.getValue();
-    inputs.motorTemp = indexerTemperatre.getValue();
+    inputs.motorTemp = indexerTemperature.getValue();
     inputs.motorSupplyCurrent = indexerSupplyCurrent.getValue();
   }
 

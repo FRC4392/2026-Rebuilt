@@ -56,7 +56,7 @@ public class HopperIOReal implements HopperIO {
   private final StatusSignal<AngularVelocity> hopperVelocity;
   private final StatusSignal<Voltage> hopperVoltage;
   private final StatusSignal<Current> hopperStatorCurrent;
-  private final StatusSignal<Temperature> hopperTemperatre;
+  private final StatusSignal<Temperature> hopperTemperature;
   private final StatusSignal<Current> hopperSupplyCurrent;
 
   // Debouncers
@@ -109,7 +109,7 @@ public class HopperIOReal implements HopperIO {
     hopperVelocity = bottomHopperMotor.getVelocity();
     hopperVoltage = bottomHopperMotor.getMotorVoltage();
     hopperStatorCurrent = bottomHopperMotor.getStatorCurrent();
-    hopperTemperatre = bottomHopperMotor.getDeviceTemp();
+    hopperTemperature = bottomHopperMotor.getDeviceTemp();
     hopperSupplyCurrent = bottomHopperMotor.getSupplyCurrent();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
@@ -118,7 +118,7 @@ public class HopperIOReal implements HopperIO {
         hopperVelocity,
         hopperVoltage,
         hopperStatorCurrent,
-        hopperTemperatre,
+        hopperTemperature,
         hopperSupplyCurrent);
     ParentDevice.optimizeBusUtilizationForAll(bottomHopperMotor);
 
@@ -155,7 +155,7 @@ public class HopperIOReal implements HopperIO {
             hopperVelocity,
             hopperVoltage,
             hopperStatorCurrent,
-            hopperTemperatre,
+            hopperTemperature,
             hopperSupplyCurrent);
 
     inputs.bottomMotorConnected = bottomMotorConnectDebouncer.calculate(bottomMotorStatus.isOK());
@@ -163,7 +163,7 @@ public class HopperIOReal implements HopperIO {
     inputs.bottomMotorVelocity = hopperVelocity.getValue();
     inputs.bottomMotorAppliedVolts = hopperVoltage.getValue();
     inputs.bottomMotorStatorCurrent = hopperStatorCurrent.getValue();
-    inputs.bottomMotorTemp = hopperTemperatre.getValue();
+    inputs.bottomMotorTemp = hopperTemperature.getValue();
     inputs.bottomMotorSupplyCurrent = hopperSupplyCurrent.getValue();
 
     sparkStickyFault = false;
