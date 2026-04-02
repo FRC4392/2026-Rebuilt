@@ -108,7 +108,7 @@ public class SwerveModule {
 
   /** Returns the current drive position of the module in meters. */
   public Distance getDrivePosition() {
-    return Meters.of(inputs.drivePositionAngle.in(Radians) * wheelRadius.in(Meters));
+    return Meters.of(inputs.drivePosition.in(Radians) * wheelRadius.in(Meters));
   }
 
   /** Returns the current drive velocity of the module in meters per second. */
@@ -140,7 +140,7 @@ public class SwerveModule {
   // TODO: Units?
   /** Returns the module position in radians. */
   public double getWheelRadiusCharacterizationPosition() {
-    return inputs.drivePositionAngle.in(Radians);
+    return inputs.drivePosition.in(Radians);
   }
 
   // TODO: Units?

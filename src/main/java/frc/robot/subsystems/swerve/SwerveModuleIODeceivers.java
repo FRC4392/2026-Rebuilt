@@ -68,14 +68,16 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
   private final StatusSignal<Angle> drivePosition;
   private final StatusSignal<AngularVelocity> driveVelocity;
   private final StatusSignal<Voltage> driveAppliedVolts;
-  private final StatusSignal<Current> driveCurrent;
+  private final StatusSignal<Current> driveStatorCurrent;
   private final StatusSignal<Temperature> driveTemp;
+  private final StatusSignal<Current> driveSupplyCurrent;
 
   private final StatusSignal<Angle> azimuthPosition;
   private final StatusSignal<AngularVelocity> azimuthVelocity;
   private final StatusSignal<Voltage> azimuthAppliedVolts;
-  private final StatusSignal<Current> azimuthCurrent;
+  private final StatusSignal<Current> azimuthStatorCurrent;
   private final StatusSignal<Temperature> azimuthTemp;
+  private final StatusSignal<Current> azimuthSupplyCurrent;
 
   // Odometry queue
   private final Queue<Double> timestampQueue;
@@ -167,15 +169,17 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
     drivePosition = driveMotor.getPosition();
     driveVelocity = driveMotor.getVelocity();
     driveAppliedVolts = driveMotor.getMotorVoltage();
-    driveCurrent = driveMotor.getStatorCurrent();
+    driveStatorCurrent = driveMotor.getStatorCurrent();
     driveTemp = driveMotor.getDeviceTemp();
+    driveSupplyCurrent = driveMotor.getSupplyCurrent();
 
     // Create azimuth status signals
     azimuthPosition = azimuthMotor.getPosition();
     azimuthVelocity = azimuthMotor.getVelocity();
     azimuthAppliedVolts = azimuthMotor.getMotorVoltage();
-    azimuthCurrent = azimuthMotor.getStatorCurrent();
+    azimuthStatorCurrent = azimuthMotor.getStatorCurrent();
     azimuthTemp = azimuthMotor.getDeviceTemp();
+    azimuthSupplyCurrent = azimuthMotor.getSupplyCurrent();
 
     // Enable FOC
     driveVoltageRequest.EnableFOC = true;
@@ -195,10 +199,12 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
         50.0,
         driveVelocity,
         driveAppliedVolts,
-        driveCurrent,
+        driveStatorCurrent,
+        driveSupplyCurrent,
         azimuthVelocity,
         azimuthAppliedVolts,
-        azimuthCurrent);
+        azimuthStatorCurrent,
+        azimuthSupplyCurrent);
     ParentDevice.optimizeBusUtilizationForAll(driveMotor, azimuthMotor);
 
     // Create odometry queues
@@ -214,26 +220,38 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
     // Update drive inputs
     var driveStatus =
         BaseStatusSignal.refreshAll(
-            drivePosition, driveVelocity, driveAppliedVolts, driveCurrent, driveTemp);
+            drivePosition,
+            driveVelocity,
+            driveAppliedVolts,
+            driveStatorCurrent,
+            driveTemp,
+            driveSupplyCurrent);
 
     inputs.driveConnected = driveConnectedDebounce.calculate(driveStatus.isOK());
-    inputs.drivePositionAngle = drivePosition.getValue();
+    inputs.drivePosition = drivePosition.getValue();
     inputs.driveVelocity = driveVelocity.getValue();
     inputs.driveAppliedVolts = driveAppliedVolts.getValue();
-    inputs.driveCurrentAmps = driveCurrent.getValue();
+    inputs.driveStatorCurrent = driveStatorCurrent.getValue();
     inputs.driveMotorTemp = driveTemp.getValue();
+    inputs.driveSupplyCurrent = driveSupplyCurrent.getValue();
 
     // Update turn inputs
     var azimuthStatus =
         BaseStatusSignal.refreshAll(
-            azimuthPosition, azimuthVelocity, azimuthAppliedVolts, azimuthCurrent, azimuthTemp);
+            azimuthPosition,
+            azimuthVelocity,
+            azimuthAppliedVolts,
+            azimuthStatorCurrent,
+            azimuthTemp,
+            azimuthSupplyCurrent);
 
     inputs.azimuthConnected = azimuthConnectedDebounce.calculate(azimuthStatus.isOK());
     inputs.azimuthPosition = new Rotation2d(azimuthPosition.getValue());
     inputs.azimuthVelocity = azimuthVelocity.getValue();
     inputs.azimuthAppliedVolts = azimuthAppliedVolts.getValue();
-    inputs.azimuthCurrent = azimuthCurrent.getValue();
+    inputs.azimuthStatorCurrent = azimuthStatorCurrent.getValue();
     inputs.azimuthMotorTemp = azimuthTemp.getValue();
+    inputs.azimuthSupplyCurrent = azimuthSupplyCurrent.getValue();
 
     // Update odometry inputs
     inputs.odometryTimestamps =

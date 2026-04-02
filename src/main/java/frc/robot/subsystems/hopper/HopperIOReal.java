@@ -55,8 +55,9 @@ public class HopperIOReal implements HopperIO {
   private final StatusSignal<Angle> hopperPosition;
   private final StatusSignal<AngularVelocity> hopperVelocity;
   private final StatusSignal<Voltage> hopperVoltage;
-  private final StatusSignal<Current> hopperCurrent;
+  private final StatusSignal<Current> hopperStatorCurrent;
   private final StatusSignal<Temperature> hopperTemperatre;
+  private final StatusSignal<Current> hopperSupplyCurrent;
 
   // Debouncers
   private final Debouncer topMotorConnectDebouncer = new Debouncer(.25);
@@ -107,11 +108,18 @@ public class HopperIOReal implements HopperIO {
     hopperPosition = bottomHopperMotor.getPosition();
     hopperVelocity = bottomHopperMotor.getVelocity();
     hopperVoltage = bottomHopperMotor.getMotorVoltage();
-    hopperCurrent = bottomHopperMotor.getStatorCurrent();
+    hopperStatorCurrent = bottomHopperMotor.getStatorCurrent();
     hopperTemperatre = bottomHopperMotor.getDeviceTemp();
+    hopperSupplyCurrent = bottomHopperMotor.getSupplyCurrent();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50.0, hopperPosition, hopperVelocity, hopperVoltage, hopperCurrent, hopperTemperatre);
+        50.0,
+        hopperPosition,
+        hopperVelocity,
+        hopperVoltage,
+        hopperStatorCurrent,
+        hopperTemperatre,
+        hopperSupplyCurrent);
     ParentDevice.optimizeBusUtilizationForAll(bottomHopperMotor);
 
     voltageRequest.EnableFOC = false;
@@ -143,14 +151,20 @@ public class HopperIOReal implements HopperIO {
   public void updateInputs(HopperIOInputs inputs) {
     var bottomMotorStatus =
         BaseStatusSignal.refreshAll(
-            hopperPosition, hopperVelocity, hopperVoltage, hopperCurrent, hopperTemperatre);
+            hopperPosition,
+            hopperVelocity,
+            hopperVoltage,
+            hopperStatorCurrent,
+            hopperTemperatre,
+            hopperSupplyCurrent);
 
     inputs.bottomMotorConnected = bottomMotorConnectDebouncer.calculate(bottomMotorStatus.isOK());
     inputs.bottomMotorPosition = hopperPosition.getValue();
     inputs.bottomMotorVelocity = hopperVelocity.getValue();
     inputs.bottomMotorAppliedVolts = hopperVoltage.getValue();
-    inputs.bottomMotorCurrent = hopperCurrent.getValue();
+    inputs.bottomMotorStatorCurrent = hopperStatorCurrent.getValue();
     inputs.bottomMotorTemp = hopperTemperatre.getValue();
+    inputs.bottomMotorSupplyCurrent = hopperSupplyCurrent.getValue();
 
     sparkStickyFault = false;
     ifOk(
@@ -164,7 +178,7 @@ public class HopperIOReal implements HopperIO {
     ifOk(
         hopperTopMotor,
         hopperTopMotor::getOutputCurrent,
-        (value) -> inputs.topMotorCurrent = Amps.of(value));
+        (value) -> inputs.topMotorStatorCurrent = Amps.of(value));
     ifOk(
         hopperTopMotor,
         hopperTopMotorEncoder::getPosition,

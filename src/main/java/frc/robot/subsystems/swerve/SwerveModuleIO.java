@@ -24,18 +24,20 @@ public interface SwerveModuleIO {
   @AutoLog
   public static class SwerveModuleIOInputs {
     public boolean driveConnected = false;
-    public Angle drivePositionAngle = Radians.of(0.0);
+    public Angle drivePosition = Radians.of(0.0);
     public AngularVelocity driveVelocity = RadiansPerSecond.of(0.0);
     public Voltage driveAppliedVolts = Volts.of(0.0);
-    public Current driveCurrentAmps = Amps.of(0.0);
+    public Current driveStatorCurrent = Amps.of(0.0);
     public Temperature driveMotorTemp = Celsius.of(0.0);
+    public Current driveSupplyCurrent = Amps.of(0.0);
 
     public boolean azimuthConnected = false;
     public Rotation2d azimuthPosition = new Rotation2d();
     public AngularVelocity azimuthVelocity = RadiansPerSecond.of(0.0);
     public Voltage azimuthAppliedVolts = Volts.of(0.0);
-    public Current azimuthCurrent = Amps.of(0.0);
+    public Current azimuthStatorCurrent = Amps.of(0.0);
     public Temperature azimuthMotorTemp = Celsius.of(0.0);
+    public Current azimuthSupplyCurrent = Amps.of(0.0);
 
     public double[] odometryTimestamps = new double[] {};
     public double[] odometryDrivePositionsRad = new double[] {};

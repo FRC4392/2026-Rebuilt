@@ -73,22 +73,22 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
 
     // Update drive inputs
     inputs.driveConnected = true;
-    inputs.drivePositionAngle = driveSim.getAngularPosition();
+    inputs.drivePosition = driveSim.getAngularPosition();
     inputs.driveVelocity = driveSim.getAngularVelocity();
     inputs.driveAppliedVolts = driveAppliedVolts;
-    inputs.driveCurrentAmps = Amps.of(Math.abs(driveSim.getCurrentDrawAmps()));
+    inputs.driveStatorCurrent = Amps.of(Math.abs(driveSim.getCurrentDrawAmps()));
 
     // Update azimuth inputs
     inputs.azimuthConnected = true;
     inputs.azimuthPosition = new Rotation2d(azimuthSim.getAngularPositionRad());
     inputs.azimuthVelocity = azimuthSim.getAngularVelocity();
     inputs.azimuthAppliedVolts = azimuthAppliedVolts;
-    inputs.azimuthCurrent = Amps.of(Math.abs(azimuthSim.getCurrentDrawAmps()));
+    inputs.azimuthStatorCurrent = Amps.of(Math.abs(azimuthSim.getCurrentDrawAmps()));
 
     // Update odometry inputs (50Hz because high-frequency odometry in sim doesn't
     // matter)
     inputs.odometryTimestamps = new double[] {Timer.getFPGATimestamp()};
-    inputs.odometryDrivePositionsRad = new double[] {inputs.drivePositionAngle.in(Radians)};
+    inputs.odometryDrivePositionsRad = new double[] {inputs.drivePosition.in(Radians)};
     inputs.odometryAzimuthPositions = new Rotation2d[] {inputs.azimuthPosition};
   }
 
