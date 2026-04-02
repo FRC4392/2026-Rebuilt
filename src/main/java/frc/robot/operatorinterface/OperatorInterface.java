@@ -157,7 +157,7 @@ public class OperatorInterface extends SubsystemBase {
         () -> -driverController.getLeftY(),
         () -> -driverController.getLeftX(),
         () -> -driverController.getRightX(),
-        () -> driverController.getHID().getBButton());
+        () -> driverController.getHID().getRightStickButton());
   }
 
   // Game Controls (vary by year)
