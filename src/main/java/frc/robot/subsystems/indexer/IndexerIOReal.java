@@ -91,7 +91,8 @@ public class IndexerIOReal implements IndexerIO {
     indexerSupplyCurrent = indexerMotor.getSupplyCurrent();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50.0, indexerPosition,
+        50.0,
+        indexerPosition,
         indexerVelocity,
         indexerVoltage,
         indexerStatorCurrent,

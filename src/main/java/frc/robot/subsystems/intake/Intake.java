@@ -64,7 +64,8 @@ public class Intake extends SubsystemBase {
         "Intake/extensionPosition", extensionAngleToDistance(inputs.extensionMotorPosition));
     Logger.recordOutput(
         "Intake/rollerTorque",
-        NewtonMeters.of((inputs.leftRollerMotorStatorCurrent.in(Amps) * 0.01981) * rollerMotorReduction));
+        NewtonMeters.of(
+            (inputs.leftRollerMotorStatorCurrent.in(Amps) * 0.01981) * rollerMotorReduction));
 
     // Connection checks
     intakeExtensionAlert.set(!inputs.extensionMotorConnected);

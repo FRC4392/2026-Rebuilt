@@ -297,7 +297,7 @@ public class RobotContainer {
     operatorInterface
         .extendButton()
         .and(operatorInterface.intakeButton().negate())
-        .onTrue(intake.setExtensionDistance(Inches.of(10)));
+        .onTrue(intake.setExtensionDistance(Inches.of(9.9)));
     operatorInterface
         .retractButton()
         .and(operatorInterface.intakeButton().negate())

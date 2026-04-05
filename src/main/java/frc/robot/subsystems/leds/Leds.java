@@ -21,7 +21,7 @@ public class Leds extends SubsystemBase {
   // LED data
   private final AddressableLED leds;
   private final AddressableLEDBuffer buffer;
-  private static final int length = 21;
+  private static final int length = 35;
 
   // Pattern Constants
   private static final double strobeFastDuration = 0.1;

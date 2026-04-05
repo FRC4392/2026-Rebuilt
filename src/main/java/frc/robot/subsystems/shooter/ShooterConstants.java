@@ -62,7 +62,7 @@ public class ShooterConstants {
 
   // Shooter Motor 2
   public static final Current shooterMotor2StatorCurrentLimit = Amps.of(120);
-  public static final Current shooterMotor2MotorSupplyLimitHigh = Amps.of(60);
+  public static final Current shooterMotor2MotorSupplyLimitHigh = Amps.of(40);
   public static final Current shooterMotor2MotorSupplyLimitLow = Amps.of(40);
   public static final Time shooterMotor2SupplyCurrentLowerTime = Seconds.of(1);
 
@@ -72,7 +72,7 @@ public class ShooterConstants {
   public static final NeutralModeValue shooterMotor2NeutralMode = NeutralModeValue.Coast;
 
   // Turret Motor
-  public static final Current turretMotorStatorCurrentLimit = Amps.of(100);
+  public static final Current turretMotorStatorCurrentLimit = Amps.of(40);
   public static final Current turretMotorMotorSupplyLimitHigh = Amps.of(30);
   public static final Current turretMotorMotorSupplyLimitLow = Amps.of(20);
   public static final Time turretMotorSupplyCurrentLowerTime = Seconds.of(1);

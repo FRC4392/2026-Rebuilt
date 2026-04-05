@@ -6,8 +6,6 @@ import static edu.wpi.first.units.Units.Radians;
 import static frc.robot.lib.util.PhoenixUtil.tryUntilOk;
 import static frc.robot.subsystems.intake.IntakeConstants.*;
 
-import java.io.ObjectInputFilter.Status;
-
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.AudioConfigs;
@@ -196,8 +194,8 @@ public class IntakeIOReal implements IntakeIO {
     rightRollerSupplyCurrent = rightRollerMotor.getSupplyCurrent();
 
     // Roller requests
-    rollerVoltageRequest.EnableFOC = false;
-    rollerVoltageRequest2.EnableFOC = false;
+    rollerVoltageRequest.EnableFOC = true;
+    rollerVoltageRequest2.EnableFOC = true;
 
     // Optimize bus utilization
     BaseStatusSignal.setUpdateFrequencyForAll(

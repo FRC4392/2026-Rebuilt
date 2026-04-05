@@ -170,8 +170,8 @@ public class ShooterIOReal implements ShooterIO {
     ParentDevice.optimizeBusUtilizationForAll(shooterMotor1);
 
     // Disable FOC on all motors due to weird issues being reported
-    shooterVoltageRequest.EnableFOC = false;
-    shooterVelocityRequest.EnableFOC = false;
+    shooterVoltageRequest.EnableFOC = true;
+    shooterVelocityRequest.EnableFOC = true;
 
     // Shooter Motor 2
     shooterMotor2 = new TalonFX(shooterMotor2CanID);
@@ -235,8 +235,8 @@ public class ShooterIOReal implements ShooterIO {
     ParentDevice.optimizeBusUtilizationForAll(shooterMotor2);
 
     // Disable FOC on all motors due to weird issues being reported
-    shooter2VoltageRequest.EnableFOC = false;
-    shooter2VelocityRequest.EnableFOC = false;
+    shooter2VoltageRequest.EnableFOC = true;
+    shooter2VelocityRequest.EnableFOC = true;
 
     // Turret Motor
     turretMotor = new TalonFX(turretMotorCanID);
@@ -306,8 +306,8 @@ public class ShooterIOReal implements ShooterIO {
     ParentDevice.optimizeBusUtilizationForAll(turretMotor);
 
     // Disable FOC on all motors due to weird issues being reported
-    turretvoltageRequest.EnableFOC = false;
-    turretMotionMagic.EnableFOC = false;
+    turretvoltageRequest.EnableFOC = true;
+    turretMotionMagic.EnableFOC = true;
 
     // Hood Motor
     hoodMotor = new SparkMax(hoodMotorCanID, MotorType.kBrushless);
@@ -426,9 +426,13 @@ public class ShooterIOReal implements ShooterIO {
     //   }
     // }
 
-    if (!Rotations.of(turretEncoderSpark.getPosition())
-        .isNear(turretMotor.getPosition().getValue(), Degrees.of(10))) {
-      turretMotor.setPosition(Rotations.of(turretEncoderSpark.getPosition()));
+    if (Rotations.of(turretEncoder.get()).in(Degrees) > 20
+        || Rotations.of(turretEncoder.get()).in(Degrees) < 340) {
+
+      if (!Rotations.of(turretEncoderSpark.getPosition())
+          .isNear(turretMotor.getPosition().getValue(), Degrees.of(10))) {
+        turretMotor.setPosition(Rotations.of(turretEncoderSpark.getPosition()));
+      }
     }
 
     shooterMotor2.setControl(
@@ -454,7 +458,8 @@ public class ShooterIOReal implements ShooterIO {
 
   @Override
   public void setTurret(Angle angle) {
-    turretMotor.setControl(turretMotionMagic.withPosition(angle));
+    turretMotor.setControl(turretvoltageRequest.withOutput(0));
+    // turretMotor.setControl(turretMotionMagic.withPosition(angle));
   }
 
   //   @Override

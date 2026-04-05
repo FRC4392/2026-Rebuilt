@@ -122,7 +122,7 @@ public class HopperIOReal implements HopperIO {
         hopperSupplyCurrent);
     ParentDevice.optimizeBusUtilizationForAll(bottomHopperMotor);
 
-    voltageRequest.EnableFOC = false;
+    voltageRequest.EnableFOC = true;
 
     hopperTopMotor = new SparkMax(topRollerCanID, MotorType.kBrushless);
 
