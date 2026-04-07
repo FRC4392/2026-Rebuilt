@@ -416,7 +416,10 @@ public class ShooterIOReal implements ShooterIO {
 
     inputs.turretAbsoluteEncoderConnected =
         turretAbsoluteEncoderDebouncer.calculate(turretEncoder.isConnected());
-    inputs.turretAbsoluteAngle = Rotations.of(turretEncoder.get());
+
+    if (turretEncoderSpark != null) {
+      inputs.turretAbsoluteAngle = Rotations.of(turretEncoderSpark.getPosition());
+    }
 
     // if (!turretInitialized) {
     //   turretMotor.setPosition(Rotations.of(turretEncoder.get()));
@@ -426,8 +429,8 @@ public class ShooterIOReal implements ShooterIO {
     //   }
     // }
 
-    if (Rotations.of(turretEncoder.get()).in(Degrees) > 20
-        || Rotations.of(turretEncoder.get()).in(Degrees) < 340) {
+    if (Rotations.of(turretEncoderSpark.getPosition()).in(Degrees) > 60
+        && Rotations.of(turretEncoderSpark.getPosition()).in(Degrees) < 300) {
 
       if (!Rotations.of(turretEncoderSpark.getPosition())
           .isNear(turretMotor.getPosition().getValue(), Degrees.of(10))) {
@@ -458,8 +461,8 @@ public class ShooterIOReal implements ShooterIO {
 
   @Override
   public void setTurret(Angle angle) {
-    turretMotor.setControl(turretvoltageRequest.withOutput(0));
-    // turretMotor.setControl(turretMotionMagic.withPosition(angle));
+    // turretMotor.setControl(turretvoltageRequest.withOutput(0));
+    turretMotor.setControl(turretMotionMagic.withPosition(angle));
   }
 
   //   @Override
