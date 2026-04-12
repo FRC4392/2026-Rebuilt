@@ -7,13 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left ramp"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Left ramp to start of left1"
+            "pathName": "left bump"
           }
         }
       ]
