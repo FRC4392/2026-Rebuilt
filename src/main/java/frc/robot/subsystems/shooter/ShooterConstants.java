@@ -44,9 +44,9 @@ public class ShooterConstants {
 
   // Shooter Motor 1
   public static final Current shooterMotor1StatorCurrentLimit = Amps.of(120);
-  public static final Current shooterMotor1MotorSupplyLimitHigh = Amps.of(40);
-  public static final Current shooterMotor1MotorSupplyLimitLow = Amps.of(40);
-  public static final Time shooterMotor1SupplyCurrentLowerTime = Seconds.of(1);
+  public static final Current shooterMotor1MotorSupplyLimitHigh = Amps.of(35);
+  public static final Current shooterMotor1MotorSupplyLimitLow = Amps.of(20);
+  public static final Time shooterMotor1SupplyCurrentLowerTime = Seconds.of(.5);
 
   public static final double shooterMotor1MotorReduction = 1.0;
 
@@ -62,9 +62,9 @@ public class ShooterConstants {
 
   // Shooter Motor 2
   public static final Current shooterMotor2StatorCurrentLimit = Amps.of(120);
-  public static final Current shooterMotor2MotorSupplyLimitHigh = Amps.of(60);
-  public static final Current shooterMotor2MotorSupplyLimitLow = Amps.of(40);
-  public static final Time shooterMotor2SupplyCurrentLowerTime = Seconds.of(1);
+  public static final Current shooterMotor2MotorSupplyLimitHigh = Amps.of(40);
+  public static final Current shooterMotor2MotorSupplyLimitLow = Amps.of(20);
+  public static final Time shooterMotor2SupplyCurrentLowerTime = Seconds.of(.5);
 
   public static final double shooterMotor2MotorReduction = 1.0;
 
@@ -72,7 +72,7 @@ public class ShooterConstants {
   public static final NeutralModeValue shooterMotor2NeutralMode = NeutralModeValue.Coast;
 
   // Turret Motor
-  public static final Current turretMotorStatorCurrentLimit = Amps.of(100);
+  public static final Current turretMotorStatorCurrentLimit = Amps.of(40);
   public static final Current turretMotorMotorSupplyLimitHigh = Amps.of(30);
   public static final Current turretMotorMotorSupplyLimitLow = Amps.of(20);
   public static final Time turretMotorSupplyCurrentLowerTime = Seconds.of(1);
@@ -128,16 +128,16 @@ public class ShooterConstants {
     flywheelSpeedMap.put(1.12, 31.0);
     timeOfFlightMap.put(1.12, .56);
 
-    hoodAngleMap.put(5.56, new Rotation2d(Degrees.of(30)));
+    hoodAngleMap.put(5.56, new Rotation2d(Degrees.of(29.5)));
     flywheelSpeedMap.put(5.56, 42.0);
     timeOfFlightMap.put(5.56, .89);
 
     passingHoodAngleMap.put(3.05, new Rotation2d(Degrees.of(30)));
     passingFlywheelSpeedMap.put(3.05, 22.0);
-    passingTimeOfFlightMap.put(3.05, 1.0);
+    passingTimeOfFlightMap.put(3.05, 0.0);
 
     passingHoodAngleMap.put(14.25, new Rotation2d(Degrees.of(31)));
     passingFlywheelSpeedMap.put(14.25, 73.0);
-    passingTimeOfFlightMap.put(14.25, 1.0);
+    passingTimeOfFlightMap.put(14.25, 0.0);
   }
 }

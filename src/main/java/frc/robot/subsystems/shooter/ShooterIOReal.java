@@ -73,19 +73,22 @@ public class ShooterIOReal implements ShooterIO {
   private final StatusSignal<AngularVelocity> shooterMotor1Velocity;
   private final StatusSignal<Voltage> shooterMotor1Voltage;
   private final StatusSignal<Current> shooterMotor1Current;
-  private final StatusSignal<Temperature> shooterMotor1Temperatre;
+  private final StatusSignal<Temperature> shooterMotor1Temperature;
+  private final StatusSignal<Current> shooterMotor1SupplyCurrent;
 
   private final StatusSignal<Angle> shooterMotor2Position;
   private final StatusSignal<AngularVelocity> shooterMotor2Velocity;
   private final StatusSignal<Voltage> shooterMotor2Voltage;
-  private final StatusSignal<Current> shooterMotor2Current;
-  private final StatusSignal<Temperature> shooterMotor2Temperatre;
+  private final StatusSignal<Current> shooterMotor2StatorCurrent;
+  private final StatusSignal<Temperature> shooterMotor2Temperature;
+  private final StatusSignal<Current> shooterMotor2SupplyCurrent;
 
   private final StatusSignal<Angle> turretPosition;
   private final StatusSignal<AngularVelocity> turretVelocity;
   private final StatusSignal<Voltage> turretVoltage;
-  private final StatusSignal<Current> turretCurrent;
-  private final StatusSignal<Temperature> turretTemperatre;
+  private final StatusSignal<Current> turretStatorCurrent;
+  private final StatusSignal<Temperature> turretTemperature;
+  private final StatusSignal<Current> turretSupplyCurrent;
 
   private final SparkClosedLoopController hoodPIDController;
   private final RelativeEncoder hoodEncoder;
@@ -98,7 +101,7 @@ public class ShooterIOReal implements ShooterIO {
   private final Debouncer turretMotorConnectedDebouncer = new Debouncer(.25);
   private final Debouncer hoodMotorConnectedDebouncer = new Debouncer(.25);
   private final Debouncer turretAbsoluteEncoderDebouncer = new Debouncer(.25);
-  //   private boolean turretInitialized = false;
+  private boolean turretInitialized = false;
 
   public ShooterIOReal() {
 
@@ -153,7 +156,8 @@ public class ShooterIOReal implements ShooterIO {
     shooterMotor1Velocity = shooterMotor1.getVelocity();
     shooterMotor1Voltage = shooterMotor1.getMotorVoltage();
     shooterMotor1Current = shooterMotor1.getStatorCurrent();
-    shooterMotor1Temperatre = shooterMotor1.getDeviceTemp();
+    shooterMotor1Temperature = shooterMotor1.getDeviceTemp();
+    shooterMotor1SupplyCurrent = shooterMotor1.getSupplyCurrent();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
@@ -161,12 +165,13 @@ public class ShooterIOReal implements ShooterIO {
         shooterMotor1Velocity,
         shooterMotor1Voltage,
         shooterMotor1Current,
-        shooterMotor1Temperatre);
+        shooterMotor1Temperature,
+        shooterMotor1SupplyCurrent);
     ParentDevice.optimizeBusUtilizationForAll(shooterMotor1);
 
     // Disable FOC on all motors due to weird issues being reported
-    shooterVoltageRequest.EnableFOC = false;
-    shooterVelocityRequest.EnableFOC = false;
+    shooterVoltageRequest.EnableFOC = true;
+    shooterVelocityRequest.EnableFOC = true;
 
     // Shooter Motor 2
     shooterMotor2 = new TalonFX(shooterMotor2CanID);
@@ -215,16 +220,18 @@ public class ShooterIOReal implements ShooterIO {
     shooterMotor2Position = shooterMotor2.getPosition();
     shooterMotor2Velocity = shooterMotor2.getVelocity();
     shooterMotor2Voltage = shooterMotor2.getMotorVoltage();
-    shooterMotor2Current = shooterMotor2.getStatorCurrent();
-    shooterMotor2Temperatre = shooterMotor2.getDeviceTemp();
+    shooterMotor2StatorCurrent = shooterMotor2.getStatorCurrent();
+    shooterMotor2Temperature = shooterMotor2.getDeviceTemp();
+    shooterMotor2SupplyCurrent = shooterMotor2.getSupplyCurrent();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
         shooterMotor2Position,
         shooterMotor2Velocity,
         shooterMotor2Voltage,
-        shooterMotor2Current,
-        shooterMotor2Temperatre);
+        shooterMotor2StatorCurrent,
+        shooterMotor2Temperature,
+        shooterMotor2SupplyCurrent);
     ParentDevice.optimizeBusUtilizationForAll(shooterMotor2);
 
     // Disable FOC on all motors due to weird issues being reported
@@ -284,11 +291,18 @@ public class ShooterIOReal implements ShooterIO {
     turretPosition = turretMotor.getPosition();
     turretVelocity = turretMotor.getVelocity();
     turretVoltage = turretMotor.getMotorVoltage();
-    turretCurrent = turretMotor.getStatorCurrent();
-    turretTemperatre = turretMotor.getDeviceTemp();
+    turretStatorCurrent = turretMotor.getStatorCurrent();
+    turretTemperature = turretMotor.getDeviceTemp();
+    turretSupplyCurrent = turretMotor.getSupplyCurrent();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50.0, turretPosition, turretVelocity, turretVoltage, turretCurrent, turretTemperatre);
+        50.0,
+        turretPosition,
+        turretVelocity,
+        turretVoltage,
+        turretStatorCurrent,
+        turretTemperature,
+        turretSupplyCurrent);
     ParentDevice.optimizeBusUtilizationForAll(turretMotor);
 
     // Disable FOC on all motors due to weird issues being reported
@@ -339,40 +353,43 @@ public class ShooterIOReal implements ShooterIO {
             shooterMotor1Velocity,
             shooterMotor1Voltage,
             shooterMotor1Current,
-            shooterMotor1Temperatre);
+            shooterMotor1Temperature);
     var shooterMotor2Status =
         BaseStatusSignal.refreshAll(
             shooterMotor2Position,
             shooterMotor2Velocity,
             shooterMotor2Voltage,
-            shooterMotor2Current,
-            shooterMotor2Temperatre);
+            shooterMotor2StatorCurrent,
+            shooterMotor2Temperature);
     var turretMotorStatus =
         BaseStatusSignal.refreshAll(
-            turretPosition, turretVelocity, turretVoltage, turretCurrent, turretTemperatre);
+            turretPosition, turretVelocity, turretVoltage, turretStatorCurrent, turretTemperature);
 
     inputs.shooterMotor1Connected =
         shooterMotor1ConnectedDebouncer.calculate(shooterMotor1Status.isOK());
     inputs.shooterMotor1Position = shooterMotor1Position.getValue();
     inputs.shooterMotor1Velocity = shooterMotor1Velocity.getValue();
     inputs.shooterMotor1AppliedVolts = shooterMotor1Voltage.getValue();
-    inputs.shooterMotor1Current = shooterMotor1Current.getValue();
-    inputs.shooterMotor1Temp = shooterMotor1Temperatre.getValue();
+    inputs.shooterMotor1StatorCurrent = shooterMotor1Current.getValue();
+    inputs.shooterMotor1Temp = shooterMotor1Temperature.getValue();
+    inputs.shooterMotor1SupplyCurrent = shooterMotor1SupplyCurrent.getValue();
 
     inputs.shooterMotor2Connected =
         shooterMotor2ConnectedDebouncer.calculate(shooterMotor2Status.isOK());
     inputs.shooterMotor2Position = shooterMotor2Position.getValue();
     inputs.shooterMotor2Velocity = shooterMotor2Velocity.getValue();
     inputs.shooterMotor2AppliedVolts = shooterMotor2Voltage.getValue();
-    inputs.shooterMotor2Current = shooterMotor2Current.getValue();
-    inputs.shooterMotor2Temp = shooterMotor2Temperatre.getValue();
+    inputs.shooterMotor2StatorCurrent = shooterMotor2StatorCurrent.getValue();
+    inputs.shooterMotor2Temp = shooterMotor2Temperature.getValue();
+    inputs.shooterMotor2SupplyCurrent = shooterMotor2SupplyCurrent.getValue();
 
     inputs.turretMotorConnected = turretMotorConnectedDebouncer.calculate(turretMotorStatus.isOK());
     inputs.turretMotorPosition = turretPosition.getValue();
     inputs.turretMotorVelocity = turretVelocity.getValue();
     inputs.turretMotorAppliedVolts = turretVoltage.getValue();
-    inputs.turretMotorCurrent = turretCurrent.getValue();
-    inputs.turretMotorTemp = turretTemperatre.getValue();
+    inputs.turretMotorStatorCurrent = turretStatorCurrent.getValue();
+    inputs.turretMotorTemp = turretTemperature.getValue();
+    inputs.turretMotorSupplyCurrent = turretSupplyCurrent.getValue();
 
     sparkStickyFault = false;
     ifOk(
@@ -399,7 +416,10 @@ public class ShooterIOReal implements ShooterIO {
 
     inputs.turretAbsoluteEncoderConnected =
         turretAbsoluteEncoderDebouncer.calculate(turretEncoder.isConnected());
-    inputs.turretAbsoluteAngle = Rotations.of(turretEncoder.get());
+
+    if (turretEncoderSpark != null) {
+      inputs.turretAbsoluteAngle = Rotations.of(turretEncoderSpark.getPosition());
+    }
 
     // if (!turretInitialized) {
     //   turretMotor.setPosition(Rotations.of(turretEncoder.get()));
@@ -409,9 +429,16 @@ public class ShooterIOReal implements ShooterIO {
     //   }
     // }
 
-    if (!Rotations.of(turretEncoderSpark.getPosition())
-        .isNear(turretMotor.getPosition().getValue(), Degrees.of(10))) {
-      turretMotor.setPosition(Rotations.of(turretEncoderSpark.getPosition()));
+    if (!turretInitialized) {
+      if (Rotations.of(turretEncoderSpark.getPosition()).in(Degrees) > 60
+          && Rotations.of(turretEncoderSpark.getPosition()).in(Degrees) < 300) {
+
+        if (!Rotations.of(turretEncoderSpark.getPosition())
+            .isNear(turretMotor.getPosition().getValue(), Degrees.of(10))) {
+          turretMotor.setPosition(Rotations.of(turretEncoderSpark.getPosition()));
+          turretInitialized = true;
+        }
+      }
     }
 
     shooterMotor2.setControl(
@@ -437,6 +464,7 @@ public class ShooterIOReal implements ShooterIO {
 
   @Override
   public void setTurret(Angle angle) {
+    // turretMotor.setControl(turretvoltageRequest.withOutput(0));
     turretMotor.setControl(turretMotionMagic.withPosition(angle));
   }
 

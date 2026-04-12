@@ -38,8 +38,8 @@ public class IntakeConstants {
   public static final int rightRollerCanID = 23;
 
   // Extension Parameters
-  public static final Current extenstionStatorCurrentLimit = Amps.of(40);
-  public static final Current extensionMotorSupplyLimitHigh = Amps.of(35);
+  public static final Current extenstionStatorCurrentLimit = Amps.of(60);
+  public static final Current extensionMotorSupplyLimitHigh = Amps.of(20);
   public static final Current extensionMotorSupplyLimitLow = Amps.of(10);
   public static final Time extensionSupplyCurrentLowerTime = Seconds.of(1);
 
@@ -69,12 +69,12 @@ public class IntakeConstants {
               / (extensionDriveDiameter.in(Meters) / 2.0));
 
   // Roller Parameters
-  public static final Current rollerStatorCurrentLimit = Amps.of(100);
-  public static final Current rollerMotorSupplyLimitHigh = Amps.of(40);
+  public static final Current rollerStatorCurrentLimit = Amps.of(120);
+  public static final Current rollerMotorSupplyLimitHigh = Amps.of(35);
   public static final Current rollerMotorSupplyLimitLow = Amps.of(20);
-  public static final Time rollerSupplyCurrentLowerTime = Seconds.of(1);
+  public static final Time rollerSupplyCurrentLowerTime = Seconds.of(.5);
 
-  public static final double rollerMotorReduction = 35.0 / 11.0;
+  public static final double rollerMotorReduction = 44.0 / 11.0;
   public static final Distance rollerDriveDiameter = Inches.of(4.0);
 
   public static final InvertedValue leftRollerInverted = InvertedValue.Clockwise_Positive;

@@ -11,7 +11,6 @@ import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -105,13 +104,13 @@ public class ShotCalculator {
   public ShotParameters getParameters(Translation2d target, ShotType shotType) {
     // Calculate estimated pose while accounting for phase delay
     Pose2d estimatedPose = robotState.getRobotPose();
-    ChassisSpeeds robotRelativeVelocity = robotState.getRobotSpeeds();
-    estimatedPose =
-        estimatedPose.exp(
-            new Twist2d(
-                robotRelativeVelocity.vxMetersPerSecond * phaseDelay,
-                robotRelativeVelocity.vyMetersPerSecond * phaseDelay,
-                robotRelativeVelocity.omegaRadiansPerSecond * phaseDelay));
+    // ChassisSpeeds robotRelativeVelocity = robotState.getRobotSpeeds();
+    // estimatedPose =
+    //     estimatedPose.exp(
+    //         new Twist2d(
+    //             robotRelativeVelocity.vxMetersPerSecond * phaseDelay,
+    //             robotRelativeVelocity.vyMetersPerSecond * phaseDelay,
+    //             robotRelativeVelocity.omegaRadiansPerSecond * phaseDelay));
 
     Pose2d shooterPostiion = estimatedPose.transformBy(ShooterTransorm);
     double shooterToTargetDistance = target.getDistance(shooterPostiion.getTranslation());
@@ -133,7 +132,10 @@ public class ShotCalculator {
             ? passingTimeOfFlightMap.get(shooterToTargetDistance)
             : timeOfFlightMap.get(shooterToTargetDistance);
     Pose2d lookaheadPose = shooterPostiion;
+    Pose2d lookaheadRobotPose = lookaheadPose.transformBy(ShooterTransorm.inverse());
     double lookaheadShooterToTargetDistance = shooterToTargetDistance;
+
+    Pose2d[] triedPoses = new Pose2d[20];
 
     for (int i = 0; i < 20; i++) {
       timeOfFlight =
@@ -147,6 +149,8 @@ public class ShotCalculator {
               shooterPostiion.getTranslation().plus(new Translation2d(offsetX, offsetY)),
               shooterPostiion.getRotation());
       lookaheadShooterToTargetDistance = target.getDistance(lookaheadPose.getTranslation());
+      lookaheadRobotPose = lookaheadPose.transformBy(ShooterTransorm.inverse());
+      triedPoses[i] = lookaheadRobotPose;
     }
 
     // get turret parameters
@@ -178,7 +182,7 @@ public class ShotCalculator {
             ? RotationsPerSecond.of(passingFlywheelSpeedMap.get(lookaheadShooterToTargetDistance))
             : RotationsPerSecond.of(flywheelSpeedMap.get(shooterToTargetDistance));
 
-    Logger.recordOutput("Shooter/Shot Calculator/Lookahead Pose", lookaheadPose);
+    Logger.recordOutput("Shooter/Shot Calculator/LookaheadPoses", triedPoses);
 
     latestParameters =
         new ShotParameters(
@@ -193,7 +197,7 @@ public class ShotCalculator {
             Seconds.of(timeOfFlight),
             shotType == ShotType.Pass);
 
-    Logger.recordOutput("Shooter/Shot Calculator/Shot Parameters", shooterToTargetDistance);
+    Logger.recordOutput("Shooter/Shot Calculator/Shot Distance", shooterToTargetDistance);
 
     return latestParameters;
   }

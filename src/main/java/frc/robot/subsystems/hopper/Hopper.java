@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.DeceiverRobotState;
+import frc.robot.DeceiverRobotState.FeederStatus;
 import org.littletonrobotics.junction.Logger;
 
 public class Hopper extends SubsystemBase {
@@ -44,6 +45,12 @@ public class Hopper extends SubsystemBase {
 
     topHopperMotorDisconnectedAlert.set(!inputs.topMotorConnected);
     bottomHopperMotorDisconnectedAlert.set(!inputs.bottomMotorConnected);
+
+    if (inputs.bottomMotorAppliedVolts.gt(Volts.of(2))) {
+      robotState.setFeederStatus(FeederStatus.Feeding);
+    } else {
+      robotState.setFeederStatus(FeederStatus.Stopped);
+    }
   }
 
   public void setVoltage(Voltage volts) {

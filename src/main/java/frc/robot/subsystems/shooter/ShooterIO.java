@@ -21,22 +21,25 @@ public interface ShooterIO {
     public Angle shooterMotor1Position = Degrees.of(0);
     public AngularVelocity shooterMotor1Velocity = DegreesPerSecond.of(0.0);
     public Voltage shooterMotor1AppliedVolts = Volts.of(0.0);
-    public Current shooterMotor1Current = Amps.of(0.0);
+    public Current shooterMotor1StatorCurrent = Amps.of(0.0);
     public Temperature shooterMotor1Temp = Celsius.of(0.0);
+    public Current shooterMotor1SupplyCurrent = Amps.of(0.0);
 
     public boolean shooterMotor2Connected = false;
     public Angle shooterMotor2Position = Degrees.of(0);
     public AngularVelocity shooterMotor2Velocity = DegreesPerSecond.of(0.0);
     public Voltage shooterMotor2AppliedVolts = Volts.of(0.0);
-    public Current shooterMotor2Current = Amps.of(0.0);
+    public Current shooterMotor2StatorCurrent = Amps.of(0.0);
     public Temperature shooterMotor2Temp = Celsius.of(0.0);
+    public Current shooterMotor2SupplyCurrent = Amps.of(0.0);
 
     public boolean turretMotorConnected = false;
     public Angle turretMotorPosition = Degrees.of(0);
     public AngularVelocity turretMotorVelocity = DegreesPerSecond.of(0.0);
     public Voltage turretMotorAppliedVolts = Volts.of(0.0);
-    public Current turretMotorCurrent = Amps.of(0.0);
+    public Current turretMotorStatorCurrent = Amps.of(0.0);
     public Temperature turretMotorTemp = Celsius.of(0.0);
+    public Current turretMotorSupplyCurrent = Amps.of(0.0);
 
     public boolean hoodMotorConnected = false;
     public Angle hoodMotorPosition = Degrees.of(0);

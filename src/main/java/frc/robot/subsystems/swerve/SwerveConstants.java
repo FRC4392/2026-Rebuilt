@@ -9,7 +9,6 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
@@ -19,7 +18,6 @@ import static edu.wpi.first.units.Units.Seconds;
 import com.ctre.phoenix6.configs.AudioConfigs;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.ClosedLoopGeneralConfigs;
-import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
@@ -101,8 +99,8 @@ public final class SwerveConstants {
   public static final int backRightAzimuthCanId = 18;
 
   // Drive motor configuration
-  public static final Current driveStatorCurrentLimit = Amps.of(120);
-  public static final Current driveMotorSupplyLimitHigh = Amps.of(80);
+  public static final Current driveStatorCurrentLimit = Amps.of(80);
+  public static final Current driveMotorSupplyLimitHigh = Amps.of(40);
   public static final Current driveMotorSupplyLimitLow = Amps.of(20);
   public static final Time driveSupplyCurrentLowerTime = Seconds.of(0.5);
   public static final Distance wheelDiameter = Inches.of(3.0); // 2.84
@@ -160,13 +158,7 @@ public final class SwerveConstants {
                   .withKG(0)
                   .withKV(driveKv)
                   .withKS(driveKs)
-                  .withKA(driveKa))
-          .withTorqueCurrent(
-              new TorqueCurrentConfigs()
-                  .withPeakForwardTorqueCurrent(driveStatorCurrentLimit)
-                  .withPeakReverseTorqueCurrent(driveStatorCurrentLimit.unaryMinus()))
-          .withClosedLoopRamps(
-              new ClosedLoopRampsConfigs().withVoltageClosedLoopRampPeriod(Milliseconds.of(500)));
+                  .withKA(driveKa));
 
   // Azimuth encoder configuration
   public static final SensorDirectionValue azimuthEncoderInverted =

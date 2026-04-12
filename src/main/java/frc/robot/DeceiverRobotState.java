@@ -396,4 +396,14 @@ public class DeceiverRobotState {
   @Getter @Setter private ChassisSpeeds robotSpeeds = new ChassisSpeeds();
 
   @Getter @Setter private ChassisSpeeds setpointsSpeeds = new ChassisSpeeds();
+
+  public enum FeederStatus {
+    Feeding,
+    Stopped;
+  }
+
+  @AutoLogOutput(key = "RobotState/Hopper/FeederStatus")
+  @Getter
+  @Setter
+  private FeederStatus feederStatus = FeederStatus.Stopped;
 }

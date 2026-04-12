@@ -20,8 +20,9 @@ public interface IndexerIO {
     public Angle motorPosition = Degrees.of(0);
     public AngularVelocity motorVelocity = DegreesPerSecond.of(0.0);
     public Voltage motorAppliedVolts = Volts.of(0.0);
-    public Current motorCurrent = Amps.of(0.0);
+    public Current motorStatorCurrent = Amps.of(0.0);
     public Temperature motorTemp = Celsius.of(0.0);
+    public Current motorSupplyCurrent = Amps.of(0.0);
   }
 
   public default void updateInputs(IndexerIOInputs inputs) {}

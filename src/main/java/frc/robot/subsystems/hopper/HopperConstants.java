@@ -21,10 +21,10 @@ public class HopperConstants {
   public static final int hopperMotorCanID = 41;
   public static final int topRollerCanID = 42;
 
-  public static final Current hopperStatorCurrentLimit = Amps.of(120);
+  public static final Current hopperStatorCurrentLimit = Amps.of(80);
   public static final Current hopperMotorSupplyLimitHigh = Amps.of(30);
   public static final Current hopperMotorSupplyLimitLow = Amps.of(20);
-  public static final Time hopperSupplyCurrentLowerTime = Seconds.of(1);
+  public static final Time hopperSupplyCurrentLowerTime = Seconds.of(.5);
 
   public static final double hopperMotorReduction = 3.0;
 
@@ -32,7 +32,7 @@ public class HopperConstants {
   public static final NeutralModeValue hopperNeutralMode = NeutralModeValue.Coast;
 
   public static final boolean topRollerInverted = true;
-  public static final int topRollerCurrentLimit = 60;
+  public static final int topRollerCurrentLimit = 30;
   public static final IdleMode topRollerIdleMode = IdleMode.kCoast;
   public static final double topRollerRatio = (12.0 / 26.0);
 

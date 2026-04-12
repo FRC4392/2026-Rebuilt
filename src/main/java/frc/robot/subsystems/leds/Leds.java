@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.DeceiverRobotState;
+import frc.robot.DeceiverRobotState.FeederStatus;
 import frc.robot.HubShiftUtil;
 import frc.robot.HubShiftUtil.ShiftInfo;
 import java.util.List;
@@ -21,7 +23,7 @@ public class Leds extends SubsystemBase {
   // LED data
   private final AddressableLED leds;
   private final AddressableLEDBuffer buffer;
-  private static final int length = 21;
+  private static final int length = 35;
 
   // Pattern Constants
   private static final double strobeFastDuration = 0.1;
@@ -44,6 +46,8 @@ public class Leds extends SubsystemBase {
   // Startup notifier
   private final Notifier loadingNotifier;
 
+  private final DeceiverRobotState state;
+
   /** Creates a new Leds. */
   public Leds() {
     // Configure LED strip
@@ -53,6 +57,8 @@ public class Leds extends SubsystemBase {
     leds.setLength(length);
     leds.setData(buffer);
     leds.start();
+
+    state = DeceiverRobotState.getInstance();
 
     // Start pattern while robot is booting
     loadingNotifier =
@@ -92,15 +98,36 @@ public class Leds extends SubsystemBase {
 
       if (shiftInfo.remainingTime() < 5.0) {
         if (shiftInfo.active()) {
-          strobe(Section.FULL, Color.kGreen, strobeSlowDuration);
+          // active end
+          if (state.getFeederStatus() == FeederStatus.Feeding) {
+            strobe(Section.FULL, Color.kPurple, strobeSlowDuration);
+          } else {
+            strobe(Section.FULL, Color.kGreen, strobeSlowDuration);
+          }
         } else {
-          strobe(Section.FULL, Color.kRed, strobeSlowDuration);
+          // inactive end
+          if (state.getFeederStatus() == FeederStatus.Feeding) {
+            strobe(Section.FULL, Color.kPurple, strobeSlowDuration);
+          } else {
+            strobe(Section.FULL, Color.kRed, strobeSlowDuration);
+          }
         }
       } else {
         if (shiftInfo.active()) {
-          solid(Section.FULL, Color.kGreen);
+          // active during
+          if (state.getFeederStatus() == FeederStatus.Feeding) {
+            stripes(
+                Section.FULL, List.of(Color.kPurple, Color.kGreen), stripeLength, stripeDuration);
+          } else {
+            solid(Section.FULL, Color.kGreen);
+          }
         } else {
-          solid(Section.FULL, Color.kRed);
+          // inactive during
+          if (state.getFeederStatus() == FeederStatus.Feeding) {
+            stripes(Section.FULL, List.of(Color.kPurple, Color.kRed), stripeLength, stripeDuration);
+          } else {
+            solid(Section.FULL, Color.kRed);
+          }
         }
       }
     }
