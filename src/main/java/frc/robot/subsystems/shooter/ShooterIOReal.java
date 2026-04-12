@@ -101,7 +101,7 @@ public class ShooterIOReal implements ShooterIO {
   private final Debouncer turretMotorConnectedDebouncer = new Debouncer(.25);
   private final Debouncer hoodMotorConnectedDebouncer = new Debouncer(.25);
   private final Debouncer turretAbsoluteEncoderDebouncer = new Debouncer(.25);
-  //   private boolean turretInitialized = false;
+  private boolean turretInitialized = false;
 
   public ShooterIOReal() {
 
@@ -235,8 +235,8 @@ public class ShooterIOReal implements ShooterIO {
     ParentDevice.optimizeBusUtilizationForAll(shooterMotor2);
 
     // Disable FOC on all motors due to weird issues being reported
-    shooter2VoltageRequest.EnableFOC = true;
-    shooter2VelocityRequest.EnableFOC = true;
+    shooter2VoltageRequest.EnableFOC = false;
+    shooter2VelocityRequest.EnableFOC = false;
 
     // Turret Motor
     turretMotor = new TalonFX(turretMotorCanID);
@@ -306,8 +306,8 @@ public class ShooterIOReal implements ShooterIO {
     ParentDevice.optimizeBusUtilizationForAll(turretMotor);
 
     // Disable FOC on all motors due to weird issues being reported
-    turretvoltageRequest.EnableFOC = true;
-    turretMotionMagic.EnableFOC = true;
+    turretvoltageRequest.EnableFOC = false;
+    turretMotionMagic.EnableFOC = false;
 
     // Hood Motor
     hoodMotor = new SparkMax(hoodMotorCanID, MotorType.kBrushless);
@@ -429,12 +429,15 @@ public class ShooterIOReal implements ShooterIO {
     //   }
     // }
 
-    if (Rotations.of(turretEncoderSpark.getPosition()).in(Degrees) > 60
-        && Rotations.of(turretEncoderSpark.getPosition()).in(Degrees) < 300) {
+    if (!turretInitialized) {
+      if (Rotations.of(turretEncoderSpark.getPosition()).in(Degrees) > 60
+          && Rotations.of(turretEncoderSpark.getPosition()).in(Degrees) < 300) {
 
-      if (!Rotations.of(turretEncoderSpark.getPosition())
-          .isNear(turretMotor.getPosition().getValue(), Degrees.of(10))) {
-        turretMotor.setPosition(Rotations.of(turretEncoderSpark.getPosition()));
+        if (!Rotations.of(turretEncoderSpark.getPosition())
+            .isNear(turretMotor.getPosition().getValue(), Degrees.of(10))) {
+          turretMotor.setPosition(Rotations.of(turretEncoderSpark.getPosition()));
+          turretInitialized = true;
+        }
       }
     }
 

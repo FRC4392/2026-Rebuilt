@@ -76,7 +76,7 @@ public class RobotContainer {
     robotState = DeceiverRobotState.getInstance();
 
     // Lower brownout voltage
-    RobotController.setBrownoutVoltage(6.0);
+    RobotController.setBrownoutVoltage(6.5);
 
     leds = new Leds();
 
@@ -168,8 +168,8 @@ public class RobotContainer {
         .whileTrue(
             Commands.deadline(
                 shooter.aimAtTarget(TargetLocation.Hub),
-                Commands.waitTime(Milliseconds.of(250)).andThen(hopper.runTestVoltage()),
-                Commands.waitTime(Milliseconds.of(250)).andThen(indexer.runTestVoltage()),
+                Commands.waitTime(Milliseconds.of(50)).andThen(hopper.runTestVoltage()),
+                Commands.waitTime(Milliseconds.of(50)).andThen(indexer.runTestVoltage()),
                 intake.feedMode()));
   }
 
@@ -186,7 +186,7 @@ public class RobotContainer {
     operatorInterface.restGyroTrigger().onTrue(Commands.runOnce(() -> swerve.resetGyro()));
     operatorInterface.stopWithXTrigger().whileTrue(swerve.stopWithX());
 
-    RobotModeTriggers.teleop().onTrue(intake.setExtensionDistance(Inches.of(9.9)));
+    // RobotModeTriggers.teleop().onTrue(intake.setExtensionDistance(Inches.of(9.9)));
     // Location Based Commands
 
     Bounds trenchBoundsLeft =
@@ -322,7 +322,6 @@ public class RobotContainer {
             Commands.runOnce(
                 () -> {
                   HubShiftUtil.initialize();
-                  System.out.println("Enabled");
                 }));
   }
 

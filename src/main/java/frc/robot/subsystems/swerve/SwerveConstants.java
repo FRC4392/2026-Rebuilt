@@ -100,7 +100,7 @@ public final class SwerveConstants {
 
   // Drive motor configuration
   public static final Current driveStatorCurrentLimit = Amps.of(80);
-  public static final Current driveMotorSupplyLimitHigh = Amps.of(80);
+  public static final Current driveMotorSupplyLimitHigh = Amps.of(40);
   public static final Current driveMotorSupplyLimitLow = Amps.of(20);
   public static final Time driveSupplyCurrentLowerTime = Seconds.of(0.5);
   public static final Distance wheelDiameter = Inches.of(3.0); // 2.84

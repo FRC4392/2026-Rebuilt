@@ -100,7 +100,7 @@ public class IndexerIOReal implements IndexerIO {
         indexerSupplyCurrent);
     ParentDevice.optimizeBusUtilizationForAll(indexerMotor);
 
-    voltageRequest.EnableFOC = true;
+    voltageRequest.EnableFOC = false;
   }
 
   @Override

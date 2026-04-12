@@ -194,8 +194,8 @@ public class IntakeIOReal implements IntakeIO {
     rightRollerSupplyCurrent = rightRollerMotor.getSupplyCurrent();
 
     // Roller requests
-    rollerVoltageRequest.EnableFOC = true;
-    rollerVoltageRequest2.EnableFOC = true;
+    rollerVoltageRequest.EnableFOC = false;
+    rollerVoltageRequest2.EnableFOC = false;
 
     // Optimize bus utilization
     BaseStatusSignal.setUpdateFrequencyForAll(
