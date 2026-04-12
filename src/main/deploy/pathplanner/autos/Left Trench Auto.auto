@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left ramp"
+            "pathName": "Left Trench 1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Left ramp to start of left1"
+            "pathName": "Left Trench 2"
           }
         }
       ]
