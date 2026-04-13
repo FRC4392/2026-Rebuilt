@@ -10,7 +10,6 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
-import choreo.trajectory.SwerveSample;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -49,6 +48,7 @@ import frc.robot.DeceiverRobotState;
 import frc.robot.RobotConstants;
 import frc.robot.RobotConstants.Mode;
 import frc.robot.lib.pathplanner.LocalADStarAK;
+import frc.robot.operatorinterface.OperatorInterface.SwerveAngleControlSignal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -84,8 +84,8 @@ public class Swerve extends SubsystemBase {
 
   private SwerveState state = SwerveState.other;
 
-  private final PIDController xController = new PIDController(20.0, 0, 0);
-  private final PIDController yController = new PIDController(20.0, 0, 0);
+  // private final PIDController xController = new PIDController(20.0, 0, 0);
+  // private final PIDController yController = new PIDController(20.0, 0, 0);
   private final PIDController rotationController = new PIDController(5.0, 0, 0);
 
   /**
@@ -223,7 +223,8 @@ public class Swerve extends SubsystemBase {
   //       new ChassisSpeeds(
   //           sample.vx + xController.calculate(pose.getX(), sample.x),
   //           sample.vy + yController.calculate(pose.getY(), sample.y),
-  //           sample.omega + yController.calculate(pose.getRotation().getRadians(), sample.heading));
+  //           sample.omega + yController.calculate(pose.getRotation().getRadians(),
+  // sample.heading));
 
   //   speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getRotation());
 
@@ -391,15 +392,15 @@ public class Swerve extends SubsystemBase {
   }
 
   /** Returns the maximum angular speed in radians per sec. */
-  public AngularVelocity getSelectedAngularSpeed(boolean fastMode, boolean slowMode){
+  public AngularVelocity getSelectedAngularSpeed(boolean fastMode, boolean slowMode) {
     if (slowMode) {
-      return RadiansPerSecond.of(slowSpeed.in(MetersPerSecond) / driveBaseRadius.in(Meters));;
+      return RadiansPerSecond.of(slowSpeed.in(MetersPerSecond) / driveBaseRadius.in(Meters));
     } else if (fastMode) {
-      return RadiansPerSecond.of(maxSpeed.in(MetersPerSecond) / driveBaseRadius.in(Meters));;
+      return RadiansPerSecond.of(maxSpeed.in(MetersPerSecond) / driveBaseRadius.in(Meters));
     }
-    return RadiansPerSecond.of(normalSpeed.in(MetersPerSecond) / driveBaseRadius.in(Meters));;
+    return RadiansPerSecond.of(normalSpeed.in(MetersPerSecond) / driveBaseRadius.in(Meters));
   }
-  //MARK: - Comands
+  // MARK: - Comands
 
   /** Returns a command to run a quasistatic test in the specified direction. */
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
@@ -488,16 +489,18 @@ public class Swerve extends SubsystemBase {
           // Apply rotation deadband
           double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), controllerDeadband);
 
-
           // Square rotation value for more precise control
           omega = Math.copySign(omega * omega, omega);
 
           // Convert to field relative speeds & send command
           ChassisSpeeds speeds =
               new ChassisSpeeds(
-                  getSelectedLinearSpeed(fastMode.getAsBoolean(), slowMode.getAsBoolean()).times(linearVelocity.getX()),
-                  getSelectedLinearSpeed(fastMode.getAsBoolean(), slowMode.getAsBoolean()).times(linearVelocity.getY()),
-                  getSelectedAngularSpeed(fastMode.getAsBoolean(), slowMode.getAsBoolean()).times(omega));
+                  getSelectedLinearSpeed(fastMode.getAsBoolean(), slowMode.getAsBoolean())
+                      .times(linearVelocity.getX()),
+                  getSelectedLinearSpeed(fastMode.getAsBoolean(), slowMode.getAsBoolean())
+                      .times(linearVelocity.getY()),
+                  getSelectedAngularSpeed(fastMode.getAsBoolean(), slowMode.getAsBoolean())
+                      .times(omega));
 
           boolean isFlipped =
               robotState.getAlliance().isPresent()
@@ -507,6 +510,11 @@ public class Swerve extends SubsystemBase {
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   speeds, isFlipped ? getRotation().plus(new Rotation2d(Math.PI)) : getRotation()));
         });
+  }
+
+  public Command joystickDriveAtAngle(SwerveAngleControlSignal signal, BooleanSupplier slowMode) {
+    return joystickDriveAtAngle(
+        signal.x(), signal.y(), signal.angle(), signal.fastMode(), slowMode);
   }
 
   /**
@@ -554,13 +562,16 @@ public class Swerve extends SubsystemBase {
           // Convert to field relative speeds & send command
           ChassisSpeeds speeds =
               new ChassisSpeeds(
-                  getSelectedLinearSpeed(fastMode.getAsBoolean(), slowMode.getAsBoolean()).times(linearVelocity.getX()),
-                  getSelectedLinearSpeed(fastMode.getAsBoolean(), slowMode.getAsBoolean()).times(linearVelocity.getY()),
-                  getSelectedAngularSpeed(fastMode.getAsBoolean(), slowMode.getAsBoolean()).times(omega));
+                  getSelectedLinearSpeed(fastMode.getAsBoolean(), slowMode.getAsBoolean())
+                      .times(linearVelocity.getX()),
+                  getSelectedLinearSpeed(fastMode.getAsBoolean(), slowMode.getAsBoolean())
+                      .times(linearVelocity.getY()),
+                  getSelectedAngularSpeed(fastMode.getAsBoolean(), slowMode.getAsBoolean())
+                      .times(omega));
           boolean isFlipped =
               robotState.getAlliance().isPresent()
                   && robotState.getAlliance().get() == Alliance.Red;
-                  
+
           runVelocity(
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   speeds, isFlipped ? getRotation().plus(new Rotation2d(Math.PI)) : getRotation()));

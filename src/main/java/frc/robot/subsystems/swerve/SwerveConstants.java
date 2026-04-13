@@ -37,7 +37,7 @@ import frc.robot.lib.util.PhoenixUtil.ClosedLoopControlType;
 public final class SwerveConstants {
   private SwerveConstants() {}
 
-  //Drive Speeds
+  // Drive Speeds
   public static final LinearVelocity maxSpeed = MetersPerSecond.of(5.4);
   public static final LinearVelocity normalSpeed = MetersPerSecond.of(3.0);
   public static final LinearVelocity slowSpeed = MetersPerSecond.of(1.0);

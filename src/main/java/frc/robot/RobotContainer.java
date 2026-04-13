@@ -9,8 +9,6 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import java.util.function.DoubleSupplier;
-
 import com.pathplanner.lib.events.EventTrigger;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.RobotController;
@@ -178,8 +176,18 @@ public class RobotContainer {
 
   private void configureBindings() {
     // Swerve Controls
-    swerve.setDefaultCommand(swerve.joystickDrive(operatorInterface.getSwerveControlSignal(), () -> robotState.getFeederStatus() == FeederStatus.Feeding));
-    
+    swerve.setDefaultCommand(
+        swerve.joystickDrive(
+            operatorInterface.getSwerveControlSignal(),
+            () -> robotState.getFeederStatus() == FeederStatus.Feeding));
+
+    operatorInterface
+        .swerveAltMode()
+        .whileTrue(
+            swerve.joystickDriveAtAngle(
+                operatorInterface.getSwerveAngleControlSignal(),
+                () -> robotState.getFeederStatus() == FeederStatus.Feeding));
+
     operatorInterface.restGyroTrigger().onTrue(Commands.runOnce(() -> swerve.resetGyro()));
     operatorInterface.stopWithXTrigger().whileTrue(swerve.stopWithX());
 

@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.DeceiverRobotState;
 import frc.robot.subsystems.swerve.SwerveControlSignal;
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
@@ -158,6 +159,22 @@ public class OperatorInterface extends SubsystemBase {
         () -> -driverController.getLeftX(),
         () -> -driverController.getRightX(),
         () -> driverController.getHID().getRightStickButton());
+  }
+
+  public record SwerveAngleControlSignal(
+      DoubleSupplier x, DoubleSupplier y, Supplier<Rotation2d> angle, BooleanSupplier fastMode) {}
+  ;
+
+  public SwerveAngleControlSignal getSwerveAngleControlSignal() {
+    return new SwerveAngleControlSignal(
+        () -> -driverController.getLeftY(),
+        () -> -driverController.getLeftX(),
+        () -> new Rotation2d(driverController.getRightY(), driverController.getRightX()),
+        () -> driverController.getHID().getRightStickButton());
+  }
+
+  public Trigger swerveAltMode() {
+    return driverController.leftStick();
   }
 
   // Game Controls (vary by year)
