@@ -9,6 +9,8 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import java.util.function.DoubleSupplier;
+
 import com.pathplanner.lib.events.EventTrigger;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.RobotController;
@@ -16,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.DeceiverRobotState.FeederStatus;
 import frc.robot.lib.geometry.AllianceFlipUtil;
 import frc.robot.lib.geometry.Bounds;
 import frc.robot.operatorinterface.OperatorInterface;
@@ -175,14 +178,8 @@ public class RobotContainer {
 
   private void configureBindings() {
     // Swerve Controls
-    swerve.setDefaultCommand(swerve.joystickDrive(operatorInterface.getSwerveControlSignal()));
-    // Trigger angleTrigger = new Trigger(operatorInterface.operatorIsAngle());
-    // angleTrigger.whileTrue(
-    //     swerve.joystickDriveAtAngle(
-    //         operatorInterface.getSwerveControlSignal().getxSignal(),
-    //         operatorInterface.getSwerveControlSignal().getySignal(),
-    //         operatorInterface.rotationSupplier(),
-    //         operatorInterface.getSwerveControlSignal().getAllowFullSpeedSignal()));
+    swerve.setDefaultCommand(swerve.joystickDrive(operatorInterface.getSwerveControlSignal(), () -> robotState.getFeederStatus() == FeederStatus.Feeding));
+    
     operatorInterface.restGyroTrigger().onTrue(Commands.runOnce(() -> swerve.resetGyro()));
     operatorInterface.stopWithXTrigger().whileTrue(swerve.stopWithX());
 
