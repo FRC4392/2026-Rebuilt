@@ -4,16 +4,7 @@
 
 package frc.robot.subsystems.swerve;
 
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.KilogramSquareMeters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Pounds;
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.configs.AudioConfigs;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
@@ -46,7 +37,11 @@ import frc.robot.lib.util.PhoenixUtil.ClosedLoopControlType;
 public final class SwerveConstants {
   private SwerveConstants() {}
 
+  // Drive Speeds
   public static final LinearVelocity maxSpeed = MetersPerSecond.of(5.4);
+  public static final LinearVelocity normalSpeed = MetersPerSecond.of(3.0);
+  public static final LinearVelocity slowSpeed = MetersPerSecond.of(1.0);
+
   public static final double odometryFrequencyHz = 100.0; // Hz
   public static final Distance trackWidth = Inches.of(22.5);
   public static final Distance wheelBase = Inches.of(22.5);
