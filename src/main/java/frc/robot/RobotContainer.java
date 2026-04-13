@@ -288,7 +288,6 @@ public class RobotContainer {
         .whileTrue(shooter.aimAtTarget(TargetLocation.RightPass));
 
     isInTrench
-        .and(passRightZoneTrigger)
         .and(RobotModeTriggers.teleop())
         .whileTrue(shooter.setPose(Degrees.of(0), Degrees.of(0), RotationsPerSecond.of(30)));
 
