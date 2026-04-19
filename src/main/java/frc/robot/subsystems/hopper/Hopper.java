@@ -61,6 +61,10 @@ public class Hopper extends SubsystemBase {
     return this.runEnd(() -> setVoltage(Volts.of(10)), () -> setVoltage(Volts.of(0)));
   }
 
+  public Command vomit() {
+    return this.runEnd(() -> setVoltage(Volts.of(-10)), () -> setVoltage(Volts.of(0)));
+  }
+
   public AbsoluteEncoder getTurretAbsoluteEncoder() {
     return hopperIO.getTurretAbsoluteEncoder();
   }

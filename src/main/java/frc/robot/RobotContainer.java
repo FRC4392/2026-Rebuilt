@@ -13,6 +13,7 @@ import com.pathplanner.lib.events.EventTrigger;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -48,6 +49,7 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import java.util.function.BooleanSupplier;
 
 public class RobotContainer {
   private final DeceiverRobotState robotState;
@@ -171,22 +173,39 @@ public class RobotContainer {
                 shooter.aimAtTarget(TargetLocation.Hub),
                 Commands.waitTime(Milliseconds.of(50)).andThen(hopper.runTestVoltage()),
                 Commands.waitTime(Milliseconds.of(50)).andThen(indexer.runTestVoltage()),
-                intake.feedMode()));
+                Commands.waitSeconds(3).andThen(intake.feedMode())));
   }
 
   private void configureBindings() {
+    Bounds passLeftBounds =
+        new Bounds(
+            FieldConstants.LinesVertical.hubCenter,
+            FieldConstants.fieldLength,
+            FieldConstants.LinesHorizontal.center,
+            FieldConstants.fieldWidth);
+
+    Bounds passRightBounds =
+        new Bounds(
+            FieldConstants.LinesVertical.hubCenter,
+            FieldConstants.fieldLength,
+            0.0,
+            FieldConstants.LinesHorizontal.center);
+
+    BooleanSupplier goSlowSupplier =
+        () -> {
+          return (robotState.getFeederStatus() == FeederStatus.Feeding)
+              & !(passLeftBounds.contains(swerve.getPose().getTranslation())
+                  || passRightBounds.contains(swerve.getPose().getTranslation()));
+        };
     // Swerve Controls
     swerve.setDefaultCommand(
-        swerve.joystickDrive(
-            operatorInterface.getSwerveControlSignal(),
-            () -> robotState.getFeederStatus() == FeederStatus.Feeding));
+        swerve.joystickDrive(operatorInterface.getSwerveControlSignal(), goSlowSupplier));
 
     operatorInterface
         .swerveAltMode()
         .whileTrue(
             swerve.joystickDriveAtAngle(
-                operatorInterface.getSwerveAngleControlSignal(),
-                () -> robotState.getFeederStatus() == FeederStatus.Feeding));
+                operatorInterface.getSwerveAngleControlSignal(), goSlowSupplier));
 
     operatorInterface.restGyroTrigger().onTrue(Commands.runOnce(() -> swerve.resetGyro()));
     operatorInterface.stopWithXTrigger().whileTrue(swerve.stopWithX());
@@ -224,20 +243,6 @@ public class RobotContainer {
 
     Bounds shotBounds =
         new Bounds(0.0, FieldConstants.LinesVertical.hubCenter, 0.0, FieldConstants.fieldWidth);
-
-    Bounds passLeftBounds =
-        new Bounds(
-            FieldConstants.LinesVertical.hubCenter,
-            FieldConstants.fieldLength,
-            FieldConstants.LinesHorizontal.center,
-            FieldConstants.fieldWidth);
-
-    Bounds passRightBounds =
-        new Bounds(
-            FieldConstants.LinesVertical.hubCenter,
-            FieldConstants.fieldLength,
-            0.0,
-            FieldConstants.LinesHorizontal.center);
 
     Trigger shootHubZoneTrigger =
         new Trigger(
@@ -297,7 +302,13 @@ public class RobotContainer {
         .toggleOnTrue(hopper.runTestVoltage().alongWith(indexer.runTestVoltage()));
 
     // Intake Controls
-    operatorInterface.intakeButton().whileTrue(intake.runRollerIntake());
+    operatorInterface
+        .intakeButton()
+        .whileTrue(
+            intake
+                .runRollerIntake()
+                .ignoringDisable(true)
+                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     operatorInterface
         .extendButton()
         .and(operatorInterface.intakeButton().negate())
@@ -315,6 +326,8 @@ public class RobotContainer {
     operatorInterface
         .trenchMode()
         .whileTrue(shooter.setPose(Degrees.of(0), Degrees.of(0), RotationsPerSecond.of(-32)));
+
+    operatorInterface.vomit().whileTrue(intake.runRollerOuttake().alongWith(hopper.vomit()));
 
     // HubShiftUtil.setAllianceWinOverride(
     //     () -> Optional.of(operatorInterface.shiftOverride().getAsBoolean()));

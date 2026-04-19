@@ -1,3 +1,10 @@
+Camera 4
+Right 0.319149
+Forward -0.153554
+Height 0.342140
+Pitch 25
+Yaw -65
+
 Camera 1
 Right 0.314419
 Forward -0.262028
@@ -18,10 +25,3 @@ Forward -0.262028
 Height 0.343642
 Pitch 25
 Yaw 120
-
-Camera 4
-Right 0.319149
-Forward -0.153554
-Height 0.342140
-Pitch 25
-Yaw -65

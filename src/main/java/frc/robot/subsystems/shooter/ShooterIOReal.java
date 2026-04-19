@@ -45,6 +45,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import frc.robot.DeceiverRobotState;
 import frc.robot.lib.util.SparkUtil;
 import java.util.function.DoubleSupplier;
 
@@ -103,7 +104,10 @@ public class ShooterIOReal implements ShooterIO {
   private final Debouncer turretAbsoluteEncoderDebouncer = new Debouncer(.25);
   private boolean turretInitialized = false;
 
+  private final DeceiverRobotState robotState;
+
   public ShooterIOReal() {
+    robotState = DeceiverRobotState.getInstance();
 
     turretEncoder = new DutyCycleEncoder(TurretEncoderPin, 1, 0.639);
     turretEncoder.setInverted(true);
@@ -419,24 +423,36 @@ public class ShooterIOReal implements ShooterIO {
 
     if (turretEncoderSpark != null) {
       inputs.turretAbsoluteAngle = Rotations.of(turretEncoderSpark.getPosition());
-    }
 
-    // if (!turretInitialized) {
-    //   turretMotor.setPosition(Rotations.of(turretEncoder.get()));
+      // if (!turretInitialized) {
+      //   turretMotor.setPosition(Rotations.of(turretEncoder.get()));
 
-    //   if (turretPosition.getValue().isNear(Rotations.of(turretEncoder.get()), Degrees.of(.5))) {
-    //     turretInitialized = true;
-    //   }
-    // }
+      //   if (turretPosition.getValue().isNear(Rotations.of(turretEncoder.get()), Degrees.of(.5)))
+      // {
+      //     turretInitialized = true;
+      //   }
+      // }
 
-    if (!turretInitialized) {
-      if (Rotations.of(turretEncoderSpark.getPosition()).in(Degrees) > 60
-          && Rotations.of(turretEncoderSpark.getPosition()).in(Degrees) < 300) {
+      if (!turretInitialized
+          || robotState.isDisabled()
+          || (!Rotations.of(turretEncoderSpark.getPosition())
+                  .isNear(turretMotor.getPosition().getValue(), Degrees.of(10))
+              && Rotations.of(turretEncoderSpark.getPosition())
+                  .isNear(turretMotor.getPosition().getValue(), Degrees.of(60)))) {
+        if (Rotations.of(turretEncoderSpark.getPosition()).in(Degrees) > 60
+            && Rotations.of(turretEncoderSpark.getPosition()).in(Degrees) < 300) {
 
-        if (!Rotations.of(turretEncoderSpark.getPosition())
-            .isNear(turretMotor.getPosition().getValue(), Degrees.of(10))) {
-          turretMotor.setPosition(Rotations.of(turretEncoderSpark.getPosition()));
-          turretInitialized = true;
+          if (!Rotations.of(turretEncoderSpark.getPosition())
+              .isNear(turretMotor.getPosition().getValue(), Degrees.of(.5))) {
+            turretMotor.setPosition(Rotations.of(turretEncoderSpark.getPosition()));
+
+            if (turretMotor
+                .getPosition()
+                .getValue()
+                .isNear(Rotations.of(turretEncoderSpark.getPosition()), Degrees.of(.5))) {
+              turretInitialized = true;
+            }
+          }
         }
       }
     }

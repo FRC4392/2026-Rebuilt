@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.operatorinterface.OperatorInterfaceConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Voltage;
@@ -62,7 +63,9 @@ public class OperatorInterface extends SubsystemBase {
 
     // Set up auto chooser
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-    autoChooser.addDefaultOption("None", noAuto);
+    buildAutoChooser();
+    // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    // autoChooser.addDefaultOption("None", noAuto);
 
     // Remove controller disconnected message, we handle this on our own
     DriverStation.silenceJoystickConnectionWarning(true);
@@ -76,6 +79,33 @@ public class OperatorInterface extends SubsystemBase {
 
     // Check that an auto has been selected
     autoAlert.set(!robotState.getWasAuto() && autoChooser.get() == noAuto);
+  }
+
+  private void buildAutoChooser() {
+    SmartDashboard.putNumber("Auto Delay Seconds", 0);
+    // Add all auto options
+    for (String autoName : AutoBuilder.getAllAutoNames()) {
+      // Create standard Auto
+      PathPlannerAuto nonFlip = new PathPlannerAuto(autoName, false);
+      // Create flipped Auto
+      PathPlannerAuto flipped = new PathPlannerAuto(autoName, true);
+
+      // Create delayed versions
+      Command delaynonFlipped =
+          new ConfigurableWaitCommand(() -> SmartDashboard.getNumber("Auto Delay Seconds", 0))
+              .andThen(nonFlip);
+      Command delayFlipped =
+          new ConfigurableWaitCommand(() -> SmartDashboard.getNumber("Auto Delay Seconds", 0))
+              .andThen(flipped);
+
+      // addAutoOption(autoName, nonFlip);
+      addAutoOption("Flipped " + autoName, flipped);
+      addAutoOption("Delayed " + autoName, delaynonFlipped);
+      addAutoOption("Delayed Flipped ", delayFlipped);
+    }
+
+    // Add default no auto
+    autoChooser.addDefaultOption("None", noAuto);
   }
 
   @Override
@@ -169,7 +199,7 @@ public class OperatorInterface extends SubsystemBase {
     return new SwerveAngleControlSignal(
         () -> -driverController.getLeftY(),
         () -> -driverController.getLeftX(),
-        () -> new Rotation2d(driverController.getRightY(), driverController.getRightX()),
+        () -> new Rotation2d(-driverController.getRightY(), -driverController.getRightX()),
         () -> driverController.getHID().getRightStickButton());
   }
 
@@ -240,7 +270,7 @@ public class OperatorInterface extends SubsystemBase {
 
   // Force Triggers
   public Trigger forceHub() {
-    return operatorController.rightBumper();
+    return operatorController.pov(45);
   }
 
   public Trigger forceFeedLeft() {
@@ -282,5 +312,9 @@ public class OperatorInterface extends SubsystemBase {
 
   public Trigger forceShoot() {
     return operatorController.start();
+  }
+
+  public Trigger vomit() {
+    return operatorController.rightBumper();
   }
 }

@@ -61,8 +61,8 @@ public final class SwerveConstants {
   public static final double controllerDeadband = 0.05;
 
   // Angle Controller used in commands
-  public static final double angleControllerKp = 4.0;
-  public static final double angleControllerKd = 0.4;
+  public static final double angleControllerKp = .5;
+  public static final double angleControllerKd = 0.0;
   public static final double allowedMaxAngularVelocity = 8.0;
   public static final double allowedMaxAngularAcceleration = 20.0;
 

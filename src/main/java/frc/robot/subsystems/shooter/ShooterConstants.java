@@ -129,7 +129,7 @@ public class ShooterConstants {
     timeOfFlightMap.put(1.12, .56);
 
     hoodAngleMap.put(5.56, new Rotation2d(Degrees.of(29.5)));
-    flywheelSpeedMap.put(5.56, 42.0);
+    flywheelSpeedMap.put(5.56, 47.0);
     timeOfFlightMap.put(5.56, .89);
 
     passingHoodAngleMap.put(3.05, new Rotation2d(Degrees.of(30)));

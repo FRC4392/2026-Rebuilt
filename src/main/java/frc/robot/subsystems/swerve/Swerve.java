@@ -40,6 +40,7 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -86,7 +87,7 @@ public class Swerve extends SubsystemBase {
 
   // private final PIDController xController = new PIDController(20.0, 0, 0);
   // private final PIDController yController = new PIDController(20.0, 0, 0);
-  private final PIDController rotationController = new PIDController(5.0, 0, 0);
+  private final PIDController rotationController = new PIDController(.01, 0, 0);
 
   /**
    * Create a new swerve subsystem
@@ -383,9 +384,9 @@ public class Swerve extends SubsystemBase {
 
   /** Returns the maximum linear speed in meters per sec. */
   public LinearVelocity getSelectedLinearSpeed(boolean fastMode, boolean slowMode) {
-    if (slowMode) {
+    if (slowMode & !fastMode) {
       return slowSpeed;
-    } else if (fastMode) {
+    } else if (fastMode & !slowMode) {
       return maxSpeed;
     }
     return normalSpeed;
@@ -393,9 +394,9 @@ public class Swerve extends SubsystemBase {
 
   /** Returns the maximum angular speed in radians per sec. */
   public AngularVelocity getSelectedAngularSpeed(boolean fastMode, boolean slowMode) {
-    if (slowMode) {
+    if (slowMode & !fastMode) {
       return RadiansPerSecond.of(slowSpeed.in(MetersPerSecond) / driveBaseRadius.in(Meters));
-    } else if (fastMode) {
+    } else if (fastMode & !slowMode) {
       return RadiansPerSecond.of(maxSpeed.in(MetersPerSecond) / driveBaseRadius.in(Meters));
     }
     return RadiansPerSecond.of(normalSpeed.in(MetersPerSecond) / driveBaseRadius.in(Meters));
@@ -558,6 +559,9 @@ public class Swerve extends SubsystemBase {
           double omega =
               angleController.calculate(
                   getRotation().getRadians(), rotationSupplier.get().getRadians());
+          SmartDashboard.putNumber("target rotation", omega);
+
+          // omega = 0;
 
           // Convert to field relative speeds & send command
           ChassisSpeeds speeds =
