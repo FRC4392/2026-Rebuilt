@@ -4,10 +4,7 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Milliseconds;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.pathplanner.lib.events.EventTrigger;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -24,20 +21,11 @@ import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperIO;
 import frc.robot.subsystems.hopper.HopperIOReal;
 import frc.robot.subsystems.hopper.HopperIOSim;
-import frc.robot.subsystems.indexer.Indexer;
-import frc.robot.subsystems.indexer.IndexerIO;
-import frc.robot.subsystems.indexer.IndexerIOReal;
-import frc.robot.subsystems.indexer.IndexerIOSim;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.leds.Leds;
-import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.Shooter.TargetLocation;
-import frc.robot.subsystems.shooter.ShooterIO;
-import frc.robot.subsystems.shooter.ShooterIOReal;
-import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.swerve.GyroIO;
 import frc.robot.subsystems.swerve.GyroIOPigeon2;
 import frc.robot.subsystems.swerve.Swerve;
@@ -55,8 +43,6 @@ public class RobotContainer {
   // Subsystems
   public final Swerve swerve;
 
-  public final Shooter shooter;
-  public final Indexer indexer;
   public final Hopper hopper;
   // public final Climber climber;
   public final Intake intake;
@@ -95,11 +81,9 @@ public class RobotContainer {
                 new SwerveModuleIODeceivers(2),
                 new SwerveModuleIODeceivers(3));
 
-        indexer = new Indexer(new IndexerIOReal());
         // climber = new Climber(new ClimberIOReal());
         hopper = new Hopper(new HopperIOReal());
         intake = new Intake(new IntakeIOReal());
-        shooter = new Shooter(new ShooterIOReal(), () -> hopper.getTurretAbsoluteEncoder());
         vision =
             new Vision(
                 swerve::addVisionMeasurement,
@@ -118,11 +102,9 @@ public class RobotContainer {
                 new SwerveModuleIOSim(),
                 new SwerveModuleIOSim());
 
-        indexer = new Indexer(new IndexerIOSim());
         // climber = new Climber(new ClimberIOSim());
         hopper = new Hopper(new HopperIOSim());
         intake = new Intake(new IntakeIOSim());
-        shooter = new Shooter(new ShooterIOSim(), () -> hopper.getTurretAbsoluteEncoder());
         vision =
             new Vision(
                 swerve::addVisionMeasurement,
@@ -138,12 +120,10 @@ public class RobotContainer {
                 new SwerveModuleIO() {},
                 new SwerveModuleIO() {});
 
-        indexer = new Indexer(new IndexerIO() {});
         // climber = new Climber(new ClimberIO() {});
         hopper = new Hopper(new HopperIO() {});
         intake = new Intake(new IntakeIO() {});
         vision = new Vision(swerve::addVisionMeasurement, new VisionIO() {});
-        shooter = new Shooter(new ShooterIO() {}, () -> hopper.getTurretAbsoluteEncoder());
     }
 
     // Create Operator Interface
@@ -163,15 +143,6 @@ public class RobotContainer {
 
   private void configureAutoModes() {
     new EventTrigger("Intake").whileTrue(intake.runIntakeAuto());
-    new EventTrigger("Trench Mode")
-        .whileTrue(shooter.setPose(Degrees.of(0), Degrees.of(0), RotationsPerSecond.of(30)));
-    new EventTrigger("AimAtHub")
-        .whileTrue(
-            Commands.deadline(
-                shooter.aimAtTarget(TargetLocation.Hub),
-                Commands.waitTime(Milliseconds.of(50)).andThen(hopper.runTestVoltage()),
-                Commands.waitTime(Milliseconds.of(50)).andThen(indexer.runTestVoltage()),
-                intake.feedMode()));
   }
 
   private void configureBindings() {
@@ -268,34 +239,25 @@ public class RobotContainer {
         .or(shootHubZoneTrigger)
         .and(operatorInterface.trenchMode().negate())
         .and(RobotModeTriggers.teleop())
-        .and(isInTrench.negate())
-        .whileTrue(shooter.aimAtTarget(TargetLocation.Hub));
+        .and(isInTrench.negate());
 
     operatorInterface
         .forceFeedLeft()
         .or(passLeftZoneTrigger)
         .and(operatorInterface.trenchMode().negate())
         .and(RobotModeTriggers.teleop())
-        .and(isInTrench.negate())
-        .whileTrue(shooter.aimAtTarget(TargetLocation.LeftPass));
+        .and(isInTrench.negate());
 
     operatorInterface
         .forceFeedRight()
         .or(passRightZoneTrigger)
         .and(operatorInterface.trenchMode().negate())
         .and(RobotModeTriggers.teleop())
-        .and(isInTrench.negate())
-        .whileTrue(shooter.aimAtTarget(TargetLocation.RightPass));
+        .and(isInTrench.negate());
 
     isInTrench
-        .and(RobotModeTriggers.teleop())
-        .whileTrue(shooter.setPose(Degrees.of(0), Degrees.of(0), RotationsPerSecond.of(30)));
-
-    // Feed Controls
-    operatorInterface
-        .feedStop()
-        .toggleOnTrue(hopper.runTestVoltage().alongWith(indexer.runTestVoltage()));
-
+        .and(RobotModeTriggers.teleop());
+   
     // Intake Controls
     operatorInterface.intakeButton().whileTrue(intake.runRollerIntake());
     operatorInterface
@@ -311,11 +273,6 @@ public class RobotContainer {
         .feedMode()
         .and(operatorInterface.intakeButton().negate())
         .whileTrue(intake.feedMode());
-
-    operatorInterface
-        .trenchMode()
-        .whileTrue(shooter.setPose(Degrees.of(0), Degrees.of(0), RotationsPerSecond.of(-32)));
-
     // HubShiftUtil.setAllianceWinOverride(
     //     () -> Optional.of(operatorInterface.shiftOverride().getAsBoolean()));
 
