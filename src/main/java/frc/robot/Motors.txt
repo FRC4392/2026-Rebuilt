@@ -1,6 +1,3 @@
-Climber:
-1 Kraken
-
 Hopper:
 1 Kraken
 
@@ -13,10 +10,8 @@ Intake:
 Extension:
 1 Kraken
 
-Shooter:
-2 Shooter Kraken
-Turret Kraken
-Hood Spark Max😭
+Dumper:
+
 
 Drivetrain:
 4 Kraken Steer
