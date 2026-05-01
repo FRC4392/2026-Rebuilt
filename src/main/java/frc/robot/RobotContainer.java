@@ -104,6 +104,7 @@ public class RobotContainer {
                 new SwerveModuleIOSim(),
                 new SwerveModuleIOSim());
 
+        dumper = new Dumper(new DumperIOReal());
         hopper = new Hopper(new HopperIOSim());
         intake = new Intake(new IntakeIOSim());
         vision =
@@ -122,6 +123,7 @@ public class RobotContainer {
                 new SwerveModuleIO() {});
 
         // climber = new Climber(new ClimberIO() {});
+        dumper = new Dumper(new DumperIOReal());
         hopper = new Hopper(new HopperIO() {});
         intake = new Intake(new IntakeIO() {});
         vision = new Vision(swerve::addVisionMeasurement, new VisionIO() {});
