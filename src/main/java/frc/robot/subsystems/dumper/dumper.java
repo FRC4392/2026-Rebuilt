@@ -1,6 +1,4 @@
-
-
-package frc.robot.subsystems.climber;
+package frc.robot.subsystems.dumper;
 
 import static edu.wpi.first.units.Units.Volts;
 
@@ -11,13 +9,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.DeceiverRobotState;
 
-import org.littletonrobotics.junction.Logger;public class dumper extends SubsystemBase{
+import org.littletonrobotics.junction.Logger;public class Dumper extends SubsystemBase{
     private final DumperIO dumperIO;
     //private final DumperIO IOInputsAutoLogged inputs = new DumpMeSilly(); //not very important
     private final DeceiverRobotState robotState;
 
       /** I... I think This makes a dumpa */
-  public Climber(DumperIO IO) {
+  public Dumper(DumperIO IO) {
     DumperIO = IO;
     robotState = DeceiverRobotState.getInstance();
   }
@@ -29,7 +27,7 @@ import org.littletonrobotics.junction.Logger;public class dumper extends Subsyst
         dumperIO.updateInputs(inputs);
         Logger.processInputs("Dumper", inputs);
 
-        climberMotorDisconnectedAlert.set(!inputs.motorConnected);
+        dumperMotorDisconnectedAlert.set(!inputs.motorConnected);
     }
 
     public void setVoltage(Voltage volts) {
