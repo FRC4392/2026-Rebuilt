@@ -18,10 +18,9 @@ public class Dumper extends SubsystemBase {
 
   private final DumperIO dumperIO;
   private final DumperIOInputsAutoLogged inputs = new DumperIOInputsAutoLogged();
-
-  @SuppressWarnings("unused")
   private final DeceiverRobotState robotState;
 
+  @SuppressWarnings("unused")
   private final Alert dumperMotorDisconnectedAlert = new Alert("Dumpa no dump", AlertType.kError);
 
   /** Creates a new Dumper. */
@@ -35,7 +34,7 @@ public class Dumper extends SubsystemBase {
     dumperIO.updateInputs(inputs);
     Logger.processInputs("Dumper", inputs);
 
-    dumperMotorDisconnectedAlert.set(!inputs.motorConnected);
+    dumperMotorDisconnectedAlert.set(!inputs.dumperMotor1Connected);
   }
 
   public void setVoltage(Voltage volts) {
