@@ -25,7 +25,10 @@ import edu.wpi.first.units.measure.Voltage;
 
 public class DumperIOReal implements DumperIO {
   // Motors
-  public final TalonFX dumperMotor;
+  public final TalonFX dumperMotor1;
+  public final TalonFX dumperMotor2;
+  public final TalonFX dumperMotor3;
+  public final TalonFX dumperMotor4;
 
   // Conrtol Requests
   private final VoltageOut voltageRequest = new VoltageOut(0);
@@ -41,7 +44,7 @@ public class DumperIOReal implements DumperIO {
   private final Debouncer motorConnectDebouncer = new Debouncer(.25);
 
   public DumperIOReal() {
-    dumperMotor = new TalonFX(dumperMotorCanID);
+    dumperMotor1 = new TalonFX(dumperMotorCanID);
 
     TalonFXConfiguration dumperConfiguration =
         new TalonFXConfiguration()

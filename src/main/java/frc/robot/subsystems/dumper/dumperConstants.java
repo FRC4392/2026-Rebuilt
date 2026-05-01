@@ -17,22 +17,80 @@ public class DumperConstants {
 
   public static boolean enableBeeps = true;
 
-  public static final int dumperMotorCanID = 41;
+  // Motor 1dumperMotor1CanID
+  public static final int dumperMotor1CanID = 41;
+  public static final int dumperMotor2CanID = 42;
+  public static final int dumperMotor3CanID = 43;
+  public static final int dumperMotor4CanID = 44;
 
-  public static final Current dumperStatorCurrentLimit = Amps.of(10);
-  public static final Current dumperMotorSupplyLimitHigh = Amps.of(10);
-  public static final Current dumperMotorSupplyLimitLow = Amps.of(10);
-  public static final Time dumperSupplyCurrentLowerTime = Seconds.of(1);
+  public static final Current dumperMotor1StatorCurrentLimit = Amps.of(10);
+  public static final Current dumperMotor1MotorSupplyLimitHigh = Amps.of(10);
+  public static final Current dumperMotor1MotorSupplyLimitLow = Amps.of(10);
+  public static final Time dumperMotor1SupplyCurrentLowerTime = Seconds.of(1);
 
-  public static final double dumperMotorReduction = 3.0;
+  public static final double dumperMotor1MotorReduction = 3.0;
 
-  public static final InvertedValue dumperInverted = InvertedValue.Clockwise_Positive;
-  public static final NeutralModeValue dumperNeutralMode = NeutralModeValue.Coast;
+  public static final InvertedValue dumperMotor1Inverted = InvertedValue.Clockwise_Positive;
+  public static final NeutralModeValue dumperMotor1NeutralMode = NeutralModeValue.Coast;
 
-  public static final double dumperKp = 0.0;
-  public static final double dumperKi = 0.0;
-  public static final double dumperKd = 0.0;
-  public static final double dumperKv = 0.0;
-  public static final double dumperKs = 0.0;
-  public static final double dumperKa = 0.0;
+  public static final double dumperMotor1Kp = 0.0;
+  public static final double dumperMotor1Ki = 0.0;
+  public static final double dumperMotor1Kd = 0.0;
+  public static final double dumperMotor1Kv = 0.0;
+  public static final double dumperMotor1Ks = 0.0;
+  public static final double dumperMotor1Ka = 0.0;
+
+  // Motor 2
+  public static final Current dumperMotor2StatorCurrentLimit = Amps.of(10);
+  public static final Current dumperMotor2MotorSupplyLimitHigh = Amps.of(10);
+  public static final Current dumperMotor2MotorSupplyLimitLow = Amps.of(10);
+  public static final Time dumperMotor2SupplyCurrentLowerTime = Seconds.of(1);
+
+  public static final double dumperMotor2MotorReduction = 3.0;
+
+  public static final InvertedValue dumperMotor2Inverted = InvertedValue.Clockwise_Positive;
+  public static final NeutralModeValue dumperMotor2NeutralMode = NeutralModeValue.Coast;
+
+  public static final double dumperMotor2Kp = 0.0;
+  public static final double dumperMotor2Ki = 0.0;
+  public static final double dumperMotor2Kd = 0.0;
+  public static final double dumperMotor2Kv = 0.0;
+  public static final double dumperMotor2Ks = 0.0;
+  public static final double dumperMotor2Ka = 0.0;
+
+  // Motor 3
+  public static final Current dumperMotor3StatorCurrentLimit = Amps.of(10);
+  public static final Current dumperMotor3MotorSupplyLimitHigh = Amps.of(10);
+  public static final Current dumperMotor3MotorSupplyLimitLow = Amps.of(10);
+  public static final Time dumperMotor3SupplyCurrentLowerTime = Seconds.of(1);
+
+  public static final double dumperMotor3MotorReduction = 3.0;
+
+  public static final InvertedValue dumperMotor3Inverted = InvertedValue.Clockwise_Positive;
+  public static final NeutralModeValue dumperMotor3NeutralMode = NeutralModeValue.Coast;
+
+  public static final double dumperMotor3Kp = 0.0;
+  public static final double dumperMotor3Ki = 0.0;
+  public static final double dumperMotor3Kd = 0.0;
+  public static final double dumperMotor3Kv = 0.0;
+  public static final double dumperMotor3Ks = 0.0;
+  public static final double dumperMotor3Ka = 0.0;
+
+  // Motor 4
+  public static final Current dumperMotor4StatorCurrentLimit = Amps.of(10);
+  public static final Current dumperMotor4MotorSupplyLimitHigh = Amps.of(10);
+  public static final Current dumperMotor4MotorSupplyLimitLow = Amps.of(10);
+  public static final Time dumperMotor4SupplyCurrentLowerTime = Seconds.of(1);
+
+  public static final double dumperMotor4MotorReduction = 3.0;
+
+  public static final InvertedValue dumperMotor4Inverted = InvertedValue.Clockwise_Positive;
+  public static final NeutralModeValue dumperMotor4NeutralMode = NeutralModeValue.Coast;
+
+  public static final double dumperMotor4Kp = 0.0;
+  public static final double dumperMotor4Ki = 0.0;
+  public static final double dumperMotor4Kd = 0.0;
+  public static final double dumperMotor4Kv = 0.0;
+  public static final double dumperMotor4Ks = 0.0;
+  public static final double dumperMotor4Ka = 0.0;
 }
