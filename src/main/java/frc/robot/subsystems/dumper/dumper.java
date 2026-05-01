@@ -1,3 +1,7 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 package frc.robot.subsystems.dumper;
 
 import static edu.wpi.first.units.Units.Volts;
@@ -8,33 +12,37 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.DeceiverRobotState;
+import org.littletonrobotics.junction.Logger;
 
-import org.littletonrobotics.junction.Logger;public class Dumper extends SubsystemBase{
-    private final DumperIO dumperIO;
-    //private final DumperIO IOInputsAutoLogged inputs = new DumpMeSilly(); //not very important
-    private final DeceiverRobotState robotState;
+public class Dumper extends SubsystemBase {
 
-      /** I... I think This makes a dumpa */
+  private final DumperIO dumperIO;
+  private final DumperIOInputsAutoLogged inputs = new DumperIOInputsAutoLogged();
+
+  @SuppressWarnings("unused")
+  private final DeceiverRobotState robotState;
+
+  private final Alert dumperMotorDisconnectedAlert = new Alert("Dumpa no dump", AlertType.kError);
+
+  /** Creates a new Dumper. */
   public Dumper(DumperIO IO) {
-    DumperIO = IO;
+    dumperIO = IO;
     robotState = DeceiverRobotState.getInstance();
   }
-    private final Alert DumperDisconnected = new Alert("Dumpa no dump", AlertType.kError);
 
-  
-    @Override
-    public void periodic() {
-        dumperIO.updateInputs(inputs);
-        Logger.processInputs("Dumper", inputs);
+  @Override
+  public void periodic() {
+    dumperIO.updateInputs(inputs);
+    Logger.processInputs("Dumper", inputs);
 
-        dumperMotorDisconnectedAlert.set(!inputs.motorConnected);
-    }
+    dumperMotorDisconnectedAlert.set(!inputs.motorConnected);
+  }
 
-    public void setVoltage(Voltage volts) {
-        dumperIO.setVoltage(volts);
-    }
+  public void setVoltage(Voltage volts) {
+    dumperIO.setVoltage(volts);
+  }
 
-    public Command runTestVoltage() {
-        return this.runEnd(() -> setVoltage(Volts.of(6)), () -> setVoltage(Volts.of(0)));
-    }
+  public Command runTestVoltage() {
+    return this.runEnd(() -> setVoltage(Volts.of(6)), () -> setVoltage(Volts.of(0)));
+  }
 }

@@ -17,6 +17,8 @@ import frc.robot.DeceiverRobotState.FeederStatus;
 import frc.robot.lib.geometry.AllianceFlipUtil;
 import frc.robot.lib.geometry.Bounds;
 import frc.robot.operatorinterface.OperatorInterface;
+import frc.robot.subsystems.dumper.Dumper;
+import frc.robot.subsystems.dumper.DumperIOReal;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperIO;
 import frc.robot.subsystems.hopper.HopperIOReal;
@@ -44,7 +46,7 @@ public class RobotContainer {
   public final Swerve swerve;
 
   public final Hopper hopper;
-  // public final Climber climber;
+  public final Dumper dumper;
   public final Intake intake;
   public final Vision vision;
   public final Leds leds;
@@ -81,7 +83,7 @@ public class RobotContainer {
                 new SwerveModuleIODeceivers(2),
                 new SwerveModuleIODeceivers(3));
 
-        // climber = new Climber(new ClimberIOReal());
+        dumper = new Dumper(new DumperIOReal());
         hopper = new Hopper(new HopperIOReal());
         intake = new Intake(new IntakeIOReal());
         vision =
@@ -102,7 +104,6 @@ public class RobotContainer {
                 new SwerveModuleIOSim(),
                 new SwerveModuleIOSim());
 
-        // climber = new Climber(new ClimberIOSim());
         hopper = new Hopper(new HopperIOSim());
         intake = new Intake(new IntakeIOSim());
         vision =
@@ -255,9 +256,8 @@ public class RobotContainer {
         .and(RobotModeTriggers.teleop())
         .and(isInTrench.negate());
 
-    isInTrench
-        .and(RobotModeTriggers.teleop());
-   
+    isInTrench.and(RobotModeTriggers.teleop());
+
     // Intake Controls
     operatorInterface.intakeButton().whileTrue(intake.runRollerIntake());
     operatorInterface
