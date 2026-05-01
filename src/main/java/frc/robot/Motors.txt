@@ -11,7 +11,7 @@ Extension:
 1 Kraken
 
 Dumper:
-
+4 Krakens
 
 Drivetrain:
 4 Kraken Steer
