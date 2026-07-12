@@ -10,6 +10,7 @@ import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.pathplanner.lib.events.EventTrigger;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -34,6 +35,7 @@ import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.Shooter.DemoShotPreset;
 import frc.robot.subsystems.shooter.Shooter.TargetLocation;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOReal;
@@ -263,33 +265,33 @@ public class RobotContainer {
                   && robotState.isEnabled();
             });
 
-    operatorInterface
-        .forceHub()
-        .or(shootHubZoneTrigger)
-        .and(operatorInterface.trenchMode().negate())
-        .and(RobotModeTriggers.teleop())
-        .and(isInTrench.negate())
-        .whileTrue(shooter.aimAtTarget(TargetLocation.Hub));
+    // operatorInterface
+    //     .forceHub()
+    //     .or(shootHubZoneTrigger)
+    //     .and(operatorInterface.trenchMode().negate())
+    //     .and(RobotModeTriggers.teleop())
+    //     .and(isInTrench.negate())
+    //     .whileTrue(shooter.aimAtTarget(TargetLocation.Hub));
 
-    operatorInterface
-        .forceFeedLeft()
-        .or(passLeftZoneTrigger)
-        .and(operatorInterface.trenchMode().negate())
-        .and(RobotModeTriggers.teleop())
-        .and(isInTrench.negate())
-        .whileTrue(shooter.aimAtTarget(TargetLocation.LeftPass));
+    // operatorInterface
+    //     .forceFeedLeft()
+    //     .or(passLeftZoneTrigger)
+    //     .and(operatorInterface.trenchMode().negate())
+    //     .and(RobotModeTriggers.teleop())
+    //     .and(isInTrench.negate())
+    //     .whileTrue(shooter.aimAtTarget(TargetLocation.LeftPass));
 
-    operatorInterface
-        .forceFeedRight()
-        .or(passRightZoneTrigger)
-        .and(operatorInterface.trenchMode().negate())
-        .and(RobotModeTriggers.teleop())
-        .and(isInTrench.negate())
-        .whileTrue(shooter.aimAtTarget(TargetLocation.RightPass));
+    // operatorInterface
+    //     .forceFeedRight()
+    //     .or(passRightZoneTrigger)
+    //     .and(operatorInterface.trenchMode().negate())
+    //     .and(RobotModeTriggers.teleop())
+    //     .and(isInTrench.negate())
+    //     .whileTrue(shooter.aimAtTarget(TargetLocation.RightPass));
 
-    isInTrench
-        .and(RobotModeTriggers.teleop())
-        .whileTrue(shooter.setPose(Degrees.of(0), Degrees.of(0), RotationsPerSecond.of(30)));
+    // isInTrench
+    //     .and(RobotModeTriggers.teleop())
+    //     .whileTrue(shooter.setPose(Degrees.of(0), Degrees.of(0), RotationsPerSecond.of(30)));
 
     // Feed Controls
     operatorInterface
@@ -307,14 +309,14 @@ public class RobotContainer {
         .and(operatorInterface.intakeButton().negate())
         .onTrue(intake.setExtensionDistance(Inches.of(0)));
 
-    operatorInterface
-        .feedMode()
-        .and(operatorInterface.intakeButton().negate())
-        .whileTrue(intake.feedMode());
+    // operatorInterface
+    //     .feedMode()
+    //     .and(operatorInterface.intakeButton().negate())
+    //     .whileTrue(intake.feedMode());
 
-    operatorInterface
-        .trenchMode()
-        .whileTrue(shooter.setPose(Degrees.of(0), Degrees.of(0), RotationsPerSecond.of(-32)));
+    // operatorInterface
+    //     .trenchMode()
+    //     .whileTrue(shooter.setPose(Degrees.of(0), Degrees.of(0), RotationsPerSecond.of(-32)));
 
     // HubShiftUtil.setAllianceWinOverride(
     //     () -> Optional.of(operatorInterface.shiftOverride().getAsBoolean()));
@@ -327,6 +329,49 @@ public class RobotContainer {
                 () -> {
                   HubShiftUtil.initialize();
                 }));
+
+    // Demo bindings: D-pad snaps turret to field-relative cardinal angles.
+    // Hold right bumper for lob shot; default is soft feed.
+    Rotation2d demoForward = Rotation2d.fromDegrees(0);
+    Rotation2d demoLeft = Rotation2d.fromDegrees(90);
+    Rotation2d demoBackward = Rotation2d.fromDegrees(180);
+    Rotation2d demoRight = Rotation2d.fromDegrees(270);
+
+    operatorInterface
+        .testUpTurret()
+        .and(operatorInterface.demoLobMode().negate())
+        .whileTrue(shooter.demoAimAtAngle(demoForward, DemoShotPreset.Feed));
+    operatorInterface
+        .testUpTurret()
+        .and(operatorInterface.demoLobMode())
+        .whileTrue(shooter.demoAimAtAngle(demoForward, DemoShotPreset.Lob));
+
+    operatorInterface
+        .testLeftTurret()
+        .and(operatorInterface.demoLobMode().negate())
+        .whileTrue(shooter.demoAimAtAngle(demoLeft, DemoShotPreset.Feed));
+    operatorInterface
+        .testLeftTurret()
+        .and(operatorInterface.demoLobMode())
+        .whileTrue(shooter.demoAimAtAngle(demoLeft, DemoShotPreset.Lob));
+
+    operatorInterface
+        .testDownTurret()
+        .and(operatorInterface.demoLobMode().negate())
+        .whileTrue(shooter.demoAimAtAngle(demoBackward, DemoShotPreset.Feed));
+    operatorInterface
+        .testDownTurret()
+        .and(operatorInterface.demoLobMode())
+        .whileTrue(shooter.demoAimAtAngle(demoBackward, DemoShotPreset.Lob));
+
+    operatorInterface
+        .testRightTurret()
+        .and(operatorInterface.demoLobMode().negate())
+        .whileTrue(shooter.demoAimAtAngle(demoRight, DemoShotPreset.Feed));
+    operatorInterface
+        .testRightTurret()
+        .and(operatorInterface.demoLobMode())
+        .whileTrue(shooter.demoAimAtAngle(demoRight, DemoShotPreset.Lob));
   }
 
   public Command getAutonomousCommand() {

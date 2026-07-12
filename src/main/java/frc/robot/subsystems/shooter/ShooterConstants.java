@@ -20,6 +20,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.interpolation.InverseInterpolator;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -105,6 +106,13 @@ public class ShooterConstants {
   public static final double hoodKs = 0.1;
   public static final double hoodKa = 0.0;
 
+  // Demo mode presets (safe for crowd demonstrations)
+  public static final Angle demoFeedHoodAngle = Degrees.of(25);
+  public static final AngularVelocity demoFeedFlywheelSpeed = RotationsPerSecond.of(35);
+
+  public static final Angle demoLobHoodAngle = Degrees.of(2);
+  public static final AngularVelocity demoLobFlywheelSpeed = RotationsPerSecond.of(35);
+
   // Shot calculator parameters
   public static final double phaseDelay = 0.03;
 
@@ -126,11 +134,14 @@ public class ShooterConstants {
   static {
     hoodAngleMap.put(1.12, new Rotation2d(Degrees.of(2)));
     flywheelSpeedMap.put(1.12, 31.0);
-    timeOfFlightMap.put(1.12, .56);
+    timeOfFlightMap.put(1.0, 1.05);
+
+    timeOfFlightMap.put(2.9, .51);
+    timeOfFlightMap.put(4.1, .51);
 
     hoodAngleMap.put(5.56, new Rotation2d(Degrees.of(29.5)));
     flywheelSpeedMap.put(5.56, 42.0);
-    timeOfFlightMap.put(5.56, .89);
+    timeOfFlightMap.put(5.1, 1.3);
 
     passingHoodAngleMap.put(3.05, new Rotation2d(Degrees.of(30)));
     passingFlywheelSpeedMap.put(3.05, 22.0);

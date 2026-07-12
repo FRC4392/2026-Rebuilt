@@ -436,7 +436,7 @@ public class ShooterIOReal implements ShooterIO {
         if (!Rotations.of(turretEncoderSpark.getPosition())
             .isNear(turretMotor.getPosition().getValue(), Degrees.of(10))) {
           turretMotor.setPosition(Rotations.of(turretEncoderSpark.getPosition()));
-          turretInitialized = true;
+          // turretInitialized = true;
         }
       }
     }

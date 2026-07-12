@@ -283,4 +283,8 @@ public class OperatorInterface extends SubsystemBase {
   public Trigger forceShoot() {
     return operatorController.start();
   }
+
+  public Trigger demoLobMode() {
+    return operatorController.rightBumper();
+  }
 }

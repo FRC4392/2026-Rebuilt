@@ -180,6 +180,41 @@ public class Shooter extends SubsystemBase {
     RightPass
   };
 
+  public enum DemoShotPreset {
+    Feed,
+    Lob
+  }
+
+  public Command demoAimAtAngle(Rotation2d fieldAngle, DemoShotPreset preset) {
+    return this.run(
+        () -> {
+          Angle hoodAngle =
+              preset == DemoShotPreset.Feed
+                  ? ShooterConstants.demoFeedHoodAngle
+                  : ShooterConstants.demoLobHoodAngle;
+          AngularVelocity speed =
+              preset == DemoShotPreset.Feed
+                  ? ShooterConstants.demoFeedFlywheelSpeed
+                  : ShooterConstants.demoLobFlywheelSpeed;
+
+          Rotation2d turretSetpoint = robotState.getRobotPose().getRotation().minus(fieldAngle);
+          Angle setpoint = turretSetpoint.getMeasure();
+          if (setpoint.in(Degrees) < 0) {
+            setpoint = setpoint.plus(Degrees.of(360));
+          }
+          if (setpoint.in(Degrees) > 330) {
+            setpoint = Degrees.of(330);
+          }
+          if (setpoint.in(Degrees) < 30) {
+            setpoint = Degrees.of(30);
+          }
+
+          shooterIO.setHood(hoodAngle);
+          shooterIO.setShooter(speed);
+          shooterIO.setTurret(setpoint);
+        });
+  }
+
   private Translation2d getTargetTanslation(TargetLocation location) {
     switch (location) {
       case Hub:
